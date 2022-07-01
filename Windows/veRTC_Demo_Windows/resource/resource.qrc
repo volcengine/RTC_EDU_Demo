@@ -1,0 +1,19 @@
+<RCC>
+    <qresource prefix="/img">
+		<file alias="demo_logo">image/demo_logo.png</file>
+		<file alias="real_time">image/reltime_title.png</file>
+		<file alias="setting">image/setting.png</file>
+		<file alias="setting_selected">image/setting_selected.png</file>
+		<file alias="back">image/back.png</file>
+		<file alias="rdo_chk">image/rdo_chk.png</file>
+		<file alias="rdo_unchk">image/rdo_unchk.png</file>
+		<file alias="rdo_unchk@2x">image/rdo_unchk@2x.png</file>
+		<file alias="real_time_big_logo">image/real_time_big_logo.png</file>
+		<file alias="rdo_hover">image/rdo_hover.png</file>
+		<file alias="rdo_normal">image/rdo_normal.png</file>
+		<file alias="user_bg">image/user.png</file>
+		<file>image/photo_bg.png</file>
+		<file alias="close">image/close.png</file>
+		<file>image/error.png</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,36 @@
+<RCC>
+    <qresource prefix="/img">
+        <file alias="online_class">image/online_class.png</file>
+        <file alias="out_of_class">image/outofclass.png</file>
+        <file alias="record_icon">image/record_icon.png</file>
+        <file alias="local_camera_mute">image/local_camera_mute.png</file>
+		<file alias="local_bg">image/local_bg.png</file>
+        <file alias="teacher_bg">image/teacher_bg.png</file>
+        <file alias="student_line_bg">image/student_line.png</file>
+        <file alias="student">image/student.png</file>
+        <file alias="teacher">image/teacher.png</file>
+        <file alias="history">image/history.png</file>
+        <file alias="info">image/info.png</file>
+        <file alias="dustbin">image/dustbin.png</file>
+        <file alias="down">image/down.png</file>
+        <file alias="leave_class">image/leave_class.png</file>
+        <file alias="mic">image/mic.png</file>
+        <file alias="volume">image/volume.png</file>
+        <file alias="group_speaker_icon">image/group_speaker_icon.png</file>
+        <file alias="course_logo">image/course_logo.png</file>
+        <file alias="refresh">image/refresh.png</file>
+        <file alias="cls_hover">image/cls_hover.png</file>
+        <file alias="room_title_shu">image/Rectangle 1218.png</file>
+        <file alias="tree_down">image/tree_down.png</file>
+        <file alias="video_mute">image/video_mute.png</file>
+        <file alias="video_unmute">image/video_unmute.png</file>
+        <file alias="audio_mute">image/audio_mute.png</file>
+        <file alias="audio_unmute">image/audio_unmute.png</file>
+        <file alias="tree_up">image/tree_up.png</file>
+        <file>image/disconnect_bg.png</file>
+        <file>image/expand_btn.png</file>
+        <file>image/fold_btn.png</file>
+        <file alias="exit_warning">image/exit_warning.png</file>
+        <file>image/nobody_tip.png</file>
+    </qresource>
+</RCC>

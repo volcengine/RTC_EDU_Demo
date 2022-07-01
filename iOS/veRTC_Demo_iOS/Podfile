@@ -3,7 +3,7 @@ source 'https://github.com/volcengine/volcengine-specs.git'
 
 # RTC SDK
 pod 'VolcEngineRTC', '~> 3.41.101'
-pod 'VolcEngineRTC/ScreenCapture'
+
 
 target 'veRTC_Demo' do
   platform :ios, '12.0'

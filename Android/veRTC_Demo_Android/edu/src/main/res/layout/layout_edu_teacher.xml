@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#394254"
+    tools:layout_height="150dp"
+    tools:layout_width="200dp">
+
+    <FrameLayout
+        android:id="@+id/layout_edu_teacher_video_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <FrameLayout
+        android:id="@+id/layout_edu_teacher_video_camera_off"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="29dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:src="@drawable/edu_teacher_camera_off_icon"
+            tools:ignore="ContentDescription" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/layout_edu_teacher_name"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/edu_teacher_name_bg"
+        android:ellipsize="end"
+        android:gravity="center_vertical"
+        android:lines="1"
+        android:maxLines="1"
+        android:paddingLeft="6dp"
+        android:paddingRight="6dp"
+        android:singleLine="true"
+        android:textColor="@color/white"
+        android:textSize="12dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="5"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1"
+        tools:text="teacher" />
+
+    <ImageView
+        android:id="@+id/layout_edu_teacher_mic_on"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginRight="40dp"
+        android:src="@drawable/mic_on"
+        app:layout_constraintBottom_toBottomOf="@id/layout_edu_teacher_name"
+        app:layout_constraintRight_toRightOf="@id/layout_edu_teacher_name"
+        app:layout_constraintTop_toTopOf="@id/layout_edu_teacher_name" />
+
+    <ImageView
+        android:id="@+id/layout_edu_teacher_camera_on"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginRight="10dp"
+        android:src="@drawable/camera_on"
+        app:layout_constraintBottom_toBottomOf="@id/layout_edu_teacher_name"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/layout_edu_teacher_name" />
+</androidx.constraintlayout.widget.ConstraintLayout>

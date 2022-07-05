@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="#272E3B"
+    android:padding="16dp"
+    tools:ignore="HardcodedText, SpUsage, ContentDescription">
+
+    <TextView
+        android:id="@+id/layout_edu_group_speech_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="老师开启了集体发言"
+        android:textColor="@color/white"
+        android:textSize="16dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/layout_edu_group_speech_detail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/layout_edu_group_speech_title"
+        android:layout_marginTop="12dp"
+        android:text="请大声说出答案"
+        android:textColor="#86909C"
+        android:textSize="12dp" />
+
+    <ImageView
+        android:id="@+id/layout_edu_group_speech_icon"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginLeft="32dp"
+        android:layout_toRightOf="@id/layout_edu_group_speech_title"
+        android:src="@drawable/education_group_speech_icon" />
+
+</RelativeLayout>

@@ -48,7 +48,7 @@
 
 在火山引擎控制台-> 视频管理 -> [空间管理](https://console.volcengine.com/vod/overview/)页面获取 VodSpace。若不存在空间，请新建空间。
 
-<img src="https://lf3-volc-editor.volccdn.com/obj/volcfe/sop-public/upload_5019d8b56fc34a71a81a4334e064093d" width="500px" >
+<img src="https://lf6-volc-editor.volccdn.com/obj/volcfe/sop-public/upload_4f96eadc89fa828488fbe63b496cdc24" width="500px" >
 
 ### 步骤 5：环境变量配置
 

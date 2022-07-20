@@ -54,7 +54,8 @@
 
 当前你可以使用 **`http://rtc-test.bytedance.com/rtc_demo_special/login`** 作为测试服务器域名，仅提供跑通测试服务，无法保障正式需求。
 
-<img src="https://lf6-volc-editor.volccdn.com/obj/volcfe/sop-public/upload_3aaaaa571e5f8f2e335a258c8eb58cbf" width="500px" >
+
+<img src="https://lf6-volc-editor.volccdn.com/obj/volcfe/sop-public/upload_290f3994a5ee5b998172646aa0f5ab5e" width="500px" >
 
 3. **填写 APPID、APPKey、AccessKeyID、SecretAccessKey、ACCOUNT\_ID 和 VOD\_SPACE**
 	
@@ -76,8 +77,7 @@
 
 2. 选择**Run** -> **Run 'app'** ，开始编译。编译成功后你的 Android 设备上会出现新应用。部分手机会出现二次确认，请选择确认安装。
 	
-
-<img src="https://lf6-volc-editor.volccdn.com/obj/volcfe/sop-public/upload_1a4ff34d1cc86f05ebf8746b05fa5f5a" width="500px" >
+<img src="https://lf6-volc-editor.volccdn.com/obj/volcfe/sop-public/upload_966608ae63a2f6c803f37a2264798e18" width="500px" >
 
 运行开始界面如下：
 <br>

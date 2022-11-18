@@ -71,6 +71,7 @@ void StudentRoom::closeEvent(QCloseEvent* event) {
       "border-radius:8px;"
       "font-family:\"Microsoft YaHei\";");
   auto layout = new QVBoxLayout;
+  layout->setContentsMargins(0, 0, 0, 0);
   dialog->setLayout(layout);
   layout->addWidget(win, 0, Qt::AlignCenter);
   win->setFixedSize(400, 238);
@@ -141,8 +142,9 @@ void StudentRoom::closeEvent(QCloseEvent* event) {
       new QSpacerItem(1, 40, QSizePolicy::Expanding, QSizePolicy::Fixed));
   win->setLayout(vbox);
   dialog->setFixedSize(400, 238);
-  dialog->move((this->width() - 400) / 2, (this->height() - 238) / 2);
-  dialog->setWindowFlags(Qt::FramelessWindowHint);
+  dialog->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
+  dialog->setWindowModality(Qt::WindowModal);
+  dialog->move(mapToGlobal(QPoint((this->width() - 400) / 2, (this->height() - 238) / 2)));
   dialog->show();
   event->ignore();
 }
@@ -194,7 +196,7 @@ void StudentRoom::onEndClass(const std::string& room_id) {
 	close();
 	emit AppUIState::GetInstance().sigReturnMainPage();
 	QTimer::singleShot(
-		500, [] { Toast::showTip("课程已结束", QApplication::activeWindow()); });
+		1000, [] { Toast::showTip("课程已结束", QApplication::activeWindow()); });
 }
 
 void StudentRoom::onOpenGroupSpeech(const std::string& room_id) {
@@ -272,6 +274,7 @@ void StudentRoom::DropCall() {
 		"border-radius:8px;"
 		"font-family:\"Microsoft YaHei\";");
 	auto layout = new QVBoxLayout;
+	layout->setContentsMargins(0, 0, 0, 0);
 	dialog->setLayout(layout);
 	layout->addWidget(win, 0, Qt::AlignCenter);
 	win->setFixedSize(400, 238);
@@ -344,8 +347,9 @@ void StudentRoom::DropCall() {
 		new QSpacerItem(1, 40, QSizePolicy::Expanding, QSizePolicy::Fixed));
 	win->setLayout(vbox);
 	dialog->setFixedSize(400, 238);
-	dialog->setWindowFlags(Qt::FramelessWindowHint);
-	dialog->move((this->width() - 400) / 2, (this->height() - 238) / 2);
+    dialog->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
+    dialog->setWindowModality(Qt::WindowModal);
+    dialog->move(mapToGlobal(QPoint((this->width() - 400) / 2, (this->height() - 238) / 2)));
 	dialog->show();
 }
 
@@ -353,6 +357,7 @@ void StudentRoom::RtcInit() {
 	std::string roomID = Edu::DataMgr::instance().current_room().room_id;
 	std::string token = DATAMGR_INS.student_join_class_room().token;
 	std::string uid = vrd::DataMgr::instance().user_id();
+	EduRTCEngineWrap::setDefaultVideoProfiles();
 	EduRTCEngineWrap::setUserRole(Role::kUserRoleTypeSilentAudience);
 	EduRTCEngineWrap::joinRoom(token.c_str(), roomID.c_str(), uid.c_str());
 }

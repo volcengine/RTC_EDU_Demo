@@ -13,7 +13,6 @@
 #include "rtc/bytertc_advance.h"
 #include "rtc/bytertc_defines.h"
 #include "rtc/bytertc_engine_interface.h"
-#include "rtc/bytertc_engine_lite_interface.h"
 
 AppUIState& AppUIState::GetInstance() {
   static AppUIState ins;

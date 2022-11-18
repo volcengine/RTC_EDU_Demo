@@ -14,7 +14,7 @@ namespace vrd
 		virtual void add(std::string&& name, std::shared_ptr<IModule>&& module) = 0;
 		virtual void go(const std::string& name) = 0;
 		virtual std::shared_ptr<IModule> get(const std::string& name) = 0;
-		virtual void home() = 0;
+		virtual void quit() = 0;
 	};
 }
 

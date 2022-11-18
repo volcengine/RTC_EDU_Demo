@@ -50,6 +50,7 @@ public:
 	PROPRETY(std::string, user_name, UserName)
 	PROPRETY(std::string, user_id, UserId)
 	PROPRETY(std::string, room_id, RoomId)
+	PROPRETY(std::string, business_Id, BusinessId)
 	PROPRETY(RTSInfo, rts_info, RTSInfo)
 
 protected:

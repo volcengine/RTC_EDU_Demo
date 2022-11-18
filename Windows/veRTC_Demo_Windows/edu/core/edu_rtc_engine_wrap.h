@@ -29,13 +29,14 @@ class EduRTCEngineWrap : public QObject {
 
   //static int enableAutoSubscribe(bool video, bool audio);
   //static int enableAutoPublish(bool enable);
-  static int setLocalMirrorMode(bytertc::MirrorMode mode);
+  static int setLocalMirrorMode(bytertc::MirrorType type);
   static int joinRoom(const std::string token, const std::string room_id,
                       const std::string user_id);
   static int leaveRoom();
   static int publish();
   static int unPublish();
-
+  
+  static int setDefaultVideoProfiles();
   static int subscribeVideoStream(const std::string& user_id,
                                   const SubscribeConfig& info);
   static int unSubscribeVideoStream(const std::string& user_id, bool screen);
@@ -68,8 +69,8 @@ class EduRTCEngineWrap : public QObject {
 
   static bool audioRecordDevicesTest();
 
-  std::shared_ptr<bytertc::IRtcRoom> getMainRtcRoom();
-  std::shared_ptr<bytertc::IRtcRoom> getGroupRtcRoom();
+  std::shared_ptr<bytertc::IRTCRoom> getMainRtcRoom();
+  std::shared_ptr<bytertc::IRTCRoom> getGroupRtcRoom();
 
   // test
   static int startPlaybackDeviceTest(const std::string& str);
@@ -124,23 +125,24 @@ class EduRTCEngineWrap : public QObject {
  private:
   std::string str_group_room_;
   std::string str_main_room_;
-  std::shared_ptr<bytertc::IRtcRoom> group_room_;
-  std::shared_ptr<bytertc::IRtcRoom> main_room_;
+  std::shared_ptr<bytertc::IRTCRoom> group_room_;
+  std::shared_ptr<bytertc::IRTCRoom> main_room_;
 
   std::function<void(const std::string& user_id, bool add)> stream_listener_;
   std::map<std::string, int> video_streams_;
   vrd::CallbackHelper cb_helper_;
 
-  class MiniHandler : public bytertc::IRTCRoomEventHandler {
-   public:
-    void OnFirstRemoteVideoFrameRendered(
-        const bytertc::RemoteStreamKey key,
-        const bytertc::VideoFrameInfo& info) override;
-    void OnStreamRemove(const bytertc::MediaStreamInfo& stream,
-                        bytertc::StreamRemoveReason reason) override;
-    void OnLocalVideoStateChanged(
+  class MiniHandler : public bytertc::IRTCRoomEventHandler
+                    , public bytertc::IRTCVideoEventHandler {
+  public:
+    void onUserPublishStream(const char* uid, bytertc::MediaStreamType type) override;
+    void onUserUnpublishStream(const char* uid, bytertc::MediaStreamType type, bytertc::StreamRemoveReason reason) override;
+    void onLocalVideoStateChanged(
         bytertc::StreamIndex index, bytertc::LocalVideoStreamState state,
         bytertc::LocalVideoStreamError error) override;
+
+	void onRoomMessageReceived(const char* uid, const char* message) override;
+	void onUserMessageReceived(const char* uid, const char* message) override;
 
     std::function<void(const std::string& user_id, bool add)> stream_listener_;
     std::map<std::string, int> video_streams_;

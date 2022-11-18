@@ -21,7 +21,7 @@ namespace vrd
 		void add(std::string&& name, std::shared_ptr<IModule>&& module) override;
 		void go(const std::string& name) override;
 		std::shared_ptr<IModule> get(const std::string& name) override;
-		void home() override;
+		void quit() override;
 
 	private:
 		std::map<std::string, std::shared_ptr<IModule>> modules_;

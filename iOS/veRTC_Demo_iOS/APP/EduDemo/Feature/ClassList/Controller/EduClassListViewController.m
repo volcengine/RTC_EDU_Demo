@@ -2,8 +2,8 @@
 //  ClassListViewController.m
 //  veRTC_Demo
 //
-//  Created by bytedance on 2021/7/27.
-//  Copyright © 2021 . All rights reserved.
+//  Created by on 2021/7/27.
+//  
 //
 
 #import "EduClassListViewController.h"
@@ -11,7 +11,7 @@
 #import "EduLectureHallViewController.h"
 #import "EduBreakoutClassViewController.h"
 #import "EduRoomTableView.h"
-#import "EduRTCManager.h"
+#import "EduBreakoutRTCManager.h"
 #import "EduRTMManager.h"
 #import "EduRTMStudentManager.h"
 #import "UIViewController+Orientation.h"
@@ -150,7 +150,8 @@
 }
 
 - (void)dealloc {
-    [PublicParameterCompoments clear];
+    [PublicParameterComponent clear];
+    [[EduBreakoutRTCManager shareRtc] disconnect];
 }
 
 @end

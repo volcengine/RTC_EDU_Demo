@@ -2,8 +2,8 @@
 //  EduClassModel.m
 //  veRTC_Demo
 //
-//  Created by bytedance on 2021/8/30.
-//  Copyright © 2021 . All rights reserved.
+//  Created by on 2021/8/30.
+//  
 //
 
 #import "EduClassModel.h"
@@ -28,7 +28,7 @@
             userModel.roomType = EduUserRoomTypeLeature;
             userModel.isVideoStream = YES;
             [micList addObject:userModel];
-            if ([userModel.uid isEqualToString:[LocalUserComponents userModel].uid]) {
+            if ([userModel.uid isEqualToString:[LocalUserComponent userModel].uid]) {
                 selfMicOn = YES;
             }
         }

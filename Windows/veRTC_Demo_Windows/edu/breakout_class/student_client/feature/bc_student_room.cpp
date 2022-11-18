@@ -38,108 +38,110 @@ StudentRoom::~StudentRoom() {
   delete ui;
 }
 
-    void StudentRoom::closeEvent(QCloseEvent* event)
+void StudentRoom::closeEvent(QCloseEvent* event)
+{
+    if (m_is_sure_closing_)
     {
-        if (m_is_sure_closing_)
-        {
-            QWidget::closeEvent(event);
-            return;
-        }
-
-        if (m_is_leaving_room_) {
-            event->ignore();
-            return;
-        }
-
-        QWidget* dialog = new QWidget(this);
-        QWidget* win = new QWidget;
-        win->setStyleSheet(
-            "background:#272e38;"
-            "border-radius:8px;"
-            "font-family:\"Microsoft YaHei\";"
-        );
-        auto layout = new QVBoxLayout;
-        dialog->setLayout(layout);
-        layout->addWidget(win, 0, Qt::AlignCenter);
-        win->setFixedSize(400, 238);
-        auto vbox = new QVBoxLayout;
-        auto vbox1 = new QVBoxLayout;
-        vbox1->setAlignment(Qt::AlignHCenter);
-        auto h1box = new QHBoxLayout;
-        auto lbl_warnning = new QLabel;
-        lbl_warnning->setFixedSize(18, 18);
-        lbl_warnning->setStyleSheet(
-            "background-image:url(:img/"
-            "exit_warning);background-position:center;background-repeat:"
-            "no-repeat;"
-            "width:20px ; height:20px;"
-        );
-        auto lbl_tip = new QLabel;
-        lbl_tip->setStyleSheet(
-            "color:#ffffff;"
-            "font:14px;"
-            "font-weight:500;"
-        );
-        lbl_tip->setAlignment(Qt::AlignCenter);
-        lbl_tip->setText("正在上课,确定要退出教室吗?");
-        h1box->addItem(new QSpacerItem(90, 22, QSizePolicy::Fixed, QSizePolicy::Maximum));
-        h1box->addWidget(lbl_warnning);
-        h1box->addWidget(lbl_tip);
-        h1box->addItem(new QSpacerItem(10, 10, QSizePolicy::Expanding, QSizePolicy::Expanding));
-        vbox->addItem(new QSpacerItem(1, 40, QSizePolicy::Fixed, QSizePolicy::Fixed));
-        vbox->addLayout(h1box);
-        vbox->addItem(new QSpacerItem(1, 47, QSizePolicy::Fixed, QSizePolicy::Fixed));
-        vbox->setAlignment(Qt::AlignHCenter);
-
-        auto btn_close = new QPushButton;
-        btn_close->setFixedHeight(36);
-        btn_close->setFixedSize(240, 36);
-        auto btn_cancel = new QPushButton;
-        btn_cancel->setFixedHeight(36);
-        connect(btn_cancel, &QPushButton::clicked, [dialog]
-            {
-                dialog->close();
-            });
-        connect(btn_close, &QPushButton::clicked, [this, dialog]
-            {
-                Edu::StudentJoinClassRoom si = DATAMGR_INS.student_join_class_room();
-				WSS_SESSION->stuLeaveClass(this->m_room_id_, si.user_info.user_id, nullptr);
-				m_is_sure_closing_ = true;
-				dialog->close();
-				close();
-				emit AppUIState::GetInstance().sigReturnMainPage();
-            });
-        btn_cancel->setFixedSize(240, 36);
-        btn_close->setText("确定");
-
-        btn_cancel->setText("取消");
-        btn_close->setStyleSheet(
-            "background:#e63f3f;"
-            "font-weight:400;"
-            "color:#ffffff;"
-            "font:14px;"
-            "border:1px;"
-            "border-radius:18px;"
-        );
-        btn_cancel->setStyleSheet(
-            "background:rgba(255,255,255,0.1);"
-            "color:#ffffff;"
-            "font-weight:400;"
-            "font:14px;"
-            "border:1px;"
-            "border-radius:18px;"
-        );
-        vbox->addWidget(btn_close, 0, Qt::AlignHCenter);
-        vbox->addItem(new QSpacerItem(1, 24, QSizePolicy::Fixed, QSizePolicy::Fixed));
-        vbox->addWidget(btn_cancel, 0, Qt::AlignHCenter);
-        vbox->addItem(new QSpacerItem(1, 40, QSizePolicy::Expanding, QSizePolicy::Fixed));
-        win->setLayout(vbox);
-        dialog->setFixedSize(400, 238);
-        dialog->setWindowFlags(Qt::FramelessWindowHint);
-        dialog->move((this->width() - 400) / 2, (this->height() - 238) / 2);
-        dialog->show();
-        event->ignore();
+        QWidget::closeEvent(event);
+        return;
     }
+
+    if (m_is_leaving_room_) {
+        event->ignore();
+        return;
+    }
+
+    QWidget* dialog = new QWidget(this);
+    QWidget* win = new QWidget;
+    win->setStyleSheet(
+        "background:#272e38;"
+        "border-radius:8px;"
+        "font-family:\"Microsoft YaHei\";"
+    );
+    auto layout = new QVBoxLayout;
+    layout->setContentsMargins(0, 0, 0, 0);
+    dialog->setLayout(layout);
+    layout->addWidget(win, 0, Qt::AlignCenter);
+    win->setFixedSize(400, 238);
+    auto vbox = new QVBoxLayout;
+    auto vbox1 = new QVBoxLayout;
+    vbox1->setAlignment(Qt::AlignHCenter);
+    auto h1box = new QHBoxLayout;
+    auto lbl_warnning = new QLabel;
+    lbl_warnning->setFixedSize(18, 18);
+    lbl_warnning->setStyleSheet(
+        "background-image:url(:img/"
+        "exit_warning);background-position:center;background-repeat:"
+        "no-repeat;"
+        "width:20px ; height:20px;"
+    );
+    auto lbl_tip = new QLabel;
+    lbl_tip->setStyleSheet(
+        "color:#ffffff;"
+        "font:14px;"
+        "font-weight:500;"
+    );
+    lbl_tip->setAlignment(Qt::AlignCenter);
+    lbl_tip->setText("正在上课,确定要退出教室吗?");
+    h1box->addItem(new QSpacerItem(90, 22, QSizePolicy::Fixed, QSizePolicy::Maximum));
+    h1box->addWidget(lbl_warnning);
+    h1box->addWidget(lbl_tip);
+    h1box->addItem(new QSpacerItem(10, 10, QSizePolicy::Expanding, QSizePolicy::Expanding));
+    vbox->addItem(new QSpacerItem(1, 40, QSizePolicy::Fixed, QSizePolicy::Fixed));
+    vbox->addLayout(h1box);
+    vbox->addItem(new QSpacerItem(1, 47, QSizePolicy::Fixed, QSizePolicy::Fixed));
+    vbox->setAlignment(Qt::AlignHCenter);
+
+    auto btn_close = new QPushButton;
+    btn_close->setFixedHeight(36);
+    btn_close->setFixedSize(240, 36);
+    auto btn_cancel = new QPushButton;
+    btn_cancel->setFixedHeight(36);
+    connect(btn_cancel, &QPushButton::clicked, [dialog]
+    {
+        dialog->close();
+    });
+    connect(btn_close, &QPushButton::clicked, [this, dialog]
+        {
+            Edu::StudentJoinClassRoom si = DATAMGR_INS.student_join_class_room();
+            WSS_SESSION->stuLeaveClass(this->m_room_id_, si.user_info.user_id, nullptr);
+            m_is_sure_closing_ = true;
+            dialog->close();
+            close();
+            emit AppUIState::GetInstance().sigReturnMainPage();
+        });
+    btn_cancel->setFixedSize(240, 36);
+    btn_close->setText("确定");
+
+    btn_cancel->setText("取消");
+    btn_close->setStyleSheet(
+        "background:#e63f3f;"
+        "font-weight:400;"
+        "color:#ffffff;"
+        "font:14px;"
+        "border:1px;"
+        "border-radius:18px;"
+    );
+    btn_cancel->setStyleSheet(
+        "background:rgba(255,255,255,0.1);"
+        "color:#ffffff;"
+        "font-weight:400;"
+        "font:14px;"
+        "border:1px;"
+        "border-radius:18px;"
+    );
+    vbox->addWidget(btn_close, 0, Qt::AlignHCenter);
+    vbox->addItem(new QSpacerItem(1, 24, QSizePolicy::Fixed, QSizePolicy::Fixed));
+    vbox->addWidget(btn_cancel, 0, Qt::AlignHCenter);
+    vbox->addItem(new QSpacerItem(1, 40, QSizePolicy::Expanding, QSizePolicy::Fixed));
+    win->setLayout(vbox);
+    dialog->setFixedSize(400, 238);
+    dialog->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
+    dialog->setWindowModality(Qt::WindowModal);
+    dialog->move(mapToGlobal(QPoint((this->width() - 400) / 2, (this->height() - 238) / 2)));
+    dialog->show();
+    event->ignore();
+}
 
 void StudentRoom::showEvent(QShowEvent* event) {}
 
@@ -196,7 +198,7 @@ void StudentRoom::onEndClass(const std::string& room_id) {
 	this->m_is_sure_closing_ = true;
 	this->close();
 	emit AppUIState::GetInstance().sigReturnMainPage();
-	QTimer::singleShot(500, [] {
+	QTimer::singleShot(1000, [] {
 		Toast::showTip("老师已经下课", QApplication::activeWindow());
 	});
 }
@@ -285,6 +287,7 @@ void StudentRoom::DropCall() {
       "border-radius:8px;"
       "font-family:\"Microsoft YaHei\";");
   auto layout = new QVBoxLayout;
+  layout->setContentsMargins(0, 0, 0, 0);
   dialog->setLayout(layout);
   layout->addWidget(win, 0, Qt::AlignCenter);
   win->setFixedSize(400, 238);
@@ -359,8 +362,9 @@ void StudentRoom::DropCall() {
       new QSpacerItem(1, 40, QSizePolicy::Expanding, QSizePolicy::Fixed));
   win->setLayout(vbox);
   dialog->setFixedSize(400, 238);
-  dialog->move((this->width() - 400) / 2, (this->height() - 238) / 2);
-  dialog->setWindowFlags(Qt::FramelessWindowHint);
+  dialog->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
+  dialog->setWindowModality(Qt::WindowModal);
+  dialog->move(mapToGlobal(QPoint((this->width() - 400) / 2, (this->height() - 238) / 2)));
   dialog->show();
 }
 
@@ -398,8 +402,9 @@ void StudentRoom::InitRoomInfos() {
   bytertc::VideoCanvas canvas;
   canvas.render_mode = bytertc::kRenderModeHidden;
   canvas.view = m_teacher_preview_->GetView();
-  EduRTCEngineWrap::instance().getMainRtcRoom()->SetRemoteVideoCanvas(
-      ti.user_id.c_str(), bytertc::StreamIndex::kStreamIndexMain, canvas);
+
+  EduRTCEngineWrap::instance().setupRemoteViewMainRoom(m_teacher_preview_->GetView(),
+      bytertc::kRenderModeHidden, ti.user_id);
 
   pGroupView = new vrd::GroupView();
   pGroupView->setFixedWidth(208);
@@ -472,6 +477,7 @@ void StudentRoom::RtcInit() {
 
   EduRTCEngineWrap::muteLocalAudio(true);
   EduRTCEngineWrap::muteLocalVideo(false);
+  EduRTCEngineWrap::setDefaultVideoProfiles();
 
   std::string token = DATAMGR_INS.student_join_class_room().token;
   std::string uid = vrd::DataMgr::instance().user_id();
@@ -482,7 +488,7 @@ void StudentRoom::RtcInit() {
   std::string group_token = DATAMGR_INS.student_join_class_room().group_token;
   std::string group_uid = vrd::DataMgr::instance().user_id();
   const bytertc::UserInfo group_user_info{group_uid.c_str(), nullptr};
-  EduRTCEngineWrap::joinGroupRoom(group_token, user_info,
+  EduRTCEngineWrap::joinGroupRoom(group_token, group_user_info,
                                  bytertc::kRoomProfileTypeLiveBroadcasting);
   EduRTCEngineWrap::publishGroupRoom();
 }

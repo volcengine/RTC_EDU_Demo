@@ -18,6 +18,9 @@ set(CMAKE_OUTPUT_DIR ${EXECUTABLE_OUTPUT_PATH}/$(Configuration)/VeRTCDemo)
 set(PORJECT_ROOT_PATH ${CMAKE_CURRENT_LIST_DIR})
 include(cmake/common.cmake)
 include(cmake/edu.cmake)
+add_definitions(-DEDU_SCENE)
+add_definitions(-DMORE_SCENE)
+ 
 
 if(MSVC)
   if(CMAKE_CL_64)
@@ -69,12 +72,12 @@ if(WIN32)
 
   set (SOURCE_FILE 
     ${COMMON_SRC}
-	${COMMON_QRC}
+    ${COMMON_QRC}
     ${EDU_SRC}
     ${EDU_QRC}
     ${CMAKE_CURRENT_LIST_DIR}/resource/app.manifest
   )
-	
+
   add_executable(VeRTCDemo
     ${SOURCE_FILE}
     ${RC_FILES}           #windows rc complier to gen ico
@@ -107,43 +110,25 @@ if(WIN32)
         OUTPUT_NAME "VeRTCDemo")
 
   IF (win32)
-    set(SRC_FILE1 \"${CMAKE_CURRENT_LIST_DIR}/vertc_sdk/bin/Win32/VolcEngineRTC.dll\")
-    string(REPLACE "/" "\\" SRC_FILE1 ${SRC_FILE1})
-	set(SRC_FILE2 \"${CMAKE_CURRENT_LIST_DIR}/vertc_sdk/bin/Win32/RTCFFmpeg.dll\")
-	string(REPLACE "/" "\\" SRC_FILE2 ${SRC_FILE2})
-    set(SRC_FILE3 \"${CMAKE_CURRENT_LIST_DIR}/vertc_sdk/bin/Win32/openh264-4.dll\")
-    string(REPLACE "/" "\\" SRC_FILE3 ${SRC_FILE3})
-    set(SRC_FILE4 \"${CMAKE_CURRENT_LIST_DIR}/vertc_sdk/bin/Win32/libEGL.dll\")
-    string(REPLACE "/" "\\" SRC_FILE4 ${SRC_FILE4})
-    set(SRC_FILE5 \"${CMAKE_CURRENT_LIST_DIR}/vertc_sdk/bin/Win32/libGLESv2.dll\")
-    string(REPLACE "/" "\\" SRC_FILE5 ${SRC_FILE5})
+    set(SDK_DIR ${CMAKE_SOURCE_DIR}/vertc_sdk/bin/win32)
+    string(REPLACE "/" "\\" SDK_DIR ${SDK_DIR})
   ELSE ()
-    set(SRC_FILE1 \"${CMAKE_CURRENT_LIST_DIR}/vertc_sdk/bin/x64/VolcEngineRTC.dll\")
-    string(REPLACE "/" "\\" SRC_FILE1 ${SRC_FILE1})
-	set(SRC_FILE2 \"${CMAKE_CURRENT_LIST_DIR}/vertc_sdk/bin/x64/RTCFFmpeg.dll\")
-    string(REPLACE "/" "\\" SRC_FILE2 ${SRC_FILE2})
-    set(SRC_FILE3 \"${CMAKE_CURRENT_LIST_DIR}/vertc_sdk/bin/x64/openh264-4.dll\")
-    string(REPLACE "/" "\\" SRC_FILE3 ${SRC_FILE3})
-    set(SRC_FILE4 \"${CMAKE_CURRENT_LIST_DIR}/vertc_sdk/bin/x64/libEGL.dll\")
-    string(REPLACE "/" "\\" SRC_FILE4 ${SRC_FILE4})
-    set(SRC_FILE5 \"${CMAKE_CURRENT_LIST_DIR}/vertc_sdk/bin/x64/libGLESv2.dll\")
-    string(REPLACE "/" "\\" SRC_FILE5 ${SRC_FILE5})
+    set(SDK_DIR ${CMAKE_SOURCE_DIR}/vertc_sdk/bin/x64)
+    string(REPLACE "/" "\\" SDK_DIR ${SDK_DIR})
   ENDIF ()
+  message(${SDK_DIR})
   
-  set(SRC_FILE6 \"${CMAKE_CURRENT_LIST_DIR}/resource/audio/peace.mp4\")
-  string(REPLACE "/" "\\" SRC_FILE6 ${SRC_FILE6})
+  set(SRC_FILE1 \"${CMAKE_CURRENT_LIST_DIR}/resource/audio/peace.mp4\")
+  string(REPLACE "/" "\\" SRC_FILE1 ${SRC_FILE1})
   set(DEPENDS_DIR ${CMAKE_SOURCE_DIR}/Depends/${PLATFORM})
   string(REPLACE "/" "\\" DEPENDS_DIR ${DEPENDS_DIR})
   message(${DEPENDS_DIR})
 
   add_custom_command(TARGET VeRTCDemo POST_BUILD
+	COMMAND copy ${SDK_DIR}\\*.dll \"${CMAKE_OUTPUT_DIR}/\" /y
     COMMAND copy ${SRC_FILE1} \"${CMAKE_OUTPUT_DIR}/\" /y
-    COMMAND copy ${SRC_FILE2} \"${CMAKE_OUTPUT_DIR}/\" /y
-    COMMAND copy ${SRC_FILE3} \"${CMAKE_OUTPUT_DIR}/\" /y
-    COMMAND copy ${SRC_FILE4} \"${CMAKE_OUTPUT_DIR}/\" /y
-    COMMAND copy ${SRC_FILE5} \"${CMAKE_OUTPUT_DIR}/\" /y
-    COMMAND copy ${SRC_FILE6} \"${CMAKE_OUTPUT_DIR}/\" /y
 	COMMAND copy ${DEPENDS_DIR}\\*.dll \"${CMAKE_OUTPUT_DIR}/\" /y
+	COMMAND cd /d ${WINDEPLOYQT_PATH}
 	COMMAND if $(Configuration) equ Debug (${WINDEPLOYQT_PATH}\\windeployqt.exe --debug ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG}/VeRTCDemo.exe)
     COMMAND if $(Configuration) equ Release (${WINDEPLOYQT_PATH}\\windeployqt.exe --release  ${CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE}/VeRTCDemo.exe)
   )

@@ -1,5 +1,4 @@
 ﻿#include "session_base.h"
-#include "core/constants.h"
 #include "feature/data_mgr.h"
 #include "application.h"
 #include "util_error.h"
@@ -7,49 +6,60 @@
 #include "util_uuid.h"
 #include "logger.h"
 #include "http.h"
+#include "scene_select_widget.h"
 
-#include <QDebug>
+#include <QTimer>
+#include <QJsonObject>
+#include <QJsonDocument>
+
+#ifdef VE_RTS_PARAMS
+#include "feature/ve_rts_params/rts_params.h"
+#endif
+
+#ifdef RTS_PARAMS
+#include "feature/rts_params/rts_params.h"
+#endif
 
 namespace vrd {
 static const QString MESSAGE_TYPE_RETURN = "return";
 static const QString MESSAGE_TYPE_INFORM = "inform";
 
 void SessionBase::registerThis() {
-  VRD_FUNC_RIGESTER_COMPONET(vrd::SessionBase, SessionBase);
+	VRD_FUNC_RIGESTER_COMPONET(vrd::SessionBase, SessionBase);
 }
 
 SessionBase::SessionBase() {
-	net_live_timer_ = new QTimer();
-	net_live_timer_->start();
-	net_live_timer_->setInterval(3000);
-	net_live_timer_->setSingleShot(false);
+    net_live_timer_ = new QTimer();
+    net_live_timer_->start();
+    net_live_timer_->setInterval(3000);
+    net_live_timer_->setSingleShot(false);
 	initConnections();
 }
 
 SessionBase::~SessionBase() {
-	net_live_timer_->stop();
-	net_live_timer_->deleteLater();
+    net_live_timer_->stop();
+    net_live_timer_->deleteLater();
 }
 
 void SessionBase::connectRTS(CSTRING_REF_PARAM scenesName, std::function<void(void)>&& callback) {
-	_setAppInfo(vrd::APP_ID, vrd::APP_KEY,vrd::VOLC_AK,vrd::VOLC_SK, vrd::ACCOUNT_ID, vrd::VOD_SPACE, 
-		[this, scenesName, callback](){
-		getRTSParams(scenesName, token_, [this, callback](int code) {
-			if (code == 200) {
-				auto rts_info = vrd::DataMgr::instance().rts_info();
-				RtcEngineWrap::instance().createEngine(rts_info.app_id);
-				_loginRTS(rts_info.rtm_token, [this, rts_info, callback](int code) {
-					if (code == bytertc::LoginErrorCode::kLoginErrorCodeSuccess) {
-						setServerParams(rts_info.server_signature, rts_info.server_url);
-						connect_rts_callback_ = callback;
-					}
-					else {
-						qWarning() << "login error: error_code" << code;
-					}
-				});
-			}
-		});
-	});
+    vrd::getJoinRTSParams(scenesName, token_, [this, callback](int code) {
+    if (code == 200) {
+		auto rts_info = vrd::DataMgr::instance().rts_info();
+		//创建引擎
+		RtcEngineWrap::instance().createEngine(rts_info.app_id);
+		//设置业务标识参数
+		RtcEngineWrap::instance().getRtcEngine()->setBusinessId(vrd::DataMgr::instance().business_Id().c_str());
+		_loginRTS(rts_info.rtm_token, [this, rts_info, callback](int code) {
+            if (code == bytertc::LoginErrorCode::kLoginErrorCodeSuccess) {
+                setServerParams(rts_info.server_signature, rts_info.server_url);
+                connect_rts_callback_ = callback;
+            }
+            else {
+                qWarning() << "login error: error_code" << code;
+            }
+            });
+		}
+    });
 }
 
 void SessionBase::disconnectRTS() {
@@ -74,104 +84,45 @@ CSTRING_REF_PARAM SessionBase::_userId() {
 }
 
 CSTRING_REF_PARAM SessionBase::_token() {
-	return token_; 
+    return token_; 
 }
 
 void SessionBase::_emitCallback(std::function<void(void)>&& cb) {
-  cb_helper_.emitCallback(std::move(cb));
+    cb_helper_.emitCallback(std::move(cb));
 }
 
 void SessionBase::initConnections() {
-	QObject::connect(&RtcEngineWrap::instance(), &RtcEngineWrap::sigOnLoginResult, this, &SessionBase::onLoginResult);
-	QObject::connect(&RtcEngineWrap::instance(), &RtcEngineWrap::sigOnServerMessageSendResult, 
-		this, &SessionBase::onServerMessageSendResult);
-	QObject::connect(&RtcEngineWrap::instance(), &RtcEngineWrap::sigOnMessageReceived, 
-		this, &SessionBase::onMessageReceived);
-	QObject::connect(&RtcEngineWrap::instance(), &RtcEngineWrap::sigOnServerParamsSetResult, 
-		this, &SessionBase::onServerParamsSetResult);
-	QObject::connect(net_live_timer_, &QTimer::timeout, this, [this](){
-		auto& httpInstance = Http::instance();
-		//only check network connection
-		auto reply = httpInstance.post(QUrl(QString::fromStdString(vrd::URL)), "", "application/json");
-		QObject::connect(reply, &HttpReply::finished, this, [this](auto& reply) {
-			auto replyCode = reply.statusCode();
-			if (replyCode == 0) {
-				netBroken();
-			}
-			else {
-				 vrd::util::closeFixedToast();
-			}
-			});
-		});
+    QObject::connect(&RtcEngineWrap::instance(), &RtcEngineWrap::sigOnLoginResult, this, &SessionBase::onLoginResult);
+    QObject::connect(&RtcEngineWrap::instance(), &RtcEngineWrap::sigOnServerMessageSendResult,
+        this, &SessionBase::onServerMessageSendResult);
+    QObject::connect(&RtcEngineWrap::instance(), &RtcEngineWrap::sigOnMessageReceived,
+        this, &SessionBase::onMessageReceived);
+    QObject::connect(&RtcEngineWrap::instance(), &RtcEngineWrap::sigOnServerParamsSetResult,
+        this, &SessionBase::onServerParamsSetResult);
+
+    QObject::connect(net_live_timer_, &QTimer::timeout, this, [this]() {
+        auto& httpInstance = Http::instance();
+        //only check network connection
+        auto reply = httpInstance.get(QUrl(QString::fromStdString(vrd::URL)));
+        QObject::connect(reply, &HttpReply::finished, this, [this](auto& reply) {
+            auto replyCode = reply.statusCode();
+            if (replyCode == 0) {
+                netBroken();
+            }
+            else {
+                vrd::util::closeFixedToast();
+            }
+            });
+        });
 }
 
-
 void SessionBase::netBroken() {
-    vrd::util::showFixedToastInfo("网络链接已断开，请检查设置");
+    vrd::util::showFixedToastInfo("域名链接失败，请检查配置");
 }
 
 void SessionBase::changeUserName(CSTRING_REF_PARAM name,
                                  CallBackFunction&& callback) {
     _changeUserName(name, std::move(callback));
-}
-
-/**
-* 请求场景初始化RTM所需的业务服务器等相关参数
-*
-* @param scenesName     场景名缩写
-* @param loginToken     登陆Token
-* @param callBack       请求回调
-*/
-void SessionBase::getRTSParams(CSTRING_REF_PARAM scenesName, CSTRING_REF_PARAM loginToken, CallBackFunction&& callback)
-{
-	QJsonObject content;
-	content["scenes_name"] = QString::fromStdString(scenesName);
-    content["login_token"] = QString::fromStdString(loginToken);
-
-	QJsonDocument contentDoc(content);
-	QJsonObject postDataObj;
-	auto res_info = vrd::DataMgr::instance().rts_info();
-	postDataObj["event_name"] = QString::fromStdString("joinRTM");
-	postDataObj["content"] = QString(contentDoc.toJson(QJsonDocument::Indented));
-	postDataObj["device_id"] = QString::fromStdString(util::machineUuid());
-	postDataObj["app_id"] = QString::fromStdString(res_info.app_id);
-
-	QJsonDocument doc(postDataObj);
-	auto& httpInstance = Http::instance();
-	auto reply = httpInstance.post(QUrl(QString::fromStdString(vrd::URL)), doc.toJson(), "application/json");
-	QObject::connect(reply, &HttpReply::finished, this, [this, callback](auto& reply) {
-		if (reply.isSuccessful()) {
-			QJsonParseError error;
-			QJsonDocument replyDoc = QJsonDocument::fromJson(reply.body(), &error);
-			if (error.error != QJsonParseError::NoError) {
-				qDebug() << "Json parsing error!";
-				return;
-			}
-
-			auto obj = replyDoc.object();
-			auto code = obj["code"].toInt();
-			if (code == 200) {
-				auto responseObj = obj["response"].toObject();
-
-				vrd::RTSInfo rts_info;
-				auto appId = responseObj["app_id"].toString();
-				rts_info.app_id = std::string(appId.toUtf8());
-				auto rtmToken = responseObj["rtm_token"].toString();
-				rts_info.rtm_token = std::string(rtmToken.toUtf8());
-				auto serverUrl = responseObj["server_url"].toString();
-				rts_info.server_url = std::string(serverUrl.toUtf8());
-				auto serverSignature = responseObj["server_signature"].toString();
-				rts_info.server_signature = std::string(serverSignature.toUtf8());
-				vrd::DataMgr::instance().setRTSInfo(std::move(rts_info));
-			}
-			if (callback) {
-				callback(code);
-			}
-		}
-		else {
-			qDebug() << "网络错误：" << reply.reasonPhrase() << "错误码：" << QString::number(reply.statusCode());
-		}
-	});
 }
 
 void SessionBase::_onNotify(const std::string& event_name, std::function<void(const QJsonObject& data)>&& listener) {
@@ -200,7 +151,10 @@ void SessionBase::setServerParams(std::string signature, std::string url) {
         qWarning()<< "setServerParams params is illegal: signature:" << signature.c_str() << ", url: " << url.c_str();
         return;
     }
-    RtcEngineWrap::instance().getRtcEngine()->SetServerParams(signature.c_str(), url.c_str());
+
+    if (const auto& engine = RtcEngineWrap::instance().getRtcEngine()) {
+        engine->setServerParams(signature.c_str(), url.c_str());
+    }
 }
 
 /**
@@ -214,10 +168,10 @@ void SessionBase::onServerParamsSetResult(int code) {
         return;
     }
     init_server_completed_ = true;
-	if(connect_rts_callback_){
-		 _emitCallback(std::move(connect_rts_callback_));
-		 connect_rts_callback_ = nullptr;
-	}
+    if (connect_rts_callback_) {
+        _emitCallback(std::move(connect_rts_callback_));
+        connect_rts_callback_ = nullptr;
+    }
 }
 
 void SessionBase::_emitMessage(CSTRING_REF_PARAM name, const QJsonObject& content,
@@ -244,9 +198,9 @@ void SessionBase::_emitMessage(CSTRING_REF_PARAM name, const QJsonObject& conten
 	qDebug()<< "sendServerMessage eventName:" << name.c_str() << "message: "<< message;
 	auto messageStr = QString(QJsonDocument(message).toJson());
 	auto messageStdString = std::string(messageStr.toUtf8());
-	if (auto& engine = RtcEngineWrap::instance().getRtcEngine())
+	if (const auto& engine = RtcEngineWrap::instance().getRtcEngine())
 	{
-		auto msgId = engine->SendServerMessage(messageStdString.c_str());
+		auto msgId = engine->sendServerMessage(messageStdString.c_str());
 		if (msgId > 0) {
 			callback_with_requsetId_[requestId] = std::make_tuple(callback, show_err);
 			callback_with_messageId_[msgId] = message;
@@ -346,73 +300,37 @@ void SessionBase::onLoginResult(const std::string& uid, int error_code, int elap
 void SessionBase::_changeUserName(CSTRING_REF_PARAM name,
                                   CallBackFunction&& callback) {
     QJsonObject content;
-	content["user_name"] = QString::fromStdString(name);
-	content["login_token"] = QString::fromStdString(token_);
+    content["user_name"] = QString::fromStdString(name);
+    content["login_token"] = QString::fromStdString(token_);
 
-	QJsonDocument contentDoc(content);
-	QJsonObject postDataObj;
-	postDataObj["event_name"] = QString::fromStdString("changeUserName");
-	postDataObj["content"] = QString(contentDoc.toJson(QJsonDocument::Indented));
-	postDataObj["device_id"] = QString::fromStdString(util::machineUuid());
+    QJsonDocument contentDoc(content);
+    QJsonObject postDataObj;
+    postDataObj["event_name"] = QString::fromStdString("changeUserName");
+    postDataObj["content"] = QString(contentDoc.toJson(QJsonDocument::Indented));
+    postDataObj["device_id"] = QString::fromStdString(util::machineUuid());
 
-	QJsonDocument doc(postDataObj);
-	auto& httpInstance = Http::instance();
-	auto reply = httpInstance.post(QUrl(QString::fromStdString(vrd::URL)), doc.toJson(), "application/json");
-	QObject::connect(reply, &HttpReply::finished, this, [this, name, callback](auto& reply) {
-		if (reply.isSuccessful()) {
-			QJsonDocument replyDoc = QJsonDocument::fromJson(reply.body());
-			auto obj = replyDoc.object();
-			auto code = obj["code"].toInt();
-			if (code == 200) {
+    QJsonDocument doc(postDataObj);
+    auto& httpInstance = Http::instance();
+    auto reply = httpInstance.post(QUrl(QString::fromStdString(vrd::URL)), doc.toJson(), "application/json");
+    QObject::connect(reply, &HttpReply::finished, this, [this, name, callback](auto& reply) {
+        if (reply.isSuccessful()) {
+            QJsonDocument replyDoc = QJsonDocument::fromJson(reply.body());
+            auto obj = replyDoc.object();
+            auto code = obj["code"].toInt();
+            if (code == 200) {
                 vrd::DataMgr::instance().setUserName(name);
+				SceneSelectWidget::instance().updateUserName();
             }
-			if (callback) {
-				callback(code);
-			}
-		}
-		else {
-			qDebug() << "网络错误：" << reply.reasonPhrase() << "错误码：" << QString::number(reply.statusCode());
-			netBroken();
-		}
+            if (callback) {
+                callback(code);
+            }
+        }
+        else {
+            const QString errMsg = "网络请求异常: " + reply.reasonPhrase() + "错误码：" + QString::number(reply.statusCode());
+            qDebug() << errMsg;
+            vrd::util::showFixedToastInfo(errMsg.toStdString());
+        }
     });
-}
-
-void SessionBase::_setAppInfo(CSTRING_REF_PARAM appId, CSTRING_REF_PARAM appKey, 
-	CSTRING_REF_PARAM volcAK, CSTRING_REF_PARAM volcSK, CSTRING_REF_PARAM accountId, CSTRING_REF_PARAM vodSpace,
-	std::function<void(void)>&& callback) {
-
-	vrd::RTSInfo rts_info;
-	rts_info.app_id = std::string(appId);
-	vrd::DataMgr::instance().setRTSInfo(std::move(rts_info));
-
-	QJsonObject content;
-	content["app_id"] = QString::fromStdString(appId);
-	content["app_key"] = QString::fromStdString(appKey);
-	content["volc_ak"] = QString::fromStdString(volcAK);
-	content["volc_sk"] = QString::fromStdString(volcSK);
-	content["account_id"] = QString::fromStdString(accountId);
-	content["vod_space"] = QString::fromStdString(vodSpace);
-
-	QJsonDocument contentDoc(content);
-	QJsonObject postDataObj;
-	postDataObj["event_name"] = QString::fromStdString("setAppInfo");
-	postDataObj["content"] = QString(contentDoc.toJson(QJsonDocument::Indented));
-	postDataObj["device_id"] = QString::fromStdString(util::machineUuid());
-
-	QJsonDocument doc(postDataObj);
-	auto& httpInstance = Http::instance();
-	auto reply = httpInstance.post(QUrl(QString::fromStdString(vrd::URL)), doc.toJson(), "application/json");
-	QObject::connect(reply, &HttpReply::finished, this, [this,callback](auto& reply) {
-		if (reply.isSuccessful()) {
-			qDebug() << "set app info success" << reply.body();
-			if(callback) {
-				callback();
-			}
-		}
-		else {
-			qDebug() << "网络错误：" << reply.reasonPhrase() << "错误码：" << QString::number(reply.statusCode());
-		}
-	});
 }
 
 /**
@@ -427,14 +345,20 @@ void SessionBase::_loginRTS(const std::string& token, CallBackFunction&& callbac
                     << token.c_str() <<",uid:" << userId.c_str();
 		return;
 	}
-	RtcEngineWrap::instance().getRtcEngine()->Login(token.c_str(), userId.c_str());
+
+    if (const auto& engine = RtcEngineWrap::instance().getRtcEngine()) {
+        engine->login(token.c_str(), userId.c_str());
+    }
+
 }
 
 /**
-* 登出RTM,调用本接口登出后，无法调用房间外消息以及端到服务器消息相关的方法或收到相关回调。
+* 登出RTS,调用本接口登出后，无法调用房间外消息以及端到服务器消息相关的方法或收到相关回调。
 */
 void SessionBase::_logoutRTS() {
-	RtcEngineWrap::instance().getRtcEngine()->Logout();
+    if (const auto& engine = RtcEngineWrap::instance().getRtcEngine()) {
+        engine->logout();
+    }
 }
 
 }  // namespace vrd

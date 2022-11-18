@@ -12,17 +12,15 @@ RtcEngineWrap& RtcEngineWrap::instance() {
 }
 
 RtcEngineWrap::RtcEngineWrap()
-    : engine_(nullptr,
-              [=](bytertc::IRtcEngine* self) {
-                if (self) {
-                  bytertc::DestroyRtcEngine(self);
-                }
-              }),
+    : video_engine_(nullptr,
+            [](bytertc::IRTCVideo* self) {
+                bytertc::destroyRTCVideo();
+            }),
       video_device_manager_(nullptr,
-                            [=](bytertc::IVideoDeviceManager* self) {
-                              if (self) {
-                              }
-                            }),
+          [=](bytertc::IVideoDeviceManager* self) {
+              if (self) {
+              }
+          }),
       audio_device_manager_(nullptr, [=](bytertc::IAudioDeviceManager*) {
         if (audio_device_manager_) {
         }
@@ -30,58 +28,69 @@ RtcEngineWrap::RtcEngineWrap()
 
 int RtcEngineWrap::startPlaybackDeviceTest(const std::string& str) {
   CHECK_POINTER(audio_device_manager_, -API_CALL_ERROR);
-  return audio_device_manager_->StartAudioPlaybackDeviceTest(str.c_str());
+  return audio_device_manager_->startAudioPlaybackDeviceTest(str.c_str(), 1000);
 }
 
 int RtcEngineWrap::stopPlaybackDeviceTest() {
   CHECK_POINTER(audio_device_manager_, -API_CALL_ERROR);
-  return audio_device_manager_->StopAudioPlaybackDeviceTest();
+  return audio_device_manager_->stopAudioPlaybackDeviceTest();
 }
 
 int RtcEngineWrap::startRecordingDeviceTest(int indicatoin) {
   CHECK_POINTER(audio_device_manager_, -API_CALL_ERROR);
-  return audio_device_manager_->StartAudioCaptureDeviceTest(indicatoin);
+  return audio_device_manager_->startAudioDeviceRecordTest(indicatoin);
 }
 
 int RtcEngineWrap::stopRecordingDeviceTest() {
   CHECK_POINTER(audio_device_manager_, -API_CALL_ERROR);
-  return audio_device_manager_->StopAudioCaptureDeviceTest();
+  return audio_device_manager_->stopAudioDeviceRecordAndPlayTest();
 }
 
-int RtcEngineWrap::setEnv(bytertc::Env env) { return bytertc::SetEnv(env); }
+int RtcEngineWrap::setEnv(bytertc::Env env) { 
+    return bytertc::setEnv(env); 
+}
+
+int RtcEngineWrap::setMainRoomId(const std::string& roomId) {
+    instance().room_id_ = roomId;
+    return 0;
+}
 
 int RtcEngineWrap::SetDeviceId(const std::string& device_id) {
-    bytertc::SetDeviceId(device_id.c_str());
+    bytertc::setDeviceId(device_id.c_str());
     return 0;
 }
 
 void RtcEngineWrap::createEngine(const std::string& app_id) {
-    engine_.reset(bytertc::CreateRtcEngine(app_id.c_str(), this, ""));
+    video_engine_.reset(bytertc::createRTCVideo(app_id.c_str(), this, nullptr));
 }
 
-std::string RtcEngineWrap::getSDKVersion() { return bytertc::GetSDKVersion(); }
+std::string RtcEngineWrap::getSDKVersion() { 
+    return bytertc::getSDKVersion(); 
+}
 
 void RtcEngineWrap::destroyEngine() {
-    engine_.reset();
+    video_engine_.reset();
 }
 
 int RtcEngineWrap::initDevices() {
-	rooms_.clear();
-	CHECK_POINTER(engine_, -API_CALL_ERROR);
-	audio_device_manager_.reset(engine_->GetAudioDeviceManager());
-	video_device_manager_.reset(engine_->GetVideoDeviceManager());
+    rooms_.clear();
+    CHECK_POINTER(video_engine_, -API_CALL_ERROR);
+    audio_device_manager_.reset(video_engine_->getAudioDeviceManager());
+    video_device_manager_.reset(video_engine_->getVideoDeviceManager());
 
-	engine_->StartVideoCapture();
-	engine_->StartAudioCapture();
-	engine_->MuteLocalVideo(bytertc::kMuteStateOff);
+    video_engine_->startVideoCapture();
+    video_engine_->startAudioCapture();
+    if (auto rtcRoom = getRtcRoom(room_id_)) {
+        rtcRoom->unpublishStream(bytertc::MediaStreamType::kMediaStreamTypeBoth);
+    }
 
-	bytertc::VideoSolution vs;
-	vs.width = 640;
-	vs.height = 480;
-	vs.fps = 15;
-	vs.max_send_kbps = 600;
+    bytertc::VideoSolution vs;
+    vs.width = 640;
+    vs.height = 480;
+    vs.fps = 15;
+    vs.max_send_kbps = 600;
 
-	return engine_->SetVideoEncoderConfig(bytertc::kStreamIndexMain, &vs, 1);
+    return video_engine_->setVideoEncoderConfig(bytertc::kStreamIndexMain, &vs, 1);
 }
 
 void RtcEngineWrap::resetDevices() {
@@ -89,406 +98,400 @@ void RtcEngineWrap::resetDevices() {
 	audio_device_manager_.reset();
 }
 
-std::shared_ptr<bytertc::IRtcRoom> RtcEngineWrap::createRtcRoom(
-    const std::string& room_id) {
-  CHECK_POINTER(engine_, nullptr);
-  auto find_it = rooms_.find(room_id);
-  if (find_it != rooms_.cend()) return find_it->second;
-  rooms_[room_id] = std::shared_ptr<bytertc::IRtcRoom>(
-      engine_->CreateRtcRoom(room_id.c_str()),
-      [=](bytertc::IRtcRoom* room) { room->Destroy(); });
-  return rooms_[room_id];
+std::shared_ptr<bytertc::IRTCRoom> RtcEngineWrap::createRtcRoom(
+        const std::string& room_id) {
+    auto find_it = rooms_.find(room_id);
+    if (find_it != rooms_.cend()) return find_it->second;
+
+    CHECK_POINTER(video_engine_, nullptr);
+    rooms_[room_id] = std::shared_ptr<bytertc::IRTCRoom>(
+        video_engine_->createRTCRoom(room_id.c_str()),
+        [=](bytertc::IRTCRoom* room) { room->destroy(); });
+    return rooms_[room_id];
 }
 
 int RtcEngineWrap::destoryRtcRoom(const std::string& room_id) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  auto find_it = rooms_.find(room_id);
-  if (find_it != rooms_.cend()) rooms_.erase(find_it);
-  return 0;
+    CHECK_POINTER(video_engine_, -API_CALL_ERROR);
+    auto find_it = rooms_.find(room_id);
+    if (find_it != rooms_.cend()) {
+        find_it->second.reset();
+        rooms_.erase(find_it);
+    }
+    return 0;
 }
 
 int RtcEngineWrap::joinRoom(const std::string& token,
                             const std::string& room_id,
                             const bytertc::UserInfo& userInfo,
                             bytertc::RoomProfileType profileType) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
+  CHECK_POINTER(video_engine_, -API_CALL_ERROR);
+  room_id_ = room_id;
 
   bytertc::RTCRoomConfig config;
   config.room_profile_type = profileType;
-  return engine_->JoinRoom(token.c_str(), room_id.c_str(), userInfo, config);
-}
-
-int RtcEngineWrap::joinSubRoom(const std::string& token,
-                               const std::string& room_id,
-                               const bytertc::UserInfo& userInfo,
-                               bytertc::RoomProfileType profileType) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  bytertc::MultiRoomConfig config;
-  config.room_profile_type = profileType;
-  auto find_it = rooms_.find(room_id);
-  if (find_it != rooms_.cend()) {
-    find_it->second->JoinRoom(token.c_str(), userInfo, config);
-    return 0;
+  config.is_auto_publish = true;
+  config.is_auto_subscribe_audio = true;
+  config.is_auto_subscribe_video = true;
+  if (auto rtcRoom = getRtcRoom(room_id_)) {
+     return rtcRoom->joinRoom(token.c_str(), userInfo, config);
   }
   return -API_CALL_ERROR;
 }
 
 int RtcEngineWrap::setUserRole(bytertc::UserRoleType role) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  engine_->SetUserVisibility(role == bytertc::kUserRoleTypeBroadcaster ? true
-                                                                       : false);
+  CHECK_POINTER(video_engine_, -API_CALL_ERROR);
+  if (auto rtcRoom = getRtcRoom(room_id_)) {
+       rtcRoom->setUserVisibility(role == bytertc::kUserRoleTypeBroadcaster 
+           ? true : false);
+  }
   return 0;
 }
 
 int RtcEngineWrap::setRemoteVideoCanvas(const std::string& user_id,
                                         bytertc::StreamIndex index,
-                                        bytertc::RenderMode mode, void* view) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  bytertc::VideoCanvas vc;
-  vc.view = view;
-  vc.render_mode = mode;
-  engine_->SetRemoteVideoCanvas(user_id.c_str(), index, vc);
-  return 0;
+                                        bytertc::RenderMode mode, void* view, const std::string& room_id) {
+    CHECK_POINTER(video_engine_, -API_CALL_ERROR);
+    bytertc::VideoCanvas vc;
+    vc.view = view;
+    vc.render_mode = mode;
+
+    bytertc::RemoteStreamKey key;
+    key.room_id = room_id.empty() ? room_id_.c_str() : room_id.c_str();
+    key.user_id = user_id.c_str();
+    key.stream_index = index;
+
+    video_engine_->setRemoteStreamVideoCanvas(key, vc);
+    return 0;
 }
 
 int RtcEngineWrap::setLocalVideoCanvas(const std::string& uid,
                                        bytertc::StreamIndex index,
                                        bytertc::RenderMode mode, void* view) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
+  CHECK_POINTER(video_engine_, -API_CALL_ERROR);
   bytertc::VideoCanvas vc;
   vc.view = view;
   vc.render_mode = mode;
-  return engine_->SetLocalVideoCanvas(index, vc);
+  return video_engine_->setLocalVideoCanvas(index, vc);
 }
 
 int RtcEngineWrap::startPreview() {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  engine_->StartVideoCapture();
+  CHECK_POINTER(video_engine_, -API_CALL_ERROR);
+  video_engine_->startVideoCapture();
   return 0;
 }
 
 int RtcEngineWrap::stopPreview() {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  engine_->StopVideoCapture();
+  CHECK_POINTER(video_engine_, -API_CALL_ERROR);
+  video_engine_->stopVideoCapture();
   return 0;
 }
 
-// int RtcEngineWrap::enableAutoSubscribe(bytertc::SubscribeMode video_mode,
-//                                       bytertc::SubscribeMode audio_mode) {
-//  CHECK_POINTER(engine_, -API_CALL_ERROR);
-//  engine_->EnableAutoSubscribe(video_mode, audio_mode);
-//  return 0;
-//}
-
-// int RtcEngineWrap::enableAutoPublish(bool enabled) {
-//  CHECK_POINTER(engine_, -API_CALL_ERROR);
-//  engine_->EnableAutoPublish(enabled);
-//  return 0;
-//}
-
-int RtcEngineWrap::setLocalPreviewMirrorMode(bytertc::MirrorMode mm) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  engine_->SetLocalVideoMirrorMode(mm);
-  return 0;
+int RtcEngineWrap::setLocalPreviewMirrorMode(bytertc::MirrorType type) {
+    CHECK_POINTER(video_engine_, -API_CALL_ERROR);
+    video_engine_->setLocalVideoMirrorType(type);
+    return 0;
 }
 
 int RtcEngineWrap::enableLocalAudio(bool enabled) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  if (enabled)
-    engine_->StartAudioCapture();
-  else
-    engine_->StopAudioCapture();
-  return 0;
+    CHECK_POINTER(video_engine_, -API_CALL_ERROR);
+    if (enabled) {
+        video_engine_->startAudioCapture();
+    }
+    else {
+        video_engine_->stopAudioCapture();
+    }
+    return 0;
 }
 
 int RtcEngineWrap::enableLocalVideo(bool enabled) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  if (enabled)
-    engine_->StartVideoCapture();
-  else
-    engine_->StopVideoCapture();
-  return 0;
+    CHECK_POINTER(video_engine_, -API_CALL_ERROR);
+    if (enabled) {
+        video_engine_->startVideoCapture();
+    }
+    else {
+        video_engine_->stopVideoCapture();
+    }
+    return 0;
 }
 
 int RtcEngineWrap::muteLocalVideo(bool enabled) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  engine_->MuteLocalVideo(enabled ? bytertc::kMuteStateOn
-                                  : bytertc::kMuteStateOff);
+  CHECK_POINTER(video_engine_, -API_CALL_ERROR);
+  if (auto rtcRoom = getRtcRoom(room_id_)) {
+      enabled ? rtcRoom->unpublishStream(bytertc::MediaStreamType::kMediaStreamTypeVideo)
+          : rtcRoom->publishStream(bytertc::MediaStreamType::kMediaStreamTypeVideo);
+  }
   return 0;
 }
 
 int RtcEngineWrap::muteLocalAudio(bool enabled) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  return engine_->MuteLocalAudio(enabled ? bytertc::kMuteStateOn
-                                         : bytertc::kMuteStateOff),
-         0;
+    CHECK_POINTER(video_engine_, -API_CALL_ERROR);
+    if (auto rtcRoom = getRtcRoom(room_id_)) {
+        enabled ? rtcRoom->unpublishStream(bytertc::MediaStreamType::kMediaStreamTypeAudio)
+            : rtcRoom->publishStream(bytertc::MediaStreamType::kMediaStreamTypeAudio);
+    }
+    return  0;
 }
 
 int RtcEngineWrap::leaveRoom() {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  engine_->LeaveRoom();
-  return 0;
+    if (auto rtcRoom = getRtcRoom(room_id_)) {
+        rtcRoom->leaveRoom();
+    }
+    destoryRtcRoom(room_id_);
+    return 0;
 }
 
 int RtcEngineWrap::leaveSubRoom(const std::string& room_id) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  auto find_it = rooms_.find(room_id);
-  if (find_it != rooms_.cend()) {
-    find_it->second->LeaveRoom();
-    return 0;
-  }
-  return -API_CALL_ERROR;
+    auto find_it = rooms_.find(room_id);
+    if (find_it != rooms_.cend()) {
+        find_it->second->leaveRoom();
+        return 0;
+    }
+    return -API_CALL_ERROR;
 }
 
 int RtcEngineWrap::destroySubRoom(const std::string& room_id) {
-  auto find_it = rooms_.find(room_id);
-  if (find_it != rooms_.cend()) {
-    rooms_.erase(find_it);
-    return 0;
-  }
-  return -API_CALL_ERROR;
+    auto find_it = rooms_.find(room_id);
+    if (find_it != rooms_.cend()) {
+        rooms_.erase(find_it);
+        return 0;
+    }
+    return -API_CALL_ERROR;
 }
 
 int RtcEngineWrap::publish() {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  engine_->Publish();
-  return 0;
+    if (auto rtcRoom = getRtcRoom(room_id_)) {
+        rtcRoom->publishStream(bytertc::MediaStreamType::kMediaStreamTypeBoth);
+    }
+    return 0;
 }
 
 int RtcEngineWrap::unPublish() {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  engine_->Unpublish();
-  return 0;
-}
-
-int RtcEngineWrap::subPublish(const std::string& room_id) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  auto find_it = rooms_.find(room_id);
-  if (find_it != rooms_.cend()) {
-    find_it->second->Publish();
+    if (auto rtcRoom = getRtcRoom(room_id_)) {
+        rtcRoom->unpublishStream(bytertc::MediaStreamType::kMediaStreamTypeBoth);
+    }
     return 0;
-  }
-  return -API_CALL_ERROR;
-}
-
-int RtcEngineWrap::unSubPublish(const std::string& room_id) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  auto find_it = rooms_.find(room_id);
-  if (find_it != rooms_.cend()) {
-    find_it->second->Unpublish();
-    return 0;
-  }
-  return -API_CALL_ERROR;
 }
 
 int RtcEngineWrap::subscribeVideoStream(
-    const std::string& uid, const bytertc::SubscribeConfig& config) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  bytertc::StreamIndex index = config.is_screen ? bytertc::kStreamIndexScreen
-                                                : bytertc::kStreamIndexMain;
+        const std::string& uid, const bytertc::SubscribeConfig& config) {
+    bool sub_audio = config.sub_audio;
+    bool sub_video = config.sub_video;
+    bytertc::MediaStreamType media_type;
+    if (sub_audio && sub_video) {
+        media_type = bytertc::MediaStreamType::kMediaStreamTypeBoth;
+    }
+    else if (!sub_audio && sub_video) {
+        media_type = bytertc::MediaStreamType::kMediaStreamTypeVideo;
+    }
+    else if (!sub_video && sub_audio) {
+        media_type = bytertc::MediaStreamType::kMediaStreamTypeAudio;
+    }
 
-  bool sub_audio = config.sub_audio;
-  bool sub_video = config.sub_video;
-  bytertc::SubscribeMediaType media_type;
-  if (sub_audio && sub_video) {
-    media_type = bytertc::kRTCSubscribeMediaTypeVideoAndAudio;
-  } else if (!sub_audio && sub_video) {
-    media_type = bytertc::kRTCSubscribeMediaTypeVideoOnly;
-  } else if (!sub_video && sub_audio) {
-    media_type = bytertc::kRTCSubscribeMediaTypeAudioOnly;
-  } else {
-    media_type = bytertc::kRTCSubscribeMediaTypeNone;
-  }
-  bytertc::SubscribeVideoConfig videoConfig;
-  videoConfig.priority = config.priority;
-  videoConfig.video_index = config.video_index;
-
-  engine_->SubscribeUserStream(uid.c_str(), index, media_type, videoConfig);
-  return 0;
+    bytertc::SubscribeVideoConfig videoConfig;
+    videoConfig.priority = config.priority;
+    videoConfig.video_index = config.video_index;
+    if (auto rtcRoom = getRtcRoom(room_id_)) {
+        config.is_screen ? rtcRoom->subscribeScreen(uid.c_str(), media_type)
+                        : rtcRoom->subscribeStream(uid.c_str(), media_type);
+    }
+    return 0;
 }
 
 int RtcEngineWrap::unSubscribeVideoStream(const std::string& uid,
                                           bool is_screen) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  engine_->Unsubscribe(uid.c_str(), is_screen);
-  return 0;
+    if (auto rtcRoom = getRtcRoom(room_id_)) {
+        is_screen ? rtcRoom->unsubscribeScreen(uid.c_str(), bytertc::MediaStreamType::kMediaStreamTypeBoth)
+            : rtcRoom->unsubscribeStream(uid.c_str(), bytertc::MediaStreamType::kMediaStreamTypeBoth);
+    }
+    return 0;
 }
 
-int RtcEngineWrap::setVideoProfiles(const bytertc::VideoSolution* solutions,
-                                    int solution_num) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  return engine_->SetVideoEncoderConfig(bytertc::kStreamIndexMain, solutions,
-                                        solution_num);
+int RtcEngineWrap::enableSimulcastMode(bool enabled) {
+    CHECK_POINTER(video_engine_, -API_CALL_ERROR);
+    return video_engine_->enableSimulcastMode(enabled);
 }
 
-int RtcEngineWrap::setScreenProfiles(const bytertc::VideoSolution* solutions,
-                                     int solution_num) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  return engine_->SetVideoEncoderConfig(bytertc::kStreamIndexScreen, solutions,
-                                        solution_num);
+int RtcEngineWrap::setVideoProfiles(const bytertc::VideoEncoderConfig& config) {
+    CHECK_POINTER(video_engine_, -API_CALL_ERROR);
+    return video_engine_->setVideoEncoderConfig(config);
+}
+
+int RtcEngineWrap::setAudioProfiles(bytertc::AudioProfileType type) {
+    CHECK_POINTER(video_engine_, -API_CALL_ERROR);
+    video_engine_->setAudioProfile(type);
+    return 0;
+}
+
+int RtcEngineWrap::setScreenProfiles(const bytertc::VideoEncoderConfig& config) {
+    CHECK_POINTER(video_engine_, -API_CALL_ERROR);
+    return video_engine_->setScreenVideoEncoderConfig(config);
 }
 
 int RtcEngineWrap::getShareList(std::vector<SnapshotAttr>& list) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
+    CHECK_POINTER(video_engine_, -API_CALL_ERROR);
 
-  int display_index = 0;
-  SnapshotAttr snapshot;
-  static std::string desktop_names[] = {
-      "桌面一", "桌面二", "桌面三", "桌面四", "桌面五",
-      "桌面六", "桌面七", "桌面八", "桌面九", "桌面十",
-  };
+    int display_index = 0;
+    SnapshotAttr snapshot;
+    static std::string desktop_names[] = {
+        "桌面一", "桌面二", "桌面三", "桌面四", "桌面五",
+        "桌面六", "桌面七", "桌面八", "桌面九", "桌面十",
+    };
 
-  auto sourcelist = engine_->GetScreenCaptureSourceList();
-  int count = sourcelist->GetCount();
-  for (int i = 0; i < count; ++i) {
-    auto source = sourcelist->GetSourceInfo(i);
-    snapshot.name = source.source_name;
-    snapshot.source_id = source.source_id;
-    switch (source.type) {
-      case bytertc::kScreenCaptureSourceTypeScreen: {
-        snapshot.type = SnapshotAttr::kScreen;
-        auto pos =
-            std::find_if(list.begin(), list.end(), [](const SnapshotAttr& s) {
-              return s.type == SnapshotAttr::kWindow;
-            });
+    auto sourcelist = video_engine_->getScreenCaptureSourceList();
+    int count = sourcelist->getCount();
+    for (int i = 0; i < count; ++i) {
+        auto source = sourcelist->getSourceInfo(i);
+        snapshot.name = source.source_name;
+        snapshot.source_id = source.source_id;
+        switch (source.type) {
+        case bytertc::kScreenCaptureSourceTypeScreen: {
+            snapshot.type = SnapshotAttr::kScreen;
+            auto pos =
+                std::find_if(list.begin(), list.end(), [](const SnapshotAttr& s) {
+                return s.type == SnapshotAttr::kWindow;
+                    });
 
-        snapshot.name = desktop_names[display_index];
-        ++display_index;
+            snapshot.name = desktop_names[display_index];
+            ++display_index;
 
-        if (pos != list.end()) {
-          list.insert(pos, snapshot);
-        } else {
-          list.push_back(snapshot);
+            if (pos != list.end()) {
+                list.insert(pos, snapshot);
+            }
+            else {
+                list.push_back(snapshot);
+            }
+            break;
         }
-        break;
-      }
-      case bytertc::kScreenCaptureSourceTypeWindow:
-        snapshot.type = SnapshotAttr::kWindow;
-        list.push_back(snapshot);
-        break;
-      default:
-        break;
+        case bytertc::kScreenCaptureSourceTypeWindow:
+            snapshot.type = SnapshotAttr::kWindow;
+            list.push_back(snapshot);
+            break;
+        default:
+            break;
+        }
     }
-  }
 
-  sourcelist->Release();
-  return 0;
+    sourcelist->release();
+    return 0;
 }
 
 QPixmap RtcEngineWrap::getThumbnail(SnapshotAttr::SnapshotType type,
                                     void* source_id, int max_width,
                                     int max_height) {
-  QPixmap pix_map;
-  CHECK_POINTER(engine_, pix_map);
+    QPixmap pix_map;
+    CHECK_POINTER(video_engine_, pix_map);
 
-  auto s_type = bytertc::kScreenCaptureSourceTypeUnknown;
-  switch (type) {
+    auto s_type = bytertc::kScreenCaptureSourceTypeUnknown;
+    switch (type) {
     case SnapshotAttr::kScreen:
-      s_type = bytertc::kScreenCaptureSourceTypeScreen;
-      break;
+        s_type = bytertc::kScreenCaptureSourceTypeScreen;
+        break;
     case SnapshotAttr::kWindow:
-      s_type = bytertc::kScreenCaptureSourceTypeWindow;
-      break;
+        s_type = bytertc::kScreenCaptureSourceTypeWindow;
+        break;
     default:
-      break;
-  }
-  auto p = engine_->GetThumbnail(s_type, source_id, max_width, max_height);
+        break;
+    }
+    auto p = video_engine_->getThumbnail(s_type, source_id, max_width, max_height);
 
-  QImage img(reinterpret_cast<uchar*>(p->get_plane_data(0)), p->width(),
-             p->height(), QImage::Format::Format_RGB32);
-  return QPixmap::fromImage(img);
+    QImage img(reinterpret_cast<uchar*>(p->getPlaneData(0)), p->width(),
+        p->height(), QImage::Format::Format_RGB32);
+    return QPixmap::fromImage(img);
 }
 
 int RtcEngineWrap::getAudioInputDevices(std::vector<RtcDevice>& devices) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  CHECK_POINTER(this->audio_device_manager_, -API_CALL_ERROR);
-  char szName[512], szId[512];
-  std::string strSelectedDeviceId;
+    CHECK_POINTER(this->audio_device_manager_, -API_CALL_ERROR);
+    char szName[512], szId[512];
+    std::string strSelectedDeviceId;
 
-  int devIdx = 0;
-  audio_input_devices_.clear();
-  bytertc::IDeviceCollection* pAudioRecordCollection =
-      audio_device_manager_->EnumerateAudioCaptureDevices();
-  if (pAudioRecordCollection) {
-    memset(szName, 0, sizeof(szName));
-    memset(szId, 0, sizeof(szId));
-    devIdx = 0;
-
-    audio_device_manager_->GetAudioCaptureDevice(szId);
-    strSelectedDeviceId = szId;
-
-    int nAudioRecNum = pAudioRecordCollection->GetCount();
-    if (nAudioRecNum > 0) {
-      for (int i = 0; i < nAudioRecNum; ++i) {
+    int devIdx = 0;
+    audio_input_devices_.clear();
+    bytertc::IDeviceCollection* pAudioRecordCollection =
+        audio_device_manager_->enumerateAudioCaptureDevices();
+    if (pAudioRecordCollection) {
         memset(szName, 0, sizeof(szName));
         memset(szId, 0, sizeof(szId));
-        if (strSelectedDeviceId == szId) {
-          current_audio_input_idx_ = i;
+        devIdx = 0;
+
+        audio_device_manager_->getAudioCaptureDevice(szId);
+        strSelectedDeviceId = szId;
+
+        int nAudioRecNum = pAudioRecordCollection->getCount();
+        if (nAudioRecNum > 0) {
+            for (int i = 0; i < nAudioRecNum; ++i) {
+                memset(szName, 0, sizeof(szName));
+                memset(szId, 0, sizeof(szId));
+                if (pAudioRecordCollection->getDevice(i, szName, szId) == 0) {
+                    if (strSelectedDeviceId == szId) {
+                        current_audio_input_idx_ = i;
+                    }
+                    RtcDevice device;
+                    device.type = RtcDeviceTypeAudioRecord;
+                    device.name = szName;
+                    device.device_id = szId;
+                    audio_input_devices_.push_back(device);
+                }
+            }
         }
-        if (pAudioRecordCollection->GetDevice(i, szName, szId) == 0) {
-          RtcDevice device;
-          device.type = RtcDeviceTypeAudioRecord;
-          device.name = szName;
-          device.device_id = szId;
-          audio_input_devices_.push_back(device);
-        }
-      }
+        devices = audio_input_devices_;
+        pAudioRecordCollection->release();
+        pAudioRecordCollection = nullptr;
     }
-    devices = audio_input_devices_;
-    pAudioRecordCollection->Release();
-    pAudioRecordCollection = nullptr;
-  }
-  return 0;
+    return 0;
 }
 
 int RtcEngineWrap::setAudioInputDevice(int index) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  if (audio_input_devices_.size() <= static_cast<unsigned int>(index) ||
-      index < 0)
-    return -API_CALL_ERROR;
-  current_audio_input_idx_ = index;
-  return audio_device_manager_->SetAudioCaptureDevice(
-      audio_input_devices_[index].device_id.c_str());
+    if (audio_input_devices_.size() <= static_cast<unsigned int>(index) ||
+        index < 0)
+        return -API_CALL_ERROR;
+    current_audio_input_idx_ = index;
+    audio_device_manager_->followSystemCaptureDevice(false);
+    return audio_device_manager_->setAudioCaptureDevice(
+        audio_input_devices_[index].device_id.c_str());
 }
 
 int RtcEngineWrap::getAudioInputDevice(std::string& guid) {
-  guid.resize(512);
-  return audio_device_manager_->GetAudioCaptureDevice(
-      const_cast<char*>(guid.data()));
+    guid.reserve(512);
+    return audio_device_manager_->getAudioCaptureDevice(
+        const_cast<char*>(guid.data()));
+}
+
+int RtcEngineWrap::getCurrentAudioInputDeviceIndex() {
+    return current_audio_input_idx_;
 }
 
 int RtcEngineWrap::getAudioOutputDevices(std::vector<RtcDevice>& devices) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  std::string strSelectedDeviceId;
-  char szName[512], szId[512];
-  int devIdx = 0;
+    CHECK_POINTER(video_engine_, -API_CALL_ERROR);
+    std::string strSelectedDeviceId;
+    char szName[512], szId[512];
+    int devIdx = 0;
 
-  // enum playout devices
-  audio_output_devices_.clear();
+    // enum playout devices
+    audio_output_devices_.clear();
 
-  bytertc::IAudioDeviceManager* pAudioDeviceManager =
-      engine_->GetAudioDeviceManager();
-  if (pAudioDeviceManager) {
+    bytertc::IAudioDeviceManager* pAudioDeviceManager =
+        video_engine_->getAudioDeviceManager();
+    if (pAudioDeviceManager) {
     bytertc::IDeviceCollection* pAudioPlayoutCollection =
-        pAudioDeviceManager->EnumerateAudioPlaybackDevices();
+        pAudioDeviceManager->enumerateAudioPlaybackDevices();
     if (pAudioPlayoutCollection) {
-      memset(szName, 0, sizeof(szName));
-      memset(szId, 0, sizeof(szId));
-      devIdx = 0;
+        memset(szName, 0, sizeof(szName));
+        memset(szId, 0, sizeof(szId));
+        devIdx = 0;
 
-      // get selected device id
-      pAudioDeviceManager->GetAudioPlaybackDevice(szId);
-      strSelectedDeviceId = szId;
+        // get selected device id
+        pAudioDeviceManager->getAudioPlaybackDevice(szId);
+        strSelectedDeviceId = szId;
 
-      int nAudioRecNum = pAudioPlayoutCollection->GetCount();
-      if (nAudioRecNum > 0) {
+        int nAudioRecNum = pAudioPlayoutCollection->getCount();
+        if (nAudioRecNum > 0) {
         for (int i = 0; i < nAudioRecNum; ++i) {
-          memset(szName, 0, sizeof(szName));
-          memset(szId, 0, sizeof(szId));
+            memset(szName, 0, sizeof(szName));
+            memset(szId, 0, sizeof(szId));
 
-          if (pAudioPlayoutCollection->GetDevice(i, szName, szId) == 0) {
+            if (pAudioPlayoutCollection->getDevice(i, szName, szId) == 0) {
             if (strSelectedDeviceId == szId) {
-              current_audio_output_idx_ = i;
+                current_audio_output_idx_ = i;
             }
 
             RtcDevice device;
@@ -497,141 +500,149 @@ int RtcEngineWrap::getAudioOutputDevices(std::vector<RtcDevice>& devices) {
             device.device_id = szId;
 
             audio_output_devices_.push_back(device);
-          }
+            }
         }
-      }
-      devices = audio_output_devices_;
-      pAudioPlayoutCollection->Release();
-      pAudioPlayoutCollection = nullptr;
+        }
+        devices = audio_output_devices_;
+        pAudioPlayoutCollection->release();
+        pAudioPlayoutCollection = nullptr;
     }
-  }
-  return 0;
+    }
+    return 0;
 }
 
 int RtcEngineWrap::setAudioOutputDevice(int index) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  if (audio_output_devices_.size() >= static_cast<unsigned int>(index) ||
-      index < 0)
-    return -API_CALL_ERROR;
-  current_audio_output_idx_ = index;
-  return audio_device_manager_->SetAudioPlaybackDevice(
-      audio_output_devices_[index].device_id.c_str());
+    if (audio_output_devices_.size() >= static_cast<unsigned int>(index) 
+        || index < 0)
+        return -API_CALL_ERROR;
+    current_audio_output_idx_ = index;
+    audio_device_manager_->followSystemCaptureDevice(false);
+    return audio_device_manager_->setAudioPlaybackDevice(
+        audio_output_devices_[index].device_id.c_str());
 }
 
 int RtcEngineWrap::getAudioOutputDevice(std::string& guid) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  guid.resize(512);
-  return audio_device_manager_->GetAudioPlaybackDevice(
-      const_cast<char*>(guid.c_str()));
+    guid.resize(512);
+    return audio_device_manager_->getAudioPlaybackDevice(
+        const_cast<char*>(guid.c_str()));
+}
+
+int RtcEngineWrap::getCurrentAudioOutputDeviceIndex() {
+    return current_audio_output_idx_;
 }
 
 int RtcEngineWrap::getVideoCaptureDevices(std::vector<RtcDevice>& devices) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  std::string strSelectedDeviceId;
-  char szName[512], szId[512];
-  int devIdx = 0;
+    std::string strSelectedDeviceId;
+    char szName[512], szId[512];
+    int devIdx = 0;
 
-  // enum video capture devices
-  camera_devices_.clear();
+    // enum video capture devices
+    camera_devices_.clear();
 
-  bytertc::IDeviceCollection* pVideoRecordCollection =
-      video_device_manager_->EnumerateVideoCaptureDevices();
-  if (pVideoRecordCollection) {
+    bytertc::IDeviceCollection* pVideoRecordCollection =
+        video_device_manager_->enumerateVideoCaptureDevices();
+    if (pVideoRecordCollection) {
     memset(szName, 0, sizeof(szName));
     memset(szId, 0, sizeof(szId));
     devIdx = 0;
 
     // get selected device id
-    video_device_manager_->GetVideoCaptureDevice(szId);
+    video_device_manager_->getVideoCaptureDevice(szId);
     strSelectedDeviceId = szId;
 
-    int nVideoCaptureNum = pVideoRecordCollection->GetCount();
+    int nVideoCaptureNum = pVideoRecordCollection->getCount();
     if (nVideoCaptureNum > 0) {
-      current_camera_idx_ = 0;
-      for (int i = 0; i < nVideoCaptureNum; ++i) {
+        current_camera_idx_ = 0;
+        for (int i = 0; i < nVideoCaptureNum; ++i) {
         memset(szName, 0, sizeof(szName));
         memset(szId, 0, sizeof(szId));
 
-        if (pVideoRecordCollection->GetDevice(i, szName, szId) == 0) {
-          if (strSelectedDeviceId == szId) {
+        if (pVideoRecordCollection->getDevice(i, szName, szId) == 0) {
+            if (strSelectedDeviceId == szId) {
             current_camera_idx_ = i;
-          }
+            }
 
-          RtcDevice device;
-          device.type = RtcDeviceTypeVideoCapture;
-          device.name = szName;
-          device.device_id = szId;
+            RtcDevice device;
+            device.type = RtcDeviceTypeVideoCapture;
+            device.name = szName;
+            device.device_id = szId;
 
-          camera_devices_.push_back(device);
+            camera_devices_.push_back(device);
         }
-      }
+        }
     }
     devices = camera_devices_;
 
-    pVideoRecordCollection->Release();
+    pVideoRecordCollection->release();
     pVideoRecordCollection = nullptr;
-  }
-  return 0;
+    }
+    return 0;
 }
 
 int RtcEngineWrap::setVideoCaptureDevice(int index) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  if (camera_devices_.size() <= static_cast<unsigned int>(index) || index < 0)
-    return -API_CALL_ERROR;
-  return video_device_manager_->SetVideoCaptureDevice(
-      camera_devices_[index].device_id.c_str());
+    if (camera_devices_.size() <= static_cast<unsigned int>(index) || index < 0)
+        return -API_CALL_ERROR;
+    return video_device_manager_->setVideoCaptureDevice(
+        camera_devices_[index].device_id.c_str());
 }
 
 bool RtcEngineWrap::audioReocrdDeviceTest() {
-  CHECK_POINTER(engine_, false);
+    bool res = false;
+    char szName[512];
+    char szId[512];
+    if (audio_device_manager_) {
+        bytertc::IDeviceCollection* pAudioRecordCollection =
+            audio_device_manager_->enumerateAudioCaptureDevices();
+        if (pAudioRecordCollection) {
+            memset(szName, 0, sizeof(szName));
+            memset(szId, 0, sizeof(szId));
 
-  bool res = false;
-  char szName[512];
-  char szId[512];
-  if (audio_device_manager_) {
-    bytertc::IDeviceCollection* pAudioRecordCollection =
-        audio_device_manager_->EnumerateAudioCaptureDevices();
-    if (pAudioRecordCollection) {
-      memset(szName, 0, sizeof(szName));
-      memset(szId, 0, sizeof(szId));
+            int nAudioRecNum = pAudioRecordCollection->getCount();
+            if (nAudioRecNum > 0) {
+                current_audio_input_idx_ = 0;
+                for (int i = 0; i < nAudioRecNum; ++i) {
+                    memset(szName, 0, sizeof(szName));
 
-      int nAudioRecNum = pAudioRecordCollection->GetCount();
-      if (nAudioRecNum > 0) {
-        current_audio_input_idx_ = 0;
-        for (int i = 0; i < nAudioRecNum; ++i) {
-          memset(szName, 0, sizeof(szName));
-
-          if (pAudioRecordCollection->GetDevice(i, szName, szId) == 0) {
-            auto code =
-                audio_device_manager_->InitAudioCaptureDeviceForTest(szId);
-            if (code == 0) {
-              res = true;
+                    if (pAudioRecordCollection->getDevice(i, szName, szId) == 0) {
+                        auto code =
+                            audio_device_manager_->initAudioCaptureDeviceForTest(szId);
+                        if (code == 0) {
+                            res = true;
+                        }
+                    }
+                }
             }
-          }
+            pAudioRecordCollection->release();
+            pAudioRecordCollection = nullptr;
         }
-      }
-      pAudioRecordCollection->Release();
-      pAudioRecordCollection = nullptr;
     }
-  }
-  return res;
+    return res;
 }
 
-int RtcEngineWrap::feedBack(const std::string& str) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  engine_->Feedback(str.c_str());
-  return 0;
+int RtcEngineWrap::feedBack(bytertc::ProblemFeedbackOption* type, 
+        int count, const std::string& problem_desc) {
+    CHECK_POINTER(video_engine_, -API_CALL_ERROR);
+    video_engine_->feedback(type, count, problem_desc.c_str());
+    return 0;
 }
 
 int RtcEngineWrap::setAudioVolumeIndicate(int indicate) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  engine_->SetAudioVolumeIndicationInterval(indicate);
-  return 0;
+    CHECK_POINTER(video_engine_, -API_CALL_ERROR);
+    bytertc::AudioPropertiesConfig config;
+    config.interval = indicate;
+    video_engine_->enableAudioPropertiesReport(config);
+    return 0;
 }
 
-std::unique_ptr<bytertc::IRtcEngine, std::function<void(bytertc::IRtcEngine*)>>&
+void RtcEngineWrap::emitOnRTSMessageArrived(const char* uid, const char* message) {
+	ForwardEvent::PostEvent(this, [=, uid = std::string(uid), message = std::string(message)]{
+	    emit sigOnMessageReceived(uid, message);
+	});
+}
+
+std::unique_ptr<bytertc::IRTCVideo, std::function<void(bytertc::IRTCVideo*)>>&
 RtcEngineWrap::getRtcEngine() {
-	return engine_;
+	return video_engine_;
 }
 
 void RtcEngineWrap::customEvent(QEvent* e) {
@@ -641,16 +652,46 @@ void RtcEngineWrap::customEvent(QEvent* e) {
   }
 }
 
+std::shared_ptr<bytertc::IRTCRoom> RtcEngineWrap::getRtcRoom(const std::string& room_id) {
+    if (room_id.empty()) {
+        return nullptr;
+    }
+
+    auto find_it = rooms_.find(room_id);
+    if (find_it != rooms_.cend()) {
+        return find_it->second;
+    }
+    CHECK_POINTER(video_engine_, nullptr);
+    rooms_[room_id] = std::shared_ptr<bytertc::IRTCRoom>(
+        video_engine_->createRTCRoom(room_id.c_str()),
+        [=](bytertc::IRTCRoom* room) { room->destroy(); });
+    rooms_[room_id]->setRTCRoomEventHandler(this);
+    return rooms_[room_id];
+}
+
 int RtcEngineWrap::getVideoCaptureDevice(std::string& guid) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  guid.resize(512);
-  return video_device_manager_->GetVideoCaptureDevice(
-      const_cast<char*>(guid.c_str()));
+    guid.resize(512);
+    return video_device_manager_->getVideoCaptureDevice(
+        const_cast<char*>(guid.c_str()));
+}
+
+int RtcEngineWrap::getCurrentVideoCaptureDeviceIndex() {
+    return current_camera_idx_;
+}
+
+int RtcEngineWrap::enableEffectBeauty(bool enabled) {
+    CHECK_POINTER(video_engine_, -API_CALL_ERROR);
+    return video_engine_->enableEffectBeauty(enabled);
+}
+
+int RtcEngineWrap::setBeautyIntensity(bytertc::EffectBeautyMode beauty_mode, float intensity) {
+    CHECK_POINTER(video_engine_, -API_CALL_ERROR);
+    return video_engine_->setBeautyIntensity(beauty_mode, intensity);
 }
 
 int RtcEngineWrap::startScreenCapture(void* source_id,
                                       const std::vector<void*>& excluded) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
+  CHECK_POINTER(video_engine_, -API_CALL_ERROR);
   bytertc::ScreenCaptureSourceInfo screenSourceInfo;
   screenSourceInfo.type = bytertc::kScreenCaptureSourceTypeScreen;
   screenSourceInfo.source_id = source_id;
@@ -665,16 +706,16 @@ int RtcEngineWrap::startScreenCapture(void* source_id,
   screenCaptureParams.capture_mouse_cursor =
       bytertc::kMouseCursorCaptureStateOn;
   auto nRet =
-      engine_->StartScreenVideoCapture(screenSourceInfo, screenCaptureParams);
+      video_engine_->startScreenVideoCapture(screenSourceInfo, screenCaptureParams);
 
-  if (nRet == 0) {
-    engine_->PublishScreen();
+  if (nRet == 0 && getRtcRoom(room_id_)) {
+      getRtcRoom(room_id_)->publishScreen(bytertc::kMediaStreamTypeBoth);
   }
   return nRet;
 }
 
 int RtcEngineWrap::startScreenCaptureByWindowId(void* window_id) {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
+  CHECK_POINTER(video_engine_, -API_CALL_ERROR);
 
   bytertc::ScreenCaptureSourceInfo screenSourceInfo;
   screenSourceInfo.type = bytertc::kScreenCaptureSourceTypeWindow;
@@ -684,244 +725,280 @@ int RtcEngineWrap::startScreenCaptureByWindowId(void* window_id) {
   screenCaptureParams.capture_mouse_cursor =
       bytertc::kMouseCursorCaptureStateOff;
   auto nRet =
-      engine_->StartScreenVideoCapture(screenSourceInfo, screenCaptureParams);
-  if (nRet == 0) {
-    engine_->PublishScreen();
+      video_engine_->startScreenVideoCapture(screenSourceInfo, screenCaptureParams);
+  if (nRet == 0 && getRtcRoom(room_id_)) {
+      getRtcRoom(room_id_)->publishScreen(bytertc::kMediaStreamTypeBoth);
   }
   return nRet;
 }
 
 int RtcEngineWrap::stopScreenCapture() {
-  CHECK_POINTER(engine_, -API_CALL_ERROR);
-  engine_->StopScreenCapture();
-  return 0;
+    CHECK_POINTER(video_engine_, -API_CALL_ERROR);
+    video_engine_->stopScreenVideoCapture();
+    if (getRtcRoom(room_id_)) {
+        getRtcRoom(room_id_)->unpublishScreen(bytertc::kMediaStreamTypeBoth);
+    }
+    return 0;
+}
+
+int RtcEngineWrap::startScreenAudioCapture() {
+    CHECK_POINTER(video_engine_, -API_CALL_ERROR);
+    video_engine_->startScreenAudioCapture();
+    return 0;
+}
+
+int RtcEngineWrap::stopScreenAudioCapture() {
+    CHECK_POINTER(video_engine_, -API_CALL_ERROR);
+    video_engine_->stopScreenAudioCapture();
+    return 0;
 }
 
 // event handler
-void RtcEngineWrap::OnRoomStateChanged(const char* room_id, const char* uid,
+void RtcEngineWrap::onRoomStateChanged(const char* room_id, const char* uid,
                                        int state, const char* extra_info) {
-	ForwardEvent::PostEvent(
-		this, [=, rid = std::string(room_id), uid = std::string(uid), 
+    ForwardEvent::PostEvent(
+        this, [=, rid = std::string(room_id), uid = std::string(uid),
         extra_info = std::string(extra_info)]{
-		  emit sigOnRoomStateChanged(rid, uid, state, extra_info);
-		});
+            emit sigOnRoomStateChanged(rid, uid, state, extra_info);
+        });
 }
 
-void RtcEngineWrap::OnRoomStats(const bytertc::RtcRoomStats& stats) {
-  ForwardEvent::PostEvent(this, [=] { emit sigOnRoomStats(stats); });
+void RtcEngineWrap::onRoomStats(const bytertc::RtcRoomStats& stats) {
+    ForwardEvent::PostEvent(this, [=] { emit sigOnRoomStats(stats); });
 }
 
-void RtcEngineWrap::OnLocalStreamStats(const bytertc::LocalStreamStats& stats) {
-  ForwardEvent::PostEvent(this, [=] { emit sigOnLocalStreamStats(stats); });
+void RtcEngineWrap::onLocalStreamStats(const bytertc::LocalStreamStats& stats) {
+    ForwardEvent::PostEvent(this, [=] { emit sigOnLocalStreamStats(stats); });
 }
 
-void RtcEngineWrap::OnRemoteStreamStats(
+void RtcEngineWrap::onRemoteStreamStats(
     const bytertc::RemoteStreamStats& stats) {
-  RemoteStreamStatsWrap wrap;
-  wrap.audio_stats = stats.audio_stats;
-  wrap.is_screen = stats.is_screen;
-  wrap.remote_rx_quality = stats.remote_rx_quality;
-  wrap.remote_tx_quality = stats.remote_tx_quality;
-  wrap.uid = stats.uid;
-  wrap.video_stats = stats.video_stats;
-  ForwardEvent::PostEvent(this, [=] { emit sigOnRemoteStreamStats(wrap); });
+    RemoteStreamStatsWrap wrap;
+    wrap.audio_stats = stats.audio_stats;
+    wrap.is_screen = stats.is_screen;
+    wrap.remote_rx_quality = stats.remote_rx_quality;
+    wrap.remote_tx_quality = stats.remote_tx_quality;
+    wrap.uid = stats.uid;
+    wrap.video_stats = stats.video_stats;
+    ForwardEvent::PostEvent(this, [=] { emit sigOnRemoteStreamStats(wrap); });
 }
 
-void RtcEngineWrap::OnWarning(int warn) {
-  ForwardEvent::PostEvent(this, [=] { emit sigOnWarning(warn); });
+void RtcEngineWrap::onWarning(int warn) {
+    ForwardEvent::PostEvent(this, [=] { emit sigOnWarning(warn); });
 }
 
-void RtcEngineWrap::OnError(int err) {
-  ForwardEvent::PostEvent(this, [=] { emit sigOnError(err); });
+void RtcEngineWrap::onError(int err) {
+    ForwardEvent::PostEvent(this, [=] { emit sigOnError(err); });
 }
 
-void RtcEngineWrap::OnAudioVolumeIndication(
-    const bytertc::AudioVolumeInfo* speakers, unsigned int speakerNumber,
-    int totalVolume) {
-	std::vector<AudioVolumeInfoWrap> vec_;
-	for (size_t i = 0; i < speakerNumber; i++) {
-		AudioVolumeInfoWrap wrap{
-			speakers[i].linear_volume,
-			speakers[i].uid,
-		};
-		vec_.push_back(std::move(wrap));
-	}
-	ForwardEvent::PostEvent(
-		this, [=] { emit sigOnAudioVolumeIndication(vec_, totalVolume); });
+void RtcEngineWrap::onRemoteAudioPropertiesReport(
+        const bytertc::RemoteAudioPropertiesInfo* audio_properties_infos,
+        int audio_properties_info_number, int total_remote_volume) {
+    std::vector<AudioVolumeInfoWrap> vec_;
+    for (size_t i = 0; i < audio_properties_info_number; i++) {
+        AudioVolumeInfoWrap wrap{
+            audio_properties_infos[i].audio_properties_info.linear_volume,
+            audio_properties_infos[i].stream_key.stream_index,
+            audio_properties_infos[i].stream_key.user_id,
+            audio_properties_infos[i].stream_key.room_id
+        };
+        vec_.push_back(std::move(wrap));
+    }
+    ForwardEvent::PostEvent(
+        this, [=] { emit sigOnRemoteAudioVolumeIndication(vec_, total_remote_volume); });
 }
 
-void RtcEngineWrap::OnLeaveRoom(const bytertc::RtcRoomStats& stats) {
-  ForwardEvent::PostEvent(this, [=] { emit sigOnLeaveRoom(stats); });
+void RtcEngineWrap::onLocalAudioPropertiesReport(const bytertc::LocalAudioPropertiesInfo* audio_properties_infos, int audio_properties_info_number) {
+    std::vector<AudioVolumeInfoWrap> vec_;
+    for (size_t i = 0; i < audio_properties_info_number; i++) {
+        AudioVolumeInfoWrap wrap{
+            audio_properties_infos[i].audio_properties_info.linear_volume,
+            audio_properties_infos[i].stream_index,
+        };
+        vec_.push_back(std::move(wrap));
+    }
+    ForwardEvent::PostEvent(
+        this, [=] { emit sigOnLocalAudioVolumeIndication(vec_); });
 }
 
-void RtcEngineWrap::OnUserJoined(const bytertc::UserInfo& userInfo,
+void RtcEngineWrap::onLeaveRoom(const bytertc::RtcRoomStats& stats) {
+    ForwardEvent::PostEvent(this, [=] { emit sigOnLeaveRoom(stats); });
+}
+
+void RtcEngineWrap::onUserJoined(const bytertc::UserInfo& userInfo,
                                  int elapsed) {
-  UserInfoWrap wrap;
-  wrap.uid = userInfo.uid;
-  wrap.extra_info = userInfo.extra_info;
-  ForwardEvent::PostEvent(this, [=] { emit sigOnUserJoined(wrap, elapsed); });
+    UserInfoWrap wrap;
+    wrap.uid = userInfo.uid;
+    wrap.extra_info = userInfo.extra_info;
+    ForwardEvent::PostEvent(this, [=] { emit sigOnUserJoined(wrap, elapsed); });
 }
 
-void RtcEngineWrap::OnUserLeave(const char* uid,
+void RtcEngineWrap::onUserLeave(const char* uid,
                                 bytertc::UserOfflineReason reason) {
-  ForwardEvent::PostEvent(
-      this, [=, uid = std::string(uid)] { emit sigOnUserLeave(uid, reason); });
+    ForwardEvent::PostEvent(
+        this, [=, uid = std::string(uid)]{ emit sigOnUserLeave(uid, reason); });
 }
 
-void RtcEngineWrap::OnUserMuteAudio(const char* user_id,
-                                    bytertc::MuteState mute_state) {
-  ForwardEvent::PostEvent(this, [=, uid = std::string(user_id)] {
-    emit sigOnUserMuteAudio(user_id, mute_state);
-  });
+void RtcEngineWrap::onUserStartAudioCapture(const char* room_id, const char* user_id) {
+    ForwardEvent::PostEvent(this, [=, roomId = std::string(room_id), uid = std::string(user_id)]{
+        emit sigOnUserStartAudioCapture(roomId, uid);
+    });
 }
 
-void RtcEngineWrap::OnUserEnableLocalAudio(const char* uid, bool enabled) {
-  ForwardEvent::PostEvent(this, [=, uid = std::string(uid)] {
-    emit sigOnUserEnableLocalAudio(uid, enabled);
-  });
+void RtcEngineWrap::onUserStopAudioCapture(const char* room_id, const char* user_id) {
+    ForwardEvent::PostEvent(this, [=, roomId = std::string(room_id), uid = std::string(user_id)]{
+        emit sigOnUserStopAudioCapture(roomId, uid);
+    });
 }
 
-void RtcEngineWrap::OnFirstLocalAudioFrame(bytertc::StreamIndex index) {
-  ForwardEvent::PostEvent(this, [=] { emit sigOnFirstLocalAudioFrame(index); });
+void RtcEngineWrap::onFirstLocalAudioFrame(bytertc::StreamIndex index) {
+    ForwardEvent::PostEvent(this, [=] { emit sigOnFirstLocalAudioFrame(index); });
 }
 
-void RtcEngineWrap::OnStreamRemove(const bytertc::MediaStreamInfo& stream,
-                                   bytertc::StreamRemoveReason reason) {
-  MediaStreamInfoWrap wrap;
-  wrap.has_audio = stream.has_audio;
-  wrap.has_video = stream.has_video;
-  wrap.is_screen = stream.is_screen;
-  wrap.user_id = stream.user_id;
-
-  for (int i = 0; i < stream.profile_count; i++) {
-    wrap.profiles.push_back(stream.profiles[i]);
-  }
-  ForwardEvent::PostEvent(this, [=] { emit sigOnStreamRemove(wrap, reason); });
+void RtcEngineWrap::onLogReport(const char* log_type, const char* log_content) {
+    ForwardEvent::PostEvent(this, [=, log_type_ = std::string(log_type),
+        log_content_ = std::string(log_content)]{
+            emit sigOnLogReport(log_type_, log_content_);
+    });
 }
 
-void RtcEngineWrap::OnLogReport(const char* log_type, const char* log_content) {
-  ForwardEvent::PostEvent(this, [=, log_type_ = std::string(log_type),
-                                 log_content_ = std::string(log_content)] {
-    emit sigOnLogReport(log_type_, log_content_);
-  });
+void RtcEngineWrap::onUserPublishStream(const char* uid, bytertc::MediaStreamType type) {
+    ForwardEvent::PostEvent(this, [=, uid = std::string(uid)]{
+        emit sigOnUserPublishStream(uid, type);
+    });
 }
 
-void RtcEngineWrap::OnStreamAdd(const bytertc::MediaStreamInfo& stream) {
-  MediaStreamInfoWrap wrap;
-  wrap.has_audio = stream.has_audio;
-  wrap.has_video = stream.has_video;
-  wrap.is_screen = stream.is_screen;
-  wrap.user_id = stream.user_id;
-
-  for (int i = 0; i < stream.profile_count; i++) {
-    wrap.profiles.push_back(stream.profiles[i]);
-  }
-
-  ForwardEvent::PostEvent(this, [=] { emit sigOnStreamAdd(wrap); });
+void RtcEngineWrap::onUserUnpublishStream(const char* uid, bytertc::MediaStreamType type,
+        bytertc::StreamRemoveReason reason) {
+    ForwardEvent::PostEvent(this, [=, uid = std::string(uid)]{
+        emit sigOnUserUnPublishStream(uid, type, reason);
+    });
 }
 
-void RtcEngineWrap::OnStreamSubscribed(bytertc::SubscribeState state_code,
+void RtcEngineWrap::onUserPublishScreen(const char* uid, bytertc::MediaStreamType type) {
+    ForwardEvent::PostEvent(this, [=, uid = std::string(uid)]{
+        emit sigOnUserPublishScreen(uid, type);
+    });
+}
+
+void RtcEngineWrap::onUserUnpublishScreen(const char* uid,
+    bytertc::MediaStreamType type, bytertc::StreamRemoveReason reason) {
+    ForwardEvent::PostEvent(this, [=, uid = std::string(uid)]{
+        emit sigOnUserUnPublishScreen(uid, type, reason);
+    });
+}
+
+void RtcEngineWrap::onStreamSubscribed(bytertc::SubscribeState state_code,
                                        const char* user_id,
                                        const bytertc::SubscribeConfig& info) {
   ForwardEvent::PostEvent(
       this, [=] { emit sigOnStreamSubscribed(state_code, user_id, info); });
 }
 
-void RtcEngineWrap::OnStreamPublishSuccess(const char* user_id,
+void RtcEngineWrap::onStreamPublishSuccess(const char* user_id,
                                            bool is_screen) {
-  ForwardEvent::PostEvent(this, [=, uid = std::string(user_id)] {
-    emit sigOnStreamPublishSuccess(user_id, is_screen);
-  });
+    ForwardEvent::PostEvent(this, [=, uid = std::string(user_id)]{
+        emit sigOnStreamPublishSuccess(user_id, is_screen);
+    });
 }
 
-// void RtcEngineWrap::OnAudioRouteChanged(int routing) {
+// void RtcEngineWrap::onAudioRouteChanged(int routing) {
 //  ForwardEvent::PostEvent(this, [=] { emit sigOnAudioRouteChanged(routing);
 //  });
 //}
 
-void RtcEngineWrap::OnFirstLocalVideoFrameCaptured(
+void RtcEngineWrap::onFirstLocalVideoFrameCaptured(
     bytertc::StreamIndex index, bytertc::VideoFrameInfo info) {
   ForwardEvent::PostEvent(
       this, [=] { emit sigOnFirstLocalVideoFrameCaptured(index, info); });
 }
 
-void RtcEngineWrap::OnFirstRemoteVideoFrameRendered(
+void RtcEngineWrap::onFirstRemoteVideoFrameDecoded(
     const bytertc::RemoteStreamKey key, const bytertc::VideoFrameInfo& info) {
-  RemoteStreamKeyWrap wrap;
-  wrap.room_id = key.room_id;
-  wrap.user_id = key.user_id;
-  wrap.stream_index = key.stream_index;
-  ForwardEvent::PostEvent(
-      this, [=] { emit sigOnFirstRemoteVideoFrameRendered(wrap, info); });
+    RemoteStreamKeyWrap wrap;
+    wrap.room_id = std::string(key.room_id);
+    wrap.user_id = std::string(key.user_id);
+    wrap.stream_index = key.stream_index;
+    ForwardEvent::PostEvent(
+        this, [=] { emit sigOnFirstRemoteVideoFrameDecoded(wrap, info); });
 }
 
-void RtcEngineWrap::OnUserMuteVideo(const char* uid, bytertc::MuteState mute) {
-  ForwardEvent::PostEvent(this, [=, uid = std::string(uid)] {
-    emit sigOnUserMuteVideo(uid, mute);
-  });
+void RtcEngineWrap::onUserStartVideoCapture(const char* room_id, const char* user_id) {
+    ForwardEvent::PostEvent(this, [=, roomId = std::string(room_id), uid = std::string(user_id)]{
+        emit sigOnUserStartVideoCapture(roomId, uid);
+    });
 }
 
-void RtcEngineWrap::OnUserEnableLocalVideo(const char* uid, bool enabled) {
-  ForwardEvent::PostEvent(this, [=, uid = std::string(uid)] {
-    emit sigOnUserEnableLocalVideo(uid, enabled);
-  });
+void RtcEngineWrap::onUserStopVideoCapture(const char* room_id, const char* user_id) {
+    ForwardEvent::PostEvent(this, [=, roomId = std::string(room_id), uid = std::string(user_id)]{
+        emit sigOnUserStopVideoCapture(roomId, uid);
+    });
 }
 
-void RtcEngineWrap::OnMediaDeviceStateChanged(
-    const char* device_id, bytertc::MediaDeviceType device_type,
-    bytertc::MediaDeviceState device_state, bytertc::MediaDeviceError error) {
-  ForwardEvent::PostEvent(this, [=, device_id = std::string(device_id)] {
-    emit sigOnMediaDeviceStateChanged(device_id, device_type, device_state,
-                                      error);
-  });
+void RtcEngineWrap::onAudioDeviceStateChanged(const char* device_id, 
+    bytertc::RTCAudioDeviceType device_type, bytertc::MediaDeviceState device_state, 
+    bytertc::MediaDeviceError device_error) {
+    ForwardEvent::PostEvent(this, [=, device_id = std::string(device_id)]{
+        emit sigOnAudioDeviceStateChanged(device_id, device_type, device_state,
+                                    device_error);
+    });
 }
 
-void RtcEngineWrap::OnLocalVideoStateChanged(
+void RtcEngineWrap::onVideoDeviceStateChanged(const char* device_id,
+    bytertc::RTCVideoDeviceType device_type, bytertc::MediaDeviceState device_state,
+    bytertc::MediaDeviceError device_error) {
+    ForwardEvent::PostEvent(this, [=, device_id = std::string(device_id)]{
+        emit sigOnVideoDeviceStateChanged(device_id, device_type, device_state,
+                                    device_error);
+    });
+}
+
+void RtcEngineWrap::onLocalVideoStateChanged(
     bytertc::StreamIndex index, bytertc::LocalVideoStreamState state,
     bytertc::LocalVideoStreamError error) {
-  ForwardEvent::PostEvent(
-      this, [=] { emit sigOnLocalVideoStateChanged(index, state, error); });
+    ForwardEvent::PostEvent(
+        this, [=] { emit sigOnLocalVideoStateChanged(index, state, error); });
 }
 
-void RtcEngineWrap::OnLocalAudioStateChanged(
-    bytertc::LocalAudioStreamState state,
-    bytertc::LocalAudioStreamError error) {
-  ForwardEvent::PostEvent(
-      this, [=] { emit sigOnLocalAudioStateChanged(state, error); });
+void RtcEngineWrap::onLocalAudioStateChanged(
+        bytertc::LocalAudioStreamState state,
+        bytertc::LocalAudioStreamError error) {
+    ForwardEvent::PostEvent(
+        this, [=] { emit sigOnLocalAudioStateChanged(state, error); });
 }
 
-void RtcEngineWrap::OnSysStats(const bytertc::SysStats& stats) {
-  ForwardEvent::PostEvent(this, [=] { emit sigOnSysStats(stats); });
+void RtcEngineWrap::onSysStats(const bytertc::SysStats& stats) {
+    ForwardEvent::PostEvent(this, [=] { emit sigOnSysStats(stats); });
 }
 
-void RtcEngineWrap::OnLoginResult(const char* uid, int error_code, int elapsed) {
+void RtcEngineWrap::onNetworkTypeChanged(bytertc::NetworkType type) {
+    ForwardEvent::PostEvent(this, [=]{
+        emit sigOnNetworkTypeChanged(type);
+    });
+}
+
+void RtcEngineWrap::onLoginResult(const char* uid, int error_code, int elapsed) {
 	ForwardEvent::PostEvent(this, [=, uid = std::string(uid)]{
 	emit sigOnLoginResult(uid, error_code, elapsed);
 		});
 }
 
-void RtcEngineWrap::OnServerParamsSetResult(int error) {
+void RtcEngineWrap::onServerParamsSetResult(int error) {
     ForwardEvent::PostEvent(this, [=] { emit sigOnServerParamsSetResult(error); });
 }
 
-void RtcEngineWrap::OnRoomMessageReceived(const char* uid, const char* message) {
-	ForwardEvent::PostEvent(this, [=, uid = std::string(uid), message = std::string(message)]{
-        emit sigOnMessageReceived(uid, message);
-		});
+void RtcEngineWrap::onRoomMessageReceived(const char* uid, const char* message) {
+    emitOnRTSMessageArrived(uid, message);
 }
 
-void RtcEngineWrap::OnUserMessageReceived(const char* uid, const char* message) {
-	ForwardEvent::PostEvent(this, [=, uid = std::string(uid), message = std::string(message)]{
-	    emit sigOnMessageReceived(uid, message);
-		});
+void RtcEngineWrap::onUserMessageReceived(const char* uid, const char* message) {
+    emitOnRTSMessageArrived(uid, message);
 }
 
-void RtcEngineWrap::OnUserMessageReceivedOutsideRoom(const char* uid, const char* message) {
-	ForwardEvent::PostEvent(this, [=, uid = std::string(uid), message = std::string(message)]{
-	    emit sigOnMessageReceived(uid, message);
-		});
+void RtcEngineWrap::onUserMessageReceivedOutsideRoom(const char* uid, const char* message) {
+    emitOnRTSMessageArrived(uid, message);
 }
 
-void RtcEngineWrap::OnServerMessageSendResult(int64_t msgid, int error, const bytertc::ServerACKMsg& msg) {
+void RtcEngineWrap::onServerMessageSendResult(int64_t msgid, int error, const bytertc::ServerACKMsg& msg) {
     ForwardEvent::PostEvent(this, [=] { emit sigOnServerMessageSendResult(msgid, error, msg); });
 }

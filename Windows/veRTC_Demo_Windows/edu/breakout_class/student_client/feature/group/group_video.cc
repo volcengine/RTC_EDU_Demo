@@ -48,7 +48,7 @@ namespace vrd
 		lbl_speak->setStyleSheet("font: 14px \"微软雅黑\"; color: #86909C;");
 		speak_layout->addWidget(lbl_speak, 0, Qt::AlignCenter);
 		this->wdt_stacked_->addWidget(wdt_speak);
-
+		this->wdt_stacked_->setCurrentIndex(0);
 		main_layout->addWidget(this->wdt_stacked_, 0, Qt::AlignHCenter);
 
 		QWidget *wdt_bottom = new QWidget();
@@ -171,15 +171,14 @@ namespace vrd
 	{
 		if (presenter_ != nullptr)
 		{
-            setShowVideo(true);
-			/*if (presenter_->hasVideo(user_id_))
+			if (presenter_->hasVideo(user_id_))
 			{
 				setShowVideo(true);
 			}
 			else
 			{
 				setShowVideo(false);
-			}*/
+			}
 		}
 	}
 
@@ -195,6 +194,7 @@ namespace vrd
 
 				if (presenter_ != nullptr)
 				{
+					forceUpdateVideo();
 					presenter_->setVideoWindow(user_id_, getVideoWindow());
 				}
 			}
@@ -204,6 +204,7 @@ namespace vrd
 
 				if (presenter_ != nullptr)
 				{
+					wdt_video_->setUpdatesEnabled(true);
 					presenter_->setVideoWindow(user_id_, NULL);
 				}
 			}

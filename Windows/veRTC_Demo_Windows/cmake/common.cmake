@@ -1,7 +1,7 @@
 include_directories(
     ${PORJECT_ROOT_PATH}
     ${PORJECT_ROOT_PATH}/core/component 
-	${PORJECT_ROOT_PATH}/core/http 
+    ${PORJECT_ROOT_PATH}/core/http 
     ${PORJECT_ROOT_PATH}/feature
 )
 
@@ -16,15 +16,30 @@ file(GLOB CORE_HTTP_FILES
   ${PORJECT_ROOT_PATH}/core/http/*.cpp
 )
 
-file(GLOB USERNAME_LOGIN_FILES
-  ${PORJECT_ROOT_PATH}/feature/username_login/username_login_widget.h
-  ${PORJECT_ROOT_PATH}/feature/username_login/username_login_widget.cpp 
-)
+set(RTS_PARAMS_DIR ${PORJECT_ROOT_PATH}/feature/rts_params)
+if(EXISTS ${RTS_PARAMS_DIR})
+  add_definitions(-DRTS_PARAMS)
+  file(GLOB RTS_PARAMS_FILES
+    ${PORJECT_ROOT_PATH}/feature/rts_params/rtc_build_config.h
+    ${PORJECT_ROOT_PATH}/feature/rts_params/rts_params.h
+	${PORJECT_ROOT_PATH}/feature/rts_params/rts_params.cc
+  )
+endif()
+
+set(USERNAME_LOGIN_DIR ${PORJECT_ROOT_PATH}/feature/username_login)
+if(EXISTS ${USERNAME_LOGIN_DIR})
+  add_definitions(-DUSERNAME_LOGIN)
+  file(GLOB USERNAME_LOGIN_FILES
+    ${PORJECT_ROOT_PATH}/feature/username_login/username_login_widget.h
+    ${PORJECT_ROOT_PATH}/feature/username_login/username_login_widget.cpp 
+  )
+endif()
 
 set(COMMON_SRC 
   ${CORE_CPP_FILES} 
   ${CORE_HTTP_FILES}
   ${USERNAME_LOGIN_FILES}
+  ${RTS_PARAMS_FILES}
   ${PORJECT_ROOT_PATH}/main.cpp
   ${PORJECT_ROOT_PATH}/core/component/line_edit_warp.h
   ${PORJECT_ROOT_PATH}/core/component/line_edit_warp.cpp
@@ -44,7 +59,6 @@ set(COMMON_SRC
   ${PORJECT_ROOT_PATH}/core/component/alert.cc
   ${PORJECT_ROOT_PATH}/core/component/volume_widget.h
   ${PORJECT_ROOT_PATH}/core/component/volume_widget.cpp
-  ${PORJECT_ROOT_PATH}/core/component/flowlayout.cpp
   ${PORJECT_ROOT_PATH}/core/component/list_widget_warp.h
   ${PORJECT_ROOT_PATH}/core/component/list_widget_warp.cpp
   ${PORJECT_ROOT_PATH}/core/component/videocell.h
@@ -53,6 +67,14 @@ set(COMMON_SRC
   ${PORJECT_ROOT_PATH}/core/component/OnLineItem.h
   ${PORJECT_ROOT_PATH}/core/component/TreeGroupWidget.h
   ${PORJECT_ROOT_PATH}/core/component/TreeGroupWidget.cpp
+  ${PORJECT_ROOT_PATH}/core/component/check_button.h
+  ${PORJECT_ROOT_PATH}/core/component/check_button.cpp
+  ${PORJECT_ROOT_PATH}/core/component/slider_wrap.h
+  ${PORJECT_ROOT_PATH}/core/component/slider_wrap.cpp
+  ${PORJECT_ROOT_PATH}/core/component/share_view_wnd.h
+  ${PORJECT_ROOT_PATH}/core/component/share_view_wnd.cpp
+  ${PORJECT_ROOT_PATH}/core/component/share_view_container.h
+  ${PORJECT_ROOT_PATH}/core/component/share_view_container.cpp
   ${PORJECT_ROOT_PATH}/feature/top_bar_widget.h
   ${PORJECT_ROOT_PATH}/feature/top_bar_widget.cpp
   ${PORJECT_ROOT_PATH}/feature/scene_select_widget.h

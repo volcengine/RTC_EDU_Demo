@@ -33,7 +33,7 @@ namespace vrd
 		this->wdt_video_->setStyleSheet("border-radius: 2px; background-color: black;");
 		this->wdt_video_->setUpdatesEnabled(false);
 		this->wdt_stacked_->addWidget(this->wdt_video_);
-
+		this->wdt_stacked_->setCurrentIndex(0);
 		main_layout->addWidget(this->wdt_stacked_, 0, Qt::AlignHCenter);
 
 		QWidget *wdt_bottom = new QWidget();
@@ -116,18 +116,18 @@ namespace vrd
 
 	void WatchVideo::tryShowVideo()
 	{
-		if (presenter_ != nullptr)
-		{
-            setShowVideo(true);
-			/*if (presenter_->hasVideo(user_id_))
-			{
-				setShowVideo(true);
-			}
-			else
-			{
-				setShowVideo(false);
-			}*/
-		}
+		setShowVideo(true);
+        //if (presenter_ != nullptr)
+        //{
+        //    if (presenter_->hasVideo(user_id_))
+        //    {
+        //        setShowVideo(true);
+        //    }
+        //    else
+        //    {
+        //        setShowVideo(false);
+        //    }
+        //}
 	}
 
 	void WatchVideo::setShowVideo(bool show)
@@ -142,6 +142,7 @@ namespace vrd
 
 				if (presenter_ != nullptr)
 				{
+					forceUpdateVideo();
 					presenter_->setVideoWindow(user_id_, getVideoWindow());
 				}
 			}
@@ -151,6 +152,7 @@ namespace vrd
 
 				if (presenter_ != nullptr)
 				{
+					wdt_video_->setUpdatesEnabled(true);
 					presenter_->setVideoWindow(user_id_, NULL);
 				}
 			}

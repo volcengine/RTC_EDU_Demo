@@ -2,15 +2,15 @@
 //  EduClassViewController.m
 //  veRTC_Demo
 //
-//  Created by bytedance on 2021/7/28.
-//  Copyright © 2021 . All rights reserved.
+//  Created by on 2021/7/28.
+//  
 //
 
 #import "EduClassCpmponents.h"
-#import "EduEndCompoments.h"
+#import "EduEndComponent.h"
 #import "EduLectureHallViewController+Socket.h"
 #import "EduLectureHallViewController.h"
-#import "EduRTCManager.h"
+#import "EduBreakoutRTCManager.h"
 #import "EduRTMStudentManager.h"
 #import "UIViewController+Orientation.h"
 #import "NetworkingTool.h"
@@ -31,7 +31,7 @@
 
 @property (nonatomic, strong) EduClassChatView *chatView;
 
-@property (nonatomic, strong) EduEndCompoments *exitAlertView;
+@property (nonatomic, strong) EduEndComponent *exitAlertView;
 
 @property (nonatomic, strong) EduUserModel *teacherModel;
 
@@ -54,7 +54,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [[NSUserDefaults standardUserDefaults] setObject:@"EduRTCManager" forKey:@"KEduRTCManager"];
+    [[NSUserDefaults standardUserDefaults] setObject:@"EduBreakoutRTCManager" forKey:@"KEduBreakoutRTCManager"];
     [[NSUserDefaults standardUserDefaults]synchronize];
     [self addNotification];
     [self buildUI];
@@ -63,6 +63,8 @@
 }
 
 - (void)addNotification {
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationBecomeActive) name:UIApplicationWillEnterForegroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationEnterBackground) name: UIApplicationDidEnterBackgroundNotification object:nil];
     [self addOrientationNotice];
 }
 
@@ -219,7 +221,7 @@
 }
 
 - (void)navBackAction:(UIButton *)sender {
-    EduEndCompoments *endComponent = [[EduEndCompoments alloc] init];
+    EduEndComponent *endComponent = [[EduEndComponent alloc] init];
     [endComponent showWithStatus:EduEndStatusStudent];
     self.exitAlertView = endComponent;
 
@@ -239,7 +241,7 @@
 
                                       }];
 
-    [[EduRTCManager shareRtc] leaveChannel];
+    [[EduBreakoutRTCManager shareRtc] leaveLectureChannel];
 
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
 
@@ -247,7 +249,7 @@
 }
 
 - (void)joinClass {
-    [[PublicParameterCompoments share]setRoomId:self.roomModel.roomId];
+    [[PublicParameterComponent share] setRoomId:self.roomModel.roomId];
     WeakSelf;
     [EduRTMStudentManager joinClass:self.roomModel.roomId roomType:YES block:^(EduClassModel *classModel) {
         if(classModel.ackModel.result){
@@ -268,12 +270,11 @@
     self.titleView.inClass = classModel.roomModel.status;
     self.titleView.recordTime = classModel.roomModel.beginClassTimeReal;
 
-    [[EduRTCManager shareRtc] createEngine:classModel.roomModel.appId];
-
-    [[EduRTCManager shareRtc] joinChannelWithToken:classModel.token roomID:classModel.roomModel.roomId uid:[LocalUserComponents userModel].uid];
+    [[EduBreakoutRTCManager shareRtc] createEngine:classModel.roomModel.appId];
+    [[EduBreakoutRTCManager shareRtc] joinChannelWithToken:classModel.token roomID:classModel.roomModel.roomId uid:[LocalUserComponent userModel].uid];
     
     __weak __typeof(self) wself = self;
-    [EduRTCManager shareRtc].rtcJoinRoomBlock = ^(NSString * _Nonnull roomId, NSInteger errorCode, NSInteger joinType) {
+    [EduBreakoutRTCManager shareRtc].rtcJoinRoomBlock = ^(NSString * _Nonnull roomId, NSInteger errorCode, NSInteger joinType) {
         if (joinType != 0 && errorCode == 0) {
             [wself eduReconnect];
         }
@@ -308,7 +309,7 @@
             type = @"exit";
         }
         if (type.length > 0) {
-            NSDictionary *dic = @{@"type" : type};
+            NSDictionary *dic = @{@"type" : type ?: @""};
             [wself educontrolChange:dic];
         }
     }];
@@ -326,6 +327,20 @@
     }
 }
 
+#pragma mark - NSNotification
+
+- (void)applicationBecomeActive {
+    // APP 恢复活跃状态时，如果是开启相机状态需要恢复相机采集。
+    // When the APP returns to the active state, if the camera is turned on, the camera acquisition needs to be resumed.
+    if ([[EduBreakoutRTCManager shareRtc] currentCameraState]) {
+        [[EduBreakoutRTCManager shareRtc] enableLocalVideo:YES];
+    }
+}
+
+- (void)applicationEnterBackground {
+    [[EduBreakoutRTCManager shareRtc] enableLocalVideo:NO];
+}
+
 #pragma mark - Broadcast Notification Action
 
 - (void)onClassBegin:(NSInteger)timestamp {
@@ -336,7 +351,7 @@
 - (void)changeGroupSpeech:(BOOL)open {
     [self showSpeechView:open];
 
-    [[EduRTCManager shareRtc] enableAudioInteract:open];
+    [[EduBreakoutRTCManager shareRtc] enableAudioInteract:open];
 }
 
 - (void)changeVideoInteract:(BOOL)open {
@@ -377,8 +392,8 @@
 }
 
 - (void)approveMic:(BOOL)isOn {
-    [[EduRTCManager shareRtc] enableAudioInteract:isOn];
-    [[EduRTCManager shareRtc] enableVideoInteract:isOn];
+    [[EduBreakoutRTCManager shareRtc] enableAudioInteract:isOn];
+    [[EduBreakoutRTCManager shareRtc] enableVideoInteract:isOn];
 }
 
 #pragma mark - getter
@@ -474,9 +489,9 @@
     return _groupSpeechView;
 }
 
-- (EduEndCompoments *)exitAlertView {
+- (EduEndComponent *)exitAlertView {
     if (!_exitAlertView) {
-        _exitAlertView = [[EduEndCompoments alloc] init];
+        _exitAlertView = [[EduEndComponent alloc] init];
     }
     return _exitAlertView;
 }

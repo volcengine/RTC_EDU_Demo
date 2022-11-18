@@ -1,6 +1,7 @@
 #import "EduBreakoutRTCManager.h"
+#import "EduRTCManager.h"
 #import <VolcEngineRTC/objc/rtc/ByteRTCDefines.h>
-#import <VolcEngineRTC/objc/rtc/ByteRTCRoom.h>
+#import <VolcEngineRTC/objc/ByteRTCRoom.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -33,22 +34,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)enableLocalAudio:(BOOL)enable;
 
 /*
- * Switch local audio capture
- * @param mute ture:Turn on audio capture false：Turn off audio capture
+ * Switch local video capture
+ * @param enable ture:Turn on video capture false：Turn off video capture
  */
-- (void)muteLocalAudio:(BOOL)mute;
-
-/*
- * Switch audioInteract
- * @param enable ture:Turn on audioInteract false：Turn off audioInteract
- */
-- (void)enableAudioInteract:(BOOL)enable;
-
-/*
- * Switch videoInteract
- * @param enable ture:Turn on videoInteract false：Turn off videoInteract
- */
-- (void)enableVideoInteract:(BOOL)enable;
+- (void)enableLocalVideo:(BOOL)isEnableVideo;
 
 /*
  * Leave the room

@@ -57,7 +57,6 @@ namespace vrd
 		list_item->setSizeHint(this->lbl_title_->sizeHint());
 		this->addItem(list_item);
 		this->setItemWidget(list_item, this->lbl_title_);
-
 		this->presenter_->init();
 	}
 
@@ -66,12 +65,11 @@ namespace vrd
 		setTitleLabel(list.size());
 
 		int index = video_count_ + kTitleCount;
-
 		for (auto cit = list.cbegin(); cit != list.cend(); ++cit, ++index)
 		{
 			Applicant *applicant = (*cit).get();
-
-			if (index < count())
+			auto itemCount = this->count();
+			if (index < itemCount)
 			{
 				QListWidgetItem *list_item = item(index);
 				AppliedStudent *student = qobject_cast<AppliedStudent*>(itemWidget(list_item));
@@ -95,11 +93,13 @@ namespace vrd
 			}
 		}
 
-		for (int m = (count() - 1); m >= index; --m)
-		{
-			QListWidgetItem *list_item = takeItem(m);
-			delete list_item, list_item = nullptr;
-		}
+        for (int m = (count() - 1); m >= index; --m)
+        {
+            QListWidgetItem* list_item = takeItem(m);
+            list_item->setHidden(true);
+            delete list_item;
+            list_item = nullptr;
+        }
 	}
 
 	void RoomView::setSpeakers(const std::list<std::unique_ptr<Student>> &list)
@@ -123,8 +123,11 @@ namespace vrd
 				video->clean();
 
 				removeItemWidget(list_item);
-				delete list_item, list_item = nullptr;
-				--video_count_, --i;
+				list_item->setHidden(true);
+				delete list_item;
+				list_item = nullptr;
+				--video_count_;
+				--i;
 			}
 			else
 			{
@@ -151,40 +154,39 @@ namespace vrd
 		}
 	}
 
-	void RoomView::onVideoAdd(const std::string &user_id)
-	{
-		StudentVideo *video = getStudentVideo(user_id);
-		if (video != nullptr)
-		{
-			video->onVideoAdd();
-		}
-	}
+    void RoomView::onVideoAdd(const std::string& user_id)
+    {
+        StudentVideo* video = getStudentVideo(user_id);
+        if (video != nullptr)
+        {
+            video->onVideoAdd();
+        }
+    }
 
-	void RoomView::onVideoRemove(const std::string &user_id)
-	{
-		StudentVideo *video = getStudentVideo(user_id);
-		if (video != nullptr)
-		{
-			video->onVideoRemove();
-		}
-	}
+    void RoomView::onVideoRemove(const std::string& user_id)
+    {
+        StudentVideo* video = getStudentVideo(user_id);
+        if (video != nullptr)
+        {
+            video->onVideoRemove();
+        }
+    }
 
-	void RoomView::setTitleLabel(int number)
-	{
-		lbl_title_->setText(QString::asprintf("举手列表（%d）", number));
-	}
+    void RoomView::setTitleLabel(int number)
+    {
+        lbl_title_->setText(QString::asprintf("举手列表（%d）", number));
+    }
 
-	StudentVideo *RoomView::getStudentVideo(const std::string &user_id)
-	{
-		for (int i = 0; i < video_count_; ++i)
-		{
-			QListWidgetItem *list_item = item(i);
-			if (std::string(list_item->data(Qt::UserRole).value<QString>().toUtf8()) == user_id)
-			{
-				return qobject_cast<StudentVideo*>(itemWidget(list_item));
-			}
-		}
-
-		return nullptr;
-	}
+    StudentVideo* RoomView::getStudentVideo(const std::string& user_id)
+    {
+        for (int i = 0; i < video_count_; ++i)
+        {
+            QListWidgetItem* list_item = item(i);
+            if (std::string(list_item->data(Qt::UserRole).value<QString>().toUtf8()) == user_id)
+            {
+                return qobject_cast<StudentVideo*>(itemWidget(list_item));
+            }
+        }
+        return nullptr;
+    }
 }

@@ -97,6 +97,7 @@ namespace vrd
 				video->clean();
 
 				removeItemWidget(list_item);
+				list_item->setHidden(true);
 				delete list_item, list_item = nullptr;
 				--video_count, --i;
 			}

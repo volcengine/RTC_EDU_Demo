@@ -2,7 +2,7 @@
 //  EduDemoConstants.h
 //  Pods
 //
-//  Created by ByteDance on 2022/6/7.
+//  Created by on 2022/6/7.
 //
 
 #ifndef EduDemoConstants_h
@@ -21,7 +21,7 @@
 #define VodSpace @""
 
 
-#import "EduRTCManager.h"
+#import "EduBreakoutRTCManager.h"
 #import "EduRTMManager.h"
 
 #define HomeBundleName @"EduDemo"

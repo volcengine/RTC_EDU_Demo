@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2020 The VolcEngineRTC project authors. All Rights Reserved.
  * @brief VolcEngineRTC Advance API
 */
@@ -26,7 +26,7 @@
 
 namespace bytertc {
 
-/**  
+/** 
  * @hidden
  * @type
  * @brief RTC Audio Dump 节点配置。
@@ -144,23 +144,23 @@ struct RTCAudioSampleConfigure {
     }
 };
 
-/**  
+/** 
  * @hidden
  * @type keytype
  * @brief SDK 的服务器环境。
  */
 enum Env {
-    /**  
+    /** 
      * @hidden
      * @brief 线上环境。
      */
     kEnvProduct = 0,
-    /**  
+    /** 
      * @hidden
      * @brief BOE 环境。
      */
     kEnvBOE,
-    /**  
+    /** 
      * @hidden
      * @brief 测试环境。
      */
@@ -168,7 +168,7 @@ enum Env {
 };
 
 attribute_deprecated
-/**  
+/** 
  * @hidden
  * @deprecated
  * @type api
@@ -180,29 +180,29 @@ attribute_deprecated
  *        -1：设置失败
  * @notes
  *        1.本函数是可选函数，默认使用正式环境；
- *        2.本函数必须在创建 RtcEngine 实例 CreateRtcEngine{@link #CreateRtcEngine} 前调用。
+ *        2.本函数必须在创建 RtcEngine 实例 createRtcEngine{@link #createRtcEngine} 前调用。
  */
-BYTERTC_API int SetEnv(Env env);
+BYTERTC_API int setEnv(Env env);
 
 attribute_deprecated
-/**  
+/** 
  * @hidden
  * @deprecated
  * @brief 设置设备ID
  * @param [in] device_id app根据当前软硬件环境生成的唯一设备id
  */
-BYTERTC_API void SetDeviceId(const char* device_id);
-/**  
+BYTERTC_API void setDeviceId(const char* device_id);
+/** 
  * @hidden
  * @brief 设置应用的状态
  * @param [in] engine
  *       要通知的引擎
  * @param [in] appState 应用状态字符串
  */
-BYTERTC_API void SetAppState(IRtcEngine* engine, const char* appState);
+BYTERTC_API void setAppState(void* engine, const char* appState);
 
 attribute_deprecated
-/**  
+/** 
  * @hidden
  * @deprecated
  * @type api
@@ -210,7 +210,7 @@ attribute_deprecated
  * @brief 私有接口
  * @param [in] parameters JSON字符串
  */
-BYTERTC_API int SetParameters(const char* parameters);
+BYTERTC_API int setParameters(const char* parameters);
 
 #ifdef __ANDROID__
 /** 
@@ -218,41 +218,41 @@ BYTERTC_API int SetParameters(const char* parameters);
  * @type api
  * @region 视频管理
  * @brief 用于给编码器设置共享的EGLContext，该接口需要传入一个 android.opengl.EGLContext 类型的EGLContext
- * 如果只有C++的EGLContext，则需要在绑定了EGLContext的线程环境下执行 SetHardWareEncodeContext() 方法设置。
+ * 如果只有C++的EGLContext，则需要在绑定了EGLContext的线程环境下执行 setHardWareEncodeContext() 方法设置。
  * 设置后，RTC的编码器即可和当前的EGLContext共享资源。
  * 如果Android使用纯C++接口，则该方法必须在引擎创建前设置，用于初始化EGLContext，如果没有共享的EGLContext，参数传递nullptr即可
- * 引擎销毁后，应该调用 ClearHardWareEncodeContext() 来进行资源释放
+ * 引擎销毁后，应该调用 clearHardWareEncodeContext() 来进行资源释放
  * @param [in] j_egl_context
  *      传入Java的 android.opengl.EGLContext 类型的EGLContext
  * @return
  *      true: 设置成功
  *      false：设置失败
  */
-BYTERTC_API bool SetHardWareEncodeContext(jobject j_egl_context);
+BYTERTC_API bool setHardWareEncodeContext(jobject j_egl_context);
 
-/**  
+/** 
  * @hidden(iOS,macOS,Windows,Linux)
  * @type api
  * @region 视频管理
  * @brief 用于给编码器设置共享的EGLContext，该接口需要在绑定了EGLContext的接口下执行方法设置。
  * 设置后，RTC的编码器即可和当前的EGLContext共享资源。
  * 如果Android使用纯C++接口，则该方法必须在引擎创建前设置，如果没有绑定了EGLContext的线程环境，可以使用参数为jobject的接口替代
- * 引擎销毁后，应该调用 ClearHardWareEncodeContext() 来进行资源释放
+ * 引擎销毁后，应该调用 clearHardWareEncodeContext() 来进行资源释放
  * @return
  *      true: 设置成功
  *      false：设置失败
  */
-BYTERTC_API bool SetHardWareEncodeContext();
+BYTERTC_API bool setHardWareEncodeContext();
 
-/**  
+/** 
  * @hidden(iOS,macOS,Windows,Linux)
  * @type api
  * @region 视频管理
  * @brief 用于清除共享的EGLContext，在引擎销毁后，如果确定之后不会再使用 则应该调用本接口在进行EGLContext的资源释放
  */
-BYTERTC_API void ClearHardWareEncodeContext();
+BYTERTC_API void clearHardWareEncodeContext();
 
-/**  
+/** 
  * @hidden(iOS,macOS,Windows,Linux)
  * @type api
  * @region 引擎管理
@@ -261,10 +261,10 @@ BYTERTC_API void ClearHardWareEncodeContext();
  * @param [in] j_egl_context
  *      传入Java的 android.content.Context 类型的EGLContext
  */
-BYTERTC_API void SetApplicationContext(jobject j_application_context);
+BYTERTC_API void setApplicationContext(jobject j_application_context);
 #endif
 
-/**  
+/** 
  * @hidden
  * @type api
  * @region 视频管理
@@ -272,55 +272,55 @@ BYTERTC_API void SetApplicationContext(jobject j_application_context);
  * @brief 硬件加速设备类型
  */
 enum HWDeviceType {
-    /**  
+    /** 
      * @brief 未知的设备类型
      */
     kHWDeviceTypeNone,
 
-    /**  
+    /** 
      * @brief direct3d 11 视频加速设备
      */
     kHWDeviceTypeD3D11,
 
-    /**  
+    /** 
      * @brief cuda 硬件加速设备
      * @notes cuda 是 nvidia 平台下硬件加速设备
      */
     kHWDeviceTypeCuda,
 
-    /**  
+    /** 
      * @brief intel 平台下 qsv 加速设备
      */
     kHWDeviceTypeQsv,
 
-    /**  
+    /** 
      * @brief windows 平台 dx 硬件加速设备
      */
     kHWDeviceTypeDxva2,
 
-    /**  
+    /** 
      * @brief Android 平台下硬件加速设备 mediacodec
      */
     kHWDeviceTypeMediaCodec,
 
-    /**  
+    /** 
      * @brief IOS、MACOS 平台下硬件加速设备 VideoToolbox
      */
     kHWDeviceTypeVideoToolbox,
-     /**  
+     /** 
      * @hidden
      * @brief android、linux 平台下硬件加速设备 egl context
      */
     kHWDeviceTypeEglContext,
 
-    /**  
+    /** 
      * @hidden
      * @brief linux、windows 平台下硬件加速设备 va context
      */
     kHWDeviceTypeVaapi,
 };
 
-/**  
+/** 
  * @hidden
  * @type keytype
  * @brief 硬编码设备 context
@@ -331,75 +331,75 @@ enum HWDeviceContextKey {
      * @brief cuda context
      */
     kHWDeviceContextKeyCudaContext,
-    /**  
+    /** 
      * @hidden
      * @brief derict3D11 设备
      */
     kHWDeviceContextKeyD3D11Device,
-    /**  
+    /** 
      * @hidden
      * @brief derict3D11 设备 context
      */
     kHWDeviceContextKeyD3D11DeviceContext,
-    /**  
+    /** 
      * @hidden
      * @brief egl 设备 context
      */
     kHWDeviceContextKeyEglContext,
-    /**  
+    /** 
      * @hidden
      * @brief vadisplay 设备 context
      */
     kHWDeviceContextKeyVADisplay,
 };
 
-/**  
+/** 
  * @hidden
  * @type keytype
  * @brief 硬件加速设备 context
  */
 class IHWDeviceContext {
 public:
-    /**  
+    /** 
      * @brief 获取硬件加速设备 context 类型
      * @return 硬件加速设备类型，详见 HWDeviceType{@link #HWDeviceType}
      */
-    virtual HWDeviceType device_type() const = 0;
-    /**  
+    virtual HWDeviceType deviceType() const = 0;
+    /** 
      * @brief 设置属性
      * @param [in] key
      *        硬件加速设备 context 类型，详见 ByteRTCHWDeviceContextKey:{@link #ByteRTCHWDeviceContextKey}
      * @param [in] value
      *        指向硬件加速设备 context 地址的指针
      */
-    virtual void set_property(HWDeviceContextKey key, void* value) = 0;
-    /**  
+    virtual void setProperty(HWDeviceContextKey key, void* value) = 0;
+    /** 
      * @brief 获取属性
      * @param [in] key
      *        硬件加速设备 context 类型，详见 ByteRTCHWDeviceContextKey:{@link #ByteRTCHWDeviceContextKey}
      * @return 返回硬件加速设备 context 地址的指针
      */
-    virtual void* get_property(HWDeviceContextKey key) = 0;
-    /**  
+    virtual void* getProperty(HWDeviceContextKey key) = 0;
+    /** 
      * @brief 内部 context 是否由该实例拥有
      * @return  <br>
      *        + true: 硬件设备 context 被实例对象拥有  <br>
      *        + false: 硬件设备上 context 文不被实例对象拥有  <br>
      */
-    virtual bool own_context() const = 0;
-    /**  
+    virtual bool ownContext() const = 0;
+    /** 
      * @brief 设置 context 是否被实例对象拥有
-     * @param  [in] own_context  <br>
+     * @param  [in] ownContext  <br>
      *       + true: context 被实例对象拥有  <br>
      *       + false: context 不被实例对象拥有  <br>
      */
-    virtual void set_own_context(bool own_context) = 0;
-    /**  
+    virtual void setOwnContext(bool own_context) = 0;
+    /** 
      * @brief 转移硬件设备 context，
      * @return 指向硬件设备 context 的指针
      */
-    virtual IHWDeviceContext* move_context() = 0;
-    /**  
+    virtual IHWDeviceContext* moveContext() = 0;
+    /** 
      * @brief 释放实例对象
      */
     virtual void release() = 0;
@@ -407,59 +407,61 @@ public:
 
 /**
  * @hidden
- * @brief create a hardware device context with specified device_type
+ * @brief create a hardware device context with specified deviceType
  */
-BYTERTC_API IHWDeviceContext* CreateHwDeviceContext(HWDeviceType device_type);
+BYTERTC_API IHWDeviceContext* createHwDeviceContext(HWDeviceType device_type);
 
-/**  
+/** 
  * @hidden
  * @brief 设置视频源的设备上下文信息
  * @param [in] engine
- *       要设置的引擎，详见：IRtcEngine{@link #IRtcEngine}
+ *       要设置的引擎，详见 IRTCVideo{@link #IRTCVideo}
  * @param [in] hw_context
  *        设置视频帧，详见：IHWDeviceContext{@link #IHWDeviceContext}
  * @notes 用于硬件编码传入 GPU 内存时使用
  */
-BYTERTC_API void SetVideoSourceHWDeviceContext(IRtcEngine* engine, IHWDeviceContext* hw_context);
+BYTERTC_API void setVideoSourceHWDeviceContext(void* engine, IHWDeviceContext* hw_context);
 
-/**  
+/** 
  * @type api
  * @region 视频管理
  * @brief 创建 IVideoFrame
  * @param [in] builder 视频帧构建实例，参看 VideoFrameBuilder{@link #VideoFrameBuilder}
+ * @return IVideoFrame{@link #IVideoFrame} 实例
  */
-BYTERTC_API IVideoFrame* BuildVideoFrame(const VideoFrameBuilder& builder);
+BYTERTC_API IVideoFrame* buildVideoFrame(const VideoFrameBuilder& builder);
 
-/**  
+/** 
+ * @hidden
  * @type api
  * @region 视频管理
  * @brief 发送外部源视频数据
  * @param [in] engine
- *       要设置的引擎，详见 IRtcEngine{@link #IRtcEngine}
+ *       要设置的引擎，详见 IRTCVideo{@link #IRTCVideo}
  * @param [in] frame
  *        输入视频帧，详见 IVideoFrame{@link #IVideoFrame}
  * @notes
  *      1.支持 YUV420P，NV12，D3D texture，Cuda 内存，OpenGL texture等格式的视频帧。
  *      2.该函数运行在用户调用线程内
  */
-BYTERTC_API bool PushExternalVideoFrame(IRtcEngine* engine, const IVideoFrame* frame);
+BYTERTC_API bool pushExternalVideoFrame(void* engine, const IVideoFrame* frame);
 
-/**  
+/** 
  * @hidden
  * @type keytype
  * @region 音频管理
  * @brief 音频编码类型
  */
 enum AudioCodecType {
-    /**  
+    /** 
      * @brief 未知编码类型
      */
     kAudioCodecTypeNone = 0,
-    /**  
+    /** 
      * @brief Opus 编码类型
      */
     kAudioCodecTypeOpus,
-    /**  
+    /** 
      * @brief AAC 编码类型
      */
     kAudioCodecTypeAac,
@@ -468,9 +470,9 @@ enum AudioCodecType {
 /**
  * @hidden
  */
-BYTERTC_API IAudioFrame* BuildAudioFrame(const AudioFrameBuilder& builder);
+BYTERTC_API IAudioFrame* buildAudioFrame(const AudioFrameBuilder& builder);
 
-/**  
+/** 
  * @hidden
  * @type keytype
  * @brief 音频帧信息
@@ -485,64 +487,64 @@ public:
     /**
      * @hidden
      */
-    virtual AudioCodecType codec_type() const = 0;
+    virtual AudioCodecType codecType() const = 0;
     /**
      * @hidden
      */
-    virtual void set_codec_type(AudioCodecType codec_type) = 0;
+    virtual void setCodecType(AudioCodecType codec_type) = 0;
     /**
      * @hidden
      */
-    virtual int sample_rate() const = 0;
+    virtual int sampleRate() const = 0;
     /**
      * @hidden
      */
-    virtual void set_sample_rate(int sample_rate) = 0;
+    virtual void setSampleRate(int sample_rate) = 0;
     /**
      * @hidden
      */
-    virtual int channels_num() const = 0;
+    virtual int channelsNum() const = 0;
     /**
      * @hidden
      */
-    virtual void set_channels_num(int channels_num) = 0;
+    virtual void setChannelsNum(int channels_num) = 0;
     /**
      * @hidden
      */
-    virtual int64_t timestamp_us() const = 0;
+    virtual int64_t timestampUs() const = 0;
     /**
      * @hidden
      */
-    virtual void set_timestamp_us(int64_t timestamp_us) = 0;
+    virtual void setTimestampUs(int64_t timestamp_us) = 0;
     /**
      * @hidden
      */
-    virtual int64_t timestamp_pts() const = 0;
+    virtual int64_t timestampPts() const = 0;
     /**
      * @hidden
      */
-    virtual void set_timestamp_pts(int64_t timestamp_pts) = 0;
+    virtual void setTimestampPts(int64_t timestamp_pts) = 0;
     /**
      * @hidden
      */
-    virtual int timebase_num() const = 0;
+    virtual int timebaseNum() const = 0;
     /**
      * @hidden
      */
-    virtual void set_timestamp_num(int timebase_num) = 0;
+    virtual void setTimestampNum(int timebase_num) = 0;
     /**
      * @hidden
      */
-    virtual int timebase_den() const = 0;
+    virtual int timebaseDen() const = 0;
     /**
      * @hidden
      */
-    virtual void set_timestamp_den(int timebase_den) = 0;
+    virtual void setTimestampDen(int timebase_den) = 0;
 
     /**
      * @hidden
      */
-    virtual void set_stream_memory(const ManagedMemory& memory) = 0;
+    virtual void setStreamMemory(const ManagedMemory& memory) = 0;
     /**
      * @hidden
      */
@@ -550,20 +552,20 @@ public:
     /**
      * @hidden
      */
-    virtual int data_size() const = 0;
+    virtual int dataSize() const = 0;
 };
 
 /**
  * @hidden
  */
-BYTERTC_API IEncodedAudioFrame* CreateEncodedAudioFrame();
+BYTERTC_API IEncodedAudioFrame* createEncodedAudioFrame();
 
 /**
  * @hidden
  */
-BYTERTC_API IEncodedVideoFrame* BuildEncodedVideoFrame(const EncodedVideoFrameBuilder& builder);
+BYTERTC_API IEncodedVideoFrame* buildEncodedVideoFrame(const EncodedVideoFrameBuilder& builder);
 
-/**  
+/** 
  * @hidden
  * @type callback
  * @region 音频数据回调
@@ -571,14 +573,14 @@ BYTERTC_API IEncodedVideoFrame* BuildEncodedVideoFrame(const EncodedVideoFrameBu
  */
 class ILocalEncodedAudioFrameObserver  {
 public:
-    /**  
+    /** 
      * @hidden
      * @brief 析构函数
      */
     virtual ~ILocalEncodedAudioFrameObserver() {
     }
 
-    /**  
+    /** 
      * @hidden
      * @type callback
      * @region 音频数据回调
@@ -586,10 +588,10 @@ public:
      * @param [in] type 本地音频帧类型，参看 StreamIndex{@link #StreamIndex}
      * @param [in] audio_stream 本地音频帧信息，参看 IEncodedAudioFrame{@link #IEncodedAudioFrame}
      */
-    virtual void OnLocalEncodedAudioFrame(StreamIndex type, const IEncodedAudioFrame& audio_stream) = 0;
+    virtual void onLocalEncodedAudioFrame(StreamIndex type, const IEncodedAudioFrame& audio_stream) = 0;
 };
 
-/**  
+/** 
  * @hidden
  * @type callback
  * @region 音频数据回调
@@ -597,14 +599,14 @@ public:
  */
 class IRemoteEncodedAudioFrameObserver  {
 public:
-    /**  
+    /** 
      * @hidden
      * @brief 析构函数
      */
     virtual ~IRemoteEncodedAudioFrameObserver () {
     }
 
-    /**  
+    /** 
      * @hidden
      * @type callback
      * @region 音频数据回调
@@ -613,44 +615,44 @@ public:
      * @param [in] audio_stream 远端音频帧信息，参看 IEncodedAudioFrame{@link #IEncodedAudioFrame}
      * @param [in] stream_info 收到的远端音频流的信息，参看 RemoteStreamKey{@link #RemoteStreamKey}
      */
-    virtual void OnRemoteEncodedAudioFrame(
+    virtual void onRemoteEncodedAudioFrame(
             const char* stream_id, const IEncodedAudioFrame& audio_stream, const RemoteStreamKey& stream_info) = 0;
 };
 
 
-/**  
+/** 
  * @hidden
  * @type api
  * @region 音频数据回调
  * @brief 注册远端音频帧监测器。  <br>
  *        调用该方法后，SDK 每监测到一帧远端音频帧时，都会将音频帧信息通过 OnRemoteEncodedAudioFrame{@link #OnRemoteEncodedAudioFrame} 回调给用户
- * @param [in] engine 需设置的引擎，参看 IRtcEngine{@link #IRtcEngine}
+ * @param [in] engine 需设置的引擎，参看 IRtcEngine{@link #IRTCVideo}
  * @param [in] observer 远端音频帧监测器，参看 IRemoteEncodedAudioFrameObserver{@link #IRemoteEncodedAudioFrameObserver}
  * @notes  <br>
  *       + 该方法建议在进房前调用。 <br>
  *       + 将参数设置为 nullptr 则取消注册。
  */
-BYTERTC_API void RegisterRemoteEncodedAudioFrameObserver(IRtcEngine* engine, IRemoteEncodedAudioFrameObserver* observer);
+BYTERTC_API void registerRemoteEncodedAudioFrameObserver(void* engine, IRemoteEncodedAudioFrameObserver* observer);
 
-/**  
+/** 
  * @hidden
  * @type api
  * @region 音频数据回调
  * @brief 注册本地音频帧监测器。  <br>
  *        调用该方法后，SDK 每监测到一帧本地音频帧时，都会将音频帧信息通过 OnLocalEncodedAudioFrame{@link #OnLocalEncodedAudioFrame} 回调给用户
- * @param [in] engine 需设置的引擎，参看 IRtcEngine{@link #IRtcEngine}
+ * @param [in] engine 需设置的引擎，参看 IRtcEngine{@link #IRTCVideo}
  * @param [in] observer 本地音频帧监测器，参看 ILocalEncodedAudioFrameObserver{@link #ILocalEncodedAudioFrameObserver}
  * @notes  <br>
  *       + 该方法建议在进房前调用。 <br>
  *       + 将参数设置为 nullptr 则取消注册。
  */
-BYTERTC_API void RegisterLocalEncodedAudioFrameObserver(IRtcEngine* engine, ILocalEncodedAudioFrameObserver* observer);
+BYTERTC_API void registerLocalEncodedAudioFrameObserver(void* engine, ILocalEncodedAudioFrameObserver* observer);
 
 
 /**
  * @hidden
  */
-BYTERTC_API bool PushExternalEncodedAudioFrame(IRtcEngine* engine, const IEncodedAudioFrame* audio_stream);
+BYTERTC_API bool pushExternalEncodedAudioFrame(void* engine, const IEncodedAudioFrame* audio_stream);
 
 /**
  * @hidden
@@ -679,9 +681,9 @@ struct MediaIoOption {
  * @hidden
  * @type api
  */
-BYTERTC_API void SetupEngineMediaIo(IRtcEngine* engine, const MediaIoOption& option);
+BYTERTC_API void setupEngineMediaIo(void* engine, const MediaIoOption& option);
 
-/**  
+/** 
  * @type keytype
  * @region 视频数据回调
  * @brief metadata 数据大小最大值
@@ -689,30 +691,30 @@ BYTERTC_API void SetupEngineMediaIo(IRtcEngine* engine, const MediaIoOption& opt
 const int MAX_METADATA_LENGTH = 1024;
 
 
-/**  
+/** 
  * @hidden
  * @type callback
  * @brief 音频设备事件回调
  */
 class IAudioDeviceEventHandler {
 public:
-    /**  
+    /** 
      * @hidden
      * @type callback
      * @brief 获得麦克风音量
      * @param [in] volume
      *       音量大小
      */
-    virtual void OnRecordingAudioVolumeIndication(int volume) = 0;
+    virtual void onRecordingAudioVolumeIndication(int volume) = 0;
 
-    /**  
+    /** 
      * @hidden
      * @type callback
      * @brief 获得Loopback音量
      * @param [in] volume
      *       音量大小
      */
-    virtual void OnLoopbackAudioVolumeIndication(int volume) = 0;
+    virtual void onLoopbackAudioVolumeIndication(int volume) = 0;
 };
 
 /**
@@ -721,23 +723,23 @@ public:
  */
 class IAudioDeviceManagerEx : public IAudioDeviceManager {
 public:
-    /**  
+    /** 
      * @hidden
      * @region 音频设备管理
      * @brief 构造函数
      */
     IAudioDeviceManagerEx() = default;
 
-    /**  
+    /** 
      * @hidden
      * @type api
      * @region 音频设备管理
      * @brief 析构当前对象，释放内存
      * @notes 该结构不需要的时候应该调用本函数释放音频操作相关的资源
      */
-    virtual void Release() = 0;
+    virtual void release() = 0;
 
-    /**  
+    /** 
      * @hidden
      * @type api
      * @region 音频设备管理
@@ -747,17 +749,72 @@ public:
      *       + false：切换至听筒  <br>
      * @notes 本方法只在移动设备上有效
      */
-    virtual void SetEnableSpeakerphone(bool enable) = 0;
+    virtual void setEnableSpeakerphone(bool enable) = 0;
+
+    /** 
+     * @type api
+     * @region 音频设备管理
+     * @brief 启动音频采集设备测试。  <br>
+     *        该方法测试音频采集设备是否能正常工作。启动测试后，会收到 `onLocalAudioPropertiesReport` 回调上报的音量信息。
+     * @param [in] indication_interval `onLocalAudioPropertiesReport` 回调的时间间隔，单位为毫秒。建议设置到大于 200 毫秒。最小不得少于 10 毫秒。小于10 毫秒行为未定义。
+     * @return  方法调用结果  <br>
+     *        + 0：方法调用成功  <br>
+     *        + < 0：方法调用失败  <br>
+     * @notes  <br>
+     *       + 该方法必须在进房前调用，且不可与其它音频设备测试功能同时应用。  <br>
+     *       + 你需调用 stopAudioCaptureDeviceTest{@link #IAudioDeviceManager#stopAudioCaptureDeviceTest} 停止测试。  <br>
+     */
+    virtual int startAudioCaptureDeviceTest(int indication_interval) = 0;
+
+     /** 
+     * @type api
+     * @region 音频设备管理
+     * @brief 停止音频采集设备测试。
+     * @return  方法调用结果  <br>
+     *        + 0：方法调用成功  <br>
+     *        + < 0：方法调用失败  <br>
+     * @notes  调用 startAudioCaptureDeviceTest{@link #IAudioDeviceManager#startAudioCaptureDeviceTest} 后，需调用本方法停止测试。
+     */
+    virtual int stopAudioCaptureDeviceTest() = 0;
+
+    /** 
+     * @type api
+     * @region 音频设备管理
+     * @brief 开始音频设备回路测试。  <br>
+     *        该方法测试音频采集设备和音频播放设备是否能正常工作。一旦测试开始，音频采集设备会采集本地声音
+     *        并通过音频播放设备播放出来，同时用户 App 会收到 `onLocalAudioPropertiesReport`
+     *        回调上报的音量信息。
+     * @param [in] indication_interval `onLocalAudioPropertiesReport` 回调的时间间隔，单位为毫秒。建议设置到大于 200 毫秒。最小不得少于 10 毫秒。小于 10 毫秒行为未定义。
+     * @return  方法调用结果  <br>
+     *        + 0：方法调用成功  <br>
+     *        + < 0：方法调用失败  <br>
+     * @notes  <br>
+     *       + 该方法必须在进房前调用。且不可与其它音频设备测试功能同时应用。  <br>
+     *       + 你需调用 stopAudioDeviceLoopbackTest{@link #IAudioDeviceManager#stopAudioDeviceLoopbackTest} 停止测试。  <br>
+     *       + 该方法仅在本地进行音频设备测试，不涉及网络连接。  <br>
+     */
+    virtual int startAudioDeviceLoopbackTest(int indication_interval) = 0;
+
+    /** 
+     * @type api
+     * @region 音频设备管理
+     * @brief 停止音频设备回路测试。
+     * @return  方法调用结果  <br>
+     *        + 0：方法调用成功  <br>
+     *        + < 0：方法调用失败  <br>
+     * @notes 调用 startAudioDeviceLoopbackTest{@link #IAudioDeviceManager#startAudioDeviceLoopbackTest} 后，需调用本方法停止测试。
+     */
+    virtual int stopAudioDeviceLoopbackTest() = 0;
 
 protected:
-    /**  
+    /** 
      * @hidden
      * @brief 析构函数
      */
     virtual ~IAudioDeviceManagerEx() = default;
 };
 
-/**  
+/** 
  * @hidden
  * @type api
  * @brief 音频设备管理接口创建，该接口不依赖引擎，主要用于无引擎下的音频设备管理
@@ -765,7 +822,7 @@ protected:
  *       音频设备的事件回调
  * @return 音频设备管理接口
  */
-BYTERTC_API IAudioDeviceManagerEx* CreateAudioDeviceManager(IAudioDeviceEventHandler* handler);
+BYTERTC_API IAudioDeviceManagerEx* createAudioDeviceManager(IAudioDeviceEventHandler* handler);
 
 }  // namespace bytertc
 

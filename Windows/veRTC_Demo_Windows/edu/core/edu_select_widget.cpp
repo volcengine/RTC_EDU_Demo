@@ -7,6 +7,7 @@
 #include "side_history.h"
 #include "toast.h"
 #include "feature/data_mgr.h"
+#include "core/edu_rtc_engine_wrap.h"
 
 static constexpr char* kMainQss =
     "#stackedWidget {"
@@ -205,34 +206,34 @@ void EduSelectWidget::initConnects() {
         side_widget_->hide();
     });
     connect(ui.btn_back_4, &QPushButton::clicked, this, [=] {
-		ui.stackedWidget->setCurrentIndex(kUserRolePage);
-		side_widget_->hide();
-    });
+        ui.stackedWidget->setCurrentIndex(kUserRolePage);
+        side_widget_->hide();
+        });
     connect(ui.btn_back_5, &QPushButton::clicked, this, [=] {
-		ui.stackedWidget->setCurrentIndex(kUserRolePage);
-		side_widget_->hide();
-    });
+        ui.stackedWidget->setCurrentIndex(kUserRolePage);
+        side_widget_->hide();
+        });
 
-	connect(ui.btn_back, &QPushButton::clicked, this, [=] {
-		SceneSelectWidget::instance().getMainStackWidget()->removeWidget(this);
-		SceneSelectWidget::instance().getMainStackWidget()->setCurrentIndex(0);
-		VRD_FUNC_GET_COMPONET(vrd::INavigator)->go("scene_select");
-		side_widget_->hide();
-	});
+    connect(ui.btn_back, &QPushButton::clicked, this, [=] {
+        SceneSelectWidget::instance().getMainStackWidget()->removeWidget(this);
+        SceneSelectWidget::instance().getMainStackWidget()->setCurrentIndex(0);
+        VRD_FUNC_GET_COMPONET(vrd::INavigator)->go("scene_select");
+        side_widget_->hide();
+        });
 
     connect(ui.btn_teacher, &ImageButton::sigPressed, this, [=] { goTeacher(); });
     connect(ui.lbl_history, &LabelWarp::sigPressed, this, [=] {
-		side_widget_->updateData();
-		side_widget_->show();
-    });
+        side_widget_->updateData();
+        side_widget_->show();
+        });
     connect(ui.lbl_history_2, &LabelWarp::sigPressed, this, [=] {
-		side_widget_->updateData();
-		side_widget_->show();
-    });
+        side_widget_->updateData();
+        side_widget_->show();
+        });
     connect(ui.lbl_history_3, &LabelWarp::sigPressed, this, [=] {
-		side_widget_->updateData();
-		side_widget_->show();
-    });
+        side_widget_->updateData();
+        side_widget_->show();
+        });
 
     connect(side_widget_, &SideHistory::sigCloseButtonClicked, this,
             [=] { side_widget_->hide(); 
@@ -360,6 +361,12 @@ void EduSelectWidget::initConnects() {
     // show main page
     connect(&AppUIState::GetInstance(), &AppUIState::sigReturnMainPage, this,
 		[=] {
+            //reset devices
+            EduRTCEngineWrap::enableLocalAudio(false);
+            EduRTCEngineWrap::muteLocalAudio(true);
+            EduRTCEngineWrap::enableLocalVideo(false);
+            EduRTCEngineWrap::muteLocalVideo(true);
+
 			if (Edu::DataMgr::instance().is_teacher()) {
 				goTeacher();
 			}
@@ -370,6 +377,12 @@ void EduSelectWidget::initConnects() {
 
     connect(&AppUIState::GetInstance(), &AppUIState::sigReturnRoleSeletePage,
         this, [=] {
+            //reset devices
+            EduRTCEngineWrap::enableLocalAudio(false);
+            EduRTCEngineWrap::muteLocalAudio(true);
+            EduRTCEngineWrap::enableLocalVideo(false);
+            EduRTCEngineWrap::muteLocalVideo(true);
+
 			ui.stackedWidget->setCurrentIndex(kUserRolePage);
 			SceneSelectWidget::instance().show();
     });
@@ -451,10 +464,6 @@ void EduSelectWidget::goStudent() {
 void EduSelectWidget::resizeEvent(QResizeEvent* e) {
   mask_widget_->setGeometry(ui.stackedWidget->geometry());
   side_widget_->setGeometry(geometry().width() - 400, 0, 400, height());
-}
-
-void EduSelectWidget::closeEvent(QCloseEvent*) { 
-    QApplication::quit(); 
 }
 
 void EduSelectWidget::enableMask(bool enabled) {

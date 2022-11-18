@@ -69,7 +69,7 @@
 5. 填写 **LoginUrl**
 	
 
-当前你可以使用 **`http://rtc-test.bytedance.com/rtc_demo_special/login`** 作为测试服务器域名，仅提供跑通测试服务，无法保障正式需求。
+当前你可以使用 **`https://common.rtc.volcvideo.com/rtc_demo_special/login`** 作为测试服务器域名，仅提供跑通测试服务，无法保障正式需求。
 
 <img src="https://lf3-volc-editor.volccdn.com/obj/volcfe/sop-public/upload_5117e5bc13746e8ecf9a63598cc84d59" width="500px" >
 
@@ -83,7 +83,7 @@
 7. **填写 ACCOUNT\_ID 和 VOD\_SPACE**
 	
 
-使用在控制台获取的 **ACCOUNT\_ID 和 VOD\_SPACE** 填写到 `Pods/Development Pods/MeetingDemo/MeetingDemoConstants.h` 文件的对应位置。
+使用在控制台获取的 **ACCOUNT\_ID 和 VOD\_SPACE** 填写到 `Pods/Development Pods/EduDemo/EduDemoConstants.h` 文件的对应位置。
 
 <img src="https://lf6-volc-editor.volccdn.com/obj/volcfe/sop-public/upload_4a8caa7d72205ac1840c33a96d4e02ff" width="500px" >
 

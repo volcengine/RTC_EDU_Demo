@@ -2,9 +2,9 @@
 #include "core/Configer.h"
 #include "core/application.h"
 #include "core/session_base.h"
+#include "feature/rts_params/rtc_build_config.h"
 #include "core/util_uuid.h"
 #include "core/util_tip.h"
-#include "core/constants.h"
 #include "data_mgr.h"
 #include "scene_select_widget.h"
 #include "toast.h"
@@ -202,8 +202,9 @@ void UserNameLogin::verifyUserName(const QString& userName) {
 			_goMainWidget();
 		}
 		else {
-			qDebug() << "网络错误：" << reply.reasonPhrase() << "错误码：" << QString::number(reply.statusCode());
-			vrd::util::showFixedToastInfo("网络链接已断开，请检查设置");
+            const QString errMsg = "网络请求异常: " + reply.reasonPhrase() + "错误码：" + QString::number(reply.statusCode());
+            qDebug() << errMsg;
+            vrd::util::showFixedToastInfo(errMsg.toStdString());
 		}
 	});
 }
@@ -212,6 +213,6 @@ void UserNameLogin::_goMainWidget() {
 	hide();
 	for each (auto var in timers_) var->stop();
 	timers_.clear();
-	SceneSelectWidget::instance().updateData();
+	SceneSelectWidget::instance().updateUserName();
 	SceneSelectWidget::instance().show();
 }

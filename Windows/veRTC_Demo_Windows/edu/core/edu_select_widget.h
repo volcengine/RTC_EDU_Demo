@@ -18,7 +18,6 @@ class EduSelectWidget : public QWidget {
  public:
   explicit EduSelectWidget(QWidget* parent = nullptr);
   void resizeEvent(QResizeEvent* e);
-  void closeEvent(QCloseEvent*);
   void enableMask(bool enabled);
 
  private:

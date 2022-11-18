@@ -2,8 +2,8 @@
 //  EduClassViewController.h
 //  veRTC_Demo
 //
-//  Created by bytedance on 2021/7/28.
-//  Copyright © 2021 . All rights reserved.
+//  Created by on 2021/7/28.
+//  
 //
 
 #import <UIKit/UIKit.h>
@@ -11,7 +11,7 @@
 #import "EduClassTitleView.h"
 #import "EduClassScreenView.h"
 #import "EduClassLiveView.h"
-#import "EduEndCompoments.h"
+#import "EduEndComponent.h"
 #import "EduClassChatView.h"
 #import "EduClassStudentListView.h"
 #import "EduClassGroupSpeechView.h"

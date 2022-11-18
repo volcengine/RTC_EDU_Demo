@@ -5,6 +5,8 @@
 #include <QUrl>
 #include <algorithm>
 #include <cassert>
+#include <QFontMetrics>
+
 #define kBIN_PLACE_HOLDER "_placeholder"
 
 namespace util {
@@ -125,6 +127,15 @@ std::string GetDeviceID() {
   }
 
   return deviceId;
+}
+
+QString elideText(const QFont& font, const QString& str, int width) {
+    QFontMetrics mf(font);
+    QString res = str;
+    if (mf.horizontalAdvance(str) > width) {
+        res = mf.elidedText(str, Qt::TextElideMode::ElideRight, width);
+    }
+    return res;
 }
 
 }  // namespace util

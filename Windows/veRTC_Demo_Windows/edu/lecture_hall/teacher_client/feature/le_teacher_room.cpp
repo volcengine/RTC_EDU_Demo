@@ -9,8 +9,11 @@
 #include <QJsonArray>
 #include <QCloseEvent>
 #include <QTime>
+#include <QPoint>
 #include <mutex>
 
+#include "core/application.h"
+#include "core/navigator_interface.h"
 #include "OnLineItem.h"
 #include "QSpacerItem"
 #include "core/util.h"
@@ -268,6 +271,7 @@ void TeacherRoom::closeEvent(QCloseEvent* event) {
       "border-radius:8px;"
       "font-family:\"Microsoft YaHei\";");
   auto layout = new QVBoxLayout;
+  layout->setContentsMargins(0, 0, 0, 0);
   dialog->setLayout(layout);
   layout->addWidget(win, 0, Qt::AlignCenter);
   win->setFixedSize(400, 238);
@@ -309,7 +313,9 @@ void TeacherRoom::closeEvent(QCloseEvent* event) {
     m_is_closing = false;
     dialog->close();
   });
-  connect(btn_close, &QPushButton::clicked, [] { QApplication::exit(0);
+  connect(btn_close, &QPushButton::clicked, [] { 
+      VRD_FUNC_GET_COMPONET(vrd::INavigator)->quit();
+      QApplication::quit();
   });
   btn_cancel->setFixedSize(240, 36);
   btn_close->setText("仅关闭软件,不下课");
@@ -336,8 +342,9 @@ void TeacherRoom::closeEvent(QCloseEvent* event) {
       new QSpacerItem(1, 40, QSizePolicy::Expanding, QSizePolicy::Fixed));
   win->setLayout(vbox);
   dialog->setFixedSize(400, 238);
-  dialog->setWindowFlags(Qt::FramelessWindowHint);
-  dialog->move((this->width() - 400) / 2, (this->height() - 238) / 2);
+  dialog->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
+  dialog->setWindowModality(Qt::WindowModal);
+  dialog->move(mapToGlobal(QPoint((this->width() - 400) / 2, (this->height() - 238) / 2)));
   dialog->show();
   event->ignore();
 }
@@ -557,6 +564,7 @@ void TeacherRoom::InitSigSlots() {
       });
 
   QObject::connect(ui->btn_groupspeak, &QPushButton::clicked, this, [this] {
+    ui->btn_groupspeak->setEnabled(false);
     if (m_is_goupspeak_) {
       WSS_SESSION->closeGroupSpeech(
            vrd::DataMgr::instance().room_id(), vrd::DataMgr::instance().user_id(), [this](int code) {
@@ -564,6 +572,7 @@ void TeacherRoom::InitSigSlots() {
               m_is_goupspeak_ = false;
               ui->btn_groupspeak->setStyleSheet(kBtnActive);
               ui->btn_groupspeak->setText("集体发言");
+              ui->btn_groupspeak->setEnabled(true);
               ui->btn_interact->setFixedWidth(80);
               ui->btn_interact->setEnabled(true);
               ui->btn_interact->setStyleSheet(kBtnActive);
@@ -581,6 +590,7 @@ void TeacherRoom::InitSigSlots() {
               ui->btn_groupspeak->setText("结束集体发言");
               ui->btn_groupspeak->setFixedWidth(108);
               ui->btn_groupspeak->setStyleSheet(kBtnStartClass);
+              ui->btn_groupspeak->setEnabled(true);
               ui->btn_interact->setEnabled(false);
               ui->btn_interact->setStyleSheet(kBtnNegative);
 
@@ -590,6 +600,7 @@ void TeacherRoom::InitSigSlots() {
     }
   });
   QObject::connect(ui->btn_interact, &QPushButton::clicked, this, [this] {
+    ui->btn_interact->setEnabled(false);
     if (false == m_is_interacting) {
       WSS_SESSION->openVideoInteract(
            vrd::DataMgr::instance().room_id(), vrd::DataMgr::instance().user_id(), [this](int code) {
@@ -598,6 +609,7 @@ void TeacherRoom::InitSigSlots() {
             ui->btn_interact->setText("结束视频互动");
             ui->btn_interact->setFixedWidth(108);
             ui->btn_interact->setStyleSheet(kBtnStartClass);
+            ui->btn_interact->setEnabled(true);
             ui->btn_groupspeak->setEnabled(false);
             ui->btn_groupspeak->setStyleSheet(kBtnNegative);
 
@@ -615,6 +627,7 @@ void TeacherRoom::InitSigSlots() {
             ui->btn_interact->setText("视频互动");
             ui->btn_interact->setStyleSheet(kBtnActive);
             ui->btn_interact->setFixedWidth(80);
+            ui->btn_interact->setEnabled(true);
             ui->btn_groupspeak->setEnabled(true);
             ui->btn_groupspeak->setStyleSheet(kBtnActive);
 
@@ -665,6 +678,7 @@ void TeacherRoom::DropCall() {
       "border-radius:8px;"
       "font-family:\"Microsoft YaHei\";");
   auto layout = new QVBoxLayout;
+  layout->setContentsMargins(0, 0, 0, 0);
   dialog->setLayout(layout);
   layout->addWidget(win, 0, Qt::AlignCenter);
   win->setFixedSize(400, 238);
@@ -750,8 +764,9 @@ void TeacherRoom::DropCall() {
       new QSpacerItem(1, 40, QSizePolicy::Expanding, QSizePolicy::Fixed));
   win->setLayout(vbox);
   dialog->setFixedSize(400, 238);
-  dialog->move((this->width() - 400) / 2, (this->height() - 238) / 2);
-  dialog->setWindowFlags(Qt::FramelessWindowHint);
+  dialog->setWindowFlags(Qt::Tool | Qt::FramelessWindowHint);
+  dialog->setWindowModality(Qt::WindowModal);
+  dialog->move(mapToGlobal(QPoint((this->width() - 400) / 2, (this->height() - 238) / 2)));
   dialog->show();
 }
 
@@ -760,6 +775,7 @@ void TeacherRoom::RtcInit() {
   std::string token = DATAMGR_INS.current_room().token;
   std::string uid = vrd::DataMgr::instance().user_id();
   EduRTCEngineWrap::setUserRole(Role::kUserRoleTypeBroadcaster);
+  EduRTCEngineWrap::setDefaultVideoProfiles();
   EduRTCEngineWrap::joinRoom(token.c_str(), roomID.c_str(),
                                                uid.c_str());
   EduRTCEngineWrap::enableLocalAudio(true);
@@ -774,6 +790,7 @@ void TeacherRoom::RtcUnInit() {
 
 void TeacherRoom::TriggerStartClass() {
   qInfo() << "------> BeginClass" << Qt::endl;
+  ui->btn_class->setEnabled(false);
   WSS_SESSION->beginClass(
        vrd::DataMgr::instance().room_id(), vrd::DataMgr::instance().user_id(), [this](int code) {
         RES_CODE_CHECK(code);
@@ -786,6 +803,7 @@ void TeacherRoom::TriggerStartClass() {
         ui->btn_interact->setEnabled(true);
         ui->btn_class->setStyleSheet(kBtnStopClass);
         ui->btn_class->setText("");
+        ui->btn_class->setEnabled(true);
         ui->lab_record->setVisible(true);
         ui->lbl_record_icon->setVisible(true);
         ui->lab_time->setText("00:00");

@@ -4,24 +4,24 @@
 #include <QPainter>
 
 ImageButton::ImageButton(QWidget* parent) : QWidget(parent) {
-	text_ = new QLabel(this);
-	img_ = new QLabel(this);
+    text_ = new QLabel(this);
+    img_ = new QLabel(this);
 
-	auto layout = new QVBoxLayout(this);
-	layout->addItem(new QSpacerItem(40, 0, QSizePolicy::Expanding));
-	layout->addWidget(img_);
-	layout->addWidget(text_);
-	layout->addItem(new QSpacerItem(40, 0, QSizePolicy::Expanding));
-	this->setLayout(layout);
+    auto layout = new QVBoxLayout(this);
+    layout->addItem(new QSpacerItem(40, 0, QSizePolicy::Expanding));
+    layout->addWidget(img_);
+    layout->addWidget(text_);
+    layout->addItem(new QSpacerItem(40, 0, QSizePolicy::Expanding));
+    this->setLayout(layout);
 }
 
 
 void ImageButton::setImgQss(const QString& qss) { 
-	img_->setStyleSheet(qss); 
+	img_->setStyleSheet(qss);
 }
 
 void ImageButton::setImgText(const QString& str) { 
-	img_->setText(str); 
+	img_->setText(str);
 }
 
 void ImageButton::setTextQss(const QString& qss) { 
@@ -41,8 +41,10 @@ void ImageButton::paintEvent(QPaintEvent* e) {
 }
 
 void ImageButton::mousePressEvent(QMouseEvent* e) {
-	if (enabled_)
-		emit sigPressed();
+    if (enabled_) {
+        emit sigPressed();
+    }
+    QWidget::mousePressEvent(e);
 }
 
 void ImageButton::setEnabled(bool enabled)

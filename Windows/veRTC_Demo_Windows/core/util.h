@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <QFont>
 
 namespace util {
 	class SimpleMemoryPool {
@@ -37,6 +38,8 @@ namespace util {
 	QDateTime UTC2Local(const QString& utc_time);
 
 	std::string GetDeviceID();
+
+	QString elideText(const QFont& font, const QString& str, int width);
 	
 }
 

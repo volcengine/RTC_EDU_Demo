@@ -4,7 +4,6 @@
 #include "component_interface.h"
 #include "core/rtc_engine_wrap.h"
 #include <QObject>
-#include <QNetworkConfigurationManager>
 #include <functional>
 #include <map>
 #include <memory>
@@ -33,7 +32,6 @@ public:
 	void setServerParams(std::string signature, std::string url);
 
 	void changeUserName(CSTRING_REF_PARAM name, CallBackFunction&& callback);
-	void getRTSParams(CSTRING_REF_PARAM scenesName, CSTRING_REF_PARAM loginToken, CallBackFunction&& callback);
 	void _emitMessage(CSTRING_REF_PARAM name, const QJsonObject& content, 
 		std::function<void(const QJsonObject& response)>&& callback = nullptr, bool show_err = false);
 
@@ -56,9 +54,6 @@ private:
     void netBroken();
 	void _changeUserName(CSTRING_REF_PARAM name, CallBackFunction&& callback);
 
-	void _setAppInfo(CSTRING_REF_PARAM appId, CSTRING_REF_PARAM appKey,
-		CSTRING_REF_PARAM volcAK, CSTRING_REF_PARAM volcSK, CSTRING_REF_PARAM accountId, CSTRING_REF_PARAM vodSpace,
-		std::function<void(void)>&& callback);
 	void _loginRTS(const std::string& token, CallBackFunction&& callback);
 	void _logoutRTS();
 
@@ -66,7 +61,7 @@ private:
 	CallBackFunction engine_login_callback_{nullptr};
 	std::function<void(void)> connect_rts_callback_{nullptr};
 	CallbackHelper cb_helper_;
-	QTimer* net_live_timer_{nullptr};
+	QTimer* net_live_timer_{ nullptr };
 	
     std::string user_id_;
 	std::string token_;

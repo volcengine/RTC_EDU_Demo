@@ -2,7 +2,7 @@
 //  LectureHallStudentRoomViewController+Socket.h
 //  veRTC_Demo
 //
-//  Created by bytedance on 2021/7/30.
+//  Created by on 2021/7/30.
 //
 
 #import "EduLectureHallViewController.h"

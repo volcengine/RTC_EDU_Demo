@@ -6,7 +6,9 @@
 #include "core/session_base.h"
 #include "logger.h"
 
+#ifdef USERNAME_LOGIN
 #include "username_login/username_login_widget.h"
+#endif
 
 void regComponents();
 
@@ -17,8 +19,10 @@ int main(int argc, char* argv[]) {
     QApplication::setQuitOnLastWindowClosed(false);
     regComponents();
 
+ #ifdef USERNAME_LOGIN
     UserNameLogin w;
     w.checkSaveData();
+ #endif // USERNAME_LOGIN
 
     qInstallMessageHandler(Common::log::outputMessage);
     qInfo("-----------app start");

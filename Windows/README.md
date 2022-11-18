@@ -8,25 +8,18 @@
 ## 前置条件
 
 - Windows 7+，建议 Windows 10 系统
-	
 
 - Visual Studio 2017+
-	
 
 - Qt 5.9+
-	
 
 - Visual Studio 版本对应 Qt 运行环境（如 Visual Studio 2017 对应 msvc 2017）
-	
 
 - cmake 3.14+
-	
 
 - 使用 C++ 作为开发语言，支持 C++ 11 版本
-	
 
 - 有效的 [火山引擎开发者账号](https://console.volcengine.com/auth/login)
-	
 
 ### 操作步骤
 
@@ -44,13 +37,13 @@
 
 <img src="https://lf3-volc-editor.volccdn.com/obj/volcfe/sop-public/upload_97aa5836b4b97dff73b03c867df8cbb9" width="500px" >
 
-### 步骤 4：获取 VodSpace
+### **步骤 4：获取 VodSpace**
 
 在火山引擎控制台-> 视频管理 -> [空间管理](https://console.volcengine.com/vod/overview/)页面获取 VodSpace。若不存在空间，请新建空间。
 
-<img src="https://lf6-volc-editor.volccdn.com/obj/volcfe/sop-public/upload_4f96eadc89fa828488fbe63b496cdc24" width="500px" >
+<img src="https://lf3-volc-editor.volccdn.com/obj/volcfe/sop-public/upload_5019d8b56fc34a71a81a4334e064093d" width="500px" >
 
-### 步骤 5：环境变量配置
+### **步骤 5：环境变量配置**
 
 配置 QT 环境变量 `Qt32Path`、`Qt64Path` 。
 
@@ -58,7 +51,7 @@
 
 <img src="https://lf3-volc-editor.volccdn.com/obj/volcfe/sop-public/upload_da3c6ab3221cd2bbdab45dcd05b4714b" width="500px" >
 
-### 步骤 6：配置 Demo 工程文件
+### **步骤 6：配置 Demo 工程文件**
 
 cmd 窗口下进入安装包代码下载的目录，执行 `cmake -G "Visual Studio 16" -Bbuild_win -A "Win32"`（32 位）或`cmake -G "Visual Studio 16" -Bbuild_win -A "x64"`（64位）命令，在 `build_win` 目录下生成工程。
 
@@ -66,42 +59,37 @@ cmd 窗口下进入安装包代码下载的目录，执行 `cmake -G "Visual Stu
 
 <img src="https://lf3-volc-editor.volccdn.com/obj/volcfe/sop-public/upload_46623a1915453d11626ebe5ce4a127b7" width="500px" >
 
-### 步骤 7：填写 L**oginUrl**
+### **步骤 7：填写 LoginUrl**
 
-进入 `veRTC_Demo_Windows``/core/constants.h` 文件，填写 **LoginUrl**。
+进入 `veRTC_Demo_Windows/feature/rts_params/rtc_build_config.h` 文件，填写 **URL**字段。
 
-当前你可以使用 **`http://rtc-test.bytedance.com/rtc_demo_special/login`** 作为测试服务器域名，仅提供跑通测试服务，无法保障正式需求。
+当前你可以使用 **`https://common.rtc.volcvideo.com/rtc_demo_special/login`** 作为测试服务器域名，仅提供跑通测试服务，无法保障正式需求。
 
-<img src="https://lf6-volc-editor.volccdn.com/obj/volcfe/sop-public/upload_507f16f08f1a24698c28e4f29e037c6e" width="500px" >
+<img src="https://lf3-static.bytednsdoc.com/obj/eden-cn/ubrbfuhw/20220919180249image.png" width="900px" >
 
-### **步骤 8：填写 APPID、APPKey、AccessKeyID、SecretAccessKey、ACCOUNT\_ID 和 VOD\_SPACE**
+### **步骤 8：填写 APPID、APPKey、AccessKeyID、SecretAccessKey、AccountId 和 VodSpace**
 
-进入`veRTC_Demo_Windows/core/constants.h` 文件，填写 **APPID、APPKey、AccessKeyID、SecretAccessKey、ACCOUNT\_ID 和 VOD\_SPACE**
+进入`veRTC_Demo_Windows/feature/rts_params/rtc_build_config.h` 文件，填写 **APPID、APPKey、AccessKeyID、SecretAccessKey、AccountId 和 VodSpace**
 
-<img src="https://lf6-volc-editor.volccdn.com/obj/volcfe/sop-public/upload_f363b9771f050f2e26ac4c17727f9ddc" width="500px" >
+<img src="https://lf3-static.bytednsdoc.com/obj/eden-cn/ubrbfuhw/20220919181220image.png" width="900px" >
 
-<img src="https://lf6-volc-editor.volccdn.com/obj/volcfe/sop-public/upload_7adb082802706d1781679ef3b3d7cd12" width="500px" >
+<img src="https://lf3-static.bytednsdoc.com/obj/eden-cn/ubrbfuhw/20220919181441image.png" width="900px" >
 
-### 步骤 9：编译运行
+### **步骤 9：编译运行**
 
 1. 进入 `veRTC_Demo_Windows/build_win` 目录，使用 Visual Studio 打开工程文件 `VeRTCDemo.sln`。
-	
 
 <img src="https://lf3-volc-editor.volccdn.com/obj/volcfe/sop-public/upload_9951d287c9eb07d0666ceb5e5b133708" width="500px" >
 
 2. 将VeRTCDemo设置为启动项。
-	
 
 <img src="https://lf6-volc-editor.volccdn.com/obj/volcfe/sop-public/upload_b76ec6c9c051af48dc6517949f1c9330" width="500px" >
 
 3. 点击Visual Studio上方菜单栏【Debug】->【Start Debuging】开始编译并运行项目。
-	
-	<img src="https://lf3-volc-editor.volccdn.com/obj/volcfe/sop-public/upload_2fd4f59f4aa7f1251b31fcd8b2d93214" width="500px" >
-	
 
-<br>
+<img src="https://lf3-static.bytednsdoc.com/obj/eden-cn/ubrbfuhw/20220919181742image.png" width="800px" >
 
 运行开始界面如下：
 
-<img src="https://lf6-volc-editor.volccdn.com/obj/volcfe/sop-public/upload_0f9fcad1494e9b8b7c07f12f657576a3" width="400px" >
+<img src="https://lf6-volc-editor.volccdn.com/obj/volcfe/sop-public/upload_0f9fcad1494e9b8b7c07f12f657576a3" width="700px" >
 <br>

@@ -15,48 +15,64 @@
 #include "lecture_hall/teacher_client/common/lecture_teacher_session.h"
 #include "edu/core/edu_session.h"
 
-#include <QDebug>
-
-
 namespace vrd {
 void EduModule::addThis() {
-  Application::getSingleton()
-      .getComponent(VRD_UTIL_GET_COMPONENT_PARAM(vrd::INavigator))
-      ->add("edu", std::shared_ptr<IModule>((IModule*)(new EduModule())));
+    Application::getSingleton()
+        .getComponent(VRD_UTIL_GET_COMPONENT_PARAM(vrd::INavigator))
+        ->add("edu", std::shared_ptr<IModule>((IModule*)(new EduModule())));
 }
 
 EduModule::EduModule() {
-  vrd::EduSession::registerThis();
-  vrd::LectureTeacherSession::registerThis();
-  vrd::LectureTeacherDataMgr::registerThis();
-  vrd::LectureStudentSession::registerThis();
-  vrd::LectureStudentDataMgr::registerThis();
-  vrd::BreakoutTeacherSession::registerThis();
-  vrd::BreakoutTeacherDataMgr::registerThis();
-  vrd::BreakoutStudentSession::registerThis();
-  vrd::BreakoutStudentDataMgr::registerThis();
+    vrd::EduSession::registerThis();
+    vrd::LectureTeacherSession::registerThis();
+    vrd::LectureTeacherDataMgr::registerThis();
+    vrd::LectureStudentSession::registerThis();
+    vrd::LectureStudentDataMgr::registerThis();
+    vrd::BreakoutTeacherSession::registerThis();
+    vrd::BreakoutTeacherDataMgr::registerThis();
+    vrd::BreakoutStudentSession::registerThis();
+    vrd::BreakoutStudentDataMgr::registerThis();
 }
 
 EduModule::~EduModule() {}
 
 void EduModule::open() { 
-	auto session = vrd::Application::getSingleton().getComponent(
-		VRD_UTIL_GET_COMPONENT_PARAM(vrd::EduSession));
-	session->initSceneConfig([this]() {
-		EduRTCEngineWrap::init();
-		edu_select_widget_ = new EduSelectWidget();
-	});
+    auto session = vrd::Application::getSingleton().getComponent(
+        VRD_UTIL_GET_COMPONENT_PARAM(vrd::EduSession));
+    if (session) {
+        session->initSceneConfig([this]() {
+            EduRTCEngineWrap::init();
+            edu_select_widget_ = new EduSelectWidget();
+        });
+    }
 }
 
 void EduModule::close() {
-	EduRTCEngineWrap::unInit();
-	edu_select_widget_->deleteLater();
-	auto session = vrd::Application::getSingleton().getComponent(
-		VRD_UTIL_GET_COMPONENT_PARAM(vrd::EduSession));
-	session->exitScene();
+    EduRTCEngineWrap::unInit();
+    if (edu_select_widget_) {
+        edu_select_widget_->deleteLater();
+        edu_select_widget_ = nullptr;
+    }
+
+    auto session = vrd::Application::getSingleton().getComponent(
+        VRD_UTIL_GET_COMPONENT_PARAM(vrd::EduSession));
+    if (session) {
+        session->exitScene();
+    }
 }
 
 void EduModule::quit(bool) { 
     EduRTCEngineWrap::unInit(); 
+    if (edu_select_widget_) {
+        edu_select_widget_->deleteLater();
+        edu_select_widget_ = nullptr;
+    }
+
+    auto session = vrd::Application::getSingleton().getComponent(
+        VRD_UTIL_GET_COMPONENT_PARAM(vrd::EduSession));
+    if (session) {
+        session->exitScene();
+    }
 }
+
 }  // namespace vrd

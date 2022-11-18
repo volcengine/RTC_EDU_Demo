@@ -2,18 +2,18 @@
 //  EduRoomCell.m
 //  veRTC_Demo
 //
-//  Created by bytedance on 2021/5/18.
-//  Copyright © 2021 . All rights reserved.
+//  Created by on 2021/5/18.
+//  
 //
 
 #import "EduActiveRoomCell.h"
-#import "EduAvatarCompoments.h"
+#import "EduAvatarComponent.h"
 
 @interface EduActiveRoomCell ()
 
 @property (nonatomic, strong) UIView  *bgView;
 @property (nonatomic, strong) UILabel *roomNameLabel;
-@property (nonatomic, strong) EduAvatarCompoments *avatarView;
+@property (nonatomic, strong) EduAvatarComponent *avatarView;
 @property (nonatomic, strong) UILabel *nameLabel;
 @property (nonatomic, strong) UIImageView *activeImageView;
 @property (nonatomic, strong) UILabel *roomIDLabel;
@@ -27,7 +27,7 @@
     if (self) {
         self.backgroundColor = [UIColor clearColor];
         self.contentView.backgroundColor = [UIColor clearColor];
-        [self createUIComponents];
+        [self createUIComponent];
     }
     return self;
 }
@@ -43,7 +43,7 @@
 
 #pragma mark - Private Action
 
-- (void)createUIComponents {
+- (void)createUIComponent {
     [self.contentView addSubview:self.bgView];
     [self.bgView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(self.contentView).offset(20);
@@ -97,7 +97,6 @@
     if (!text || !label) {
         return;
     }
-    text = [text stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
     paragraphStyle.lineSpacing = lineSpace;
@@ -121,9 +120,9 @@
     return _roomNameLabel;
 }
 
-- (EduAvatarCompoments *)avatarView {
+- (EduAvatarComponent *)avatarView {
     if (!_avatarView) {
-        _avatarView = [[EduAvatarCompoments alloc] init];
+        _avatarView = [[EduAvatarComponent alloc] init];
         _avatarView.layer.cornerRadius = 20;
         _avatarView.layer.masksToBounds = YES;
         _avatarView.fontSize = 20;

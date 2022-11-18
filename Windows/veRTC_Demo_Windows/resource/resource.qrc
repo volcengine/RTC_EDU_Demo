@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/img">
 		<file alias="demo_logo">image/demo_logo.png</file>
+		<file alias="full_demo_logo">image/full_demo_logo.png</file>
 		<file alias="real_time">image/reltime_title.png</file>
 		<file alias="setting">image/setting.png</file>
 		<file alias="setting_selected">image/setting_selected.png</file>

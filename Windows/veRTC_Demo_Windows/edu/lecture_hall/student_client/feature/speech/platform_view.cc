@@ -124,8 +124,11 @@ namespace vrd
 				video->clean();
 
 				lst_speaker_->removeItemWidget(list_ltem);
-				delete list_ltem, list_ltem = nullptr;
-				--video_count, --i;
+				list_ltem->setHidden(true);
+				delete list_ltem;
+				list_ltem = nullptr;
+				--video_count;
+				--i;
 			}
 			else
 			{

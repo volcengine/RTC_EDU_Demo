@@ -2,8 +2,8 @@
 //  EduHistoryTableView.m
 //  quickstart
 //
-//  Created by bytedance on 2021/3/23.
-//  Copyright © 2021 . All rights reserved.
+//  Created by on 2021/3/23.
+//  
 //
 
 #import "EduRecordTableView.h"
@@ -46,11 +46,13 @@
 
     EduRecordModel *model = self.dataLists[indexPath.row];
     if (model.videoURL && [model.videoURL isKindOfClass:[NSString class]] && model.videoURL.length > 0) {
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:model.videoURL]
-                                           options:@{}
-                                 completionHandler:^(BOOL success) {
-
-        }];
+        if (@available(iOS 10.0, *)) {
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString:model.videoURL]
+                                               options:@{}
+                                     completionHandler:^(BOOL success) {
+                
+            }];
+        }
     }
 }
 

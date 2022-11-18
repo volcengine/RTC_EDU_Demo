@@ -2,17 +2,17 @@
 //  EduRTMStudentManager.m
 //  EduDemo
 //
-//  Created by ByteDance on 2022/6/7.
+//  Created by on 2022/6/7.
 //
 
 #import "EduRTMStudentManager.h"
-
+#import "JoinRTSParams.h"
 
 @implementation EduRTMStudentManager
 
 + (void)getActiveClassWithBlock:(void (^)(NSArray<EduRoomModel *> *list, RTMACKModel *model))block {
-    NSDictionary *dic = [PublicParameterCompoments addTokenToParams:nil];
-    [[EduRTCManager shareRtc] emitWithAck:@"eduGetActiveClass" with:dic block:^(RTMACKModel * _Nonnull ackModel) {
+    NSDictionary *dic = [JoinRTSParams addTokenToParams:nil];
+    [[EduBreakoutRTCManager shareRtc] emitWithAck:@"eduGetActiveClass" with:dic block:^(RTMACKModel * _Nonnull ackModel) {
         NSMutableArray *modelLists = [[NSMutableArray alloc] init];
         if (ackModel.result && [ackModel.response isKindOfClass:[NSArray class]]) {
             NSArray *list = (NSArray *)ackModel.response;
@@ -29,10 +29,10 @@
 
 + (void)joinClass:(NSString *)roomID roomType:(BOOL)lecture
             block:(void (^)(EduClassModel *classModel))block {
-    NSDictionary *dic = @{@"room_id" : roomID,
-                          @"user_name" : [LocalUserComponents userModel].name};
-    dic = [PublicParameterCompoments addTokenToParams:dic];
-    [[EduRTCManager shareRtc] emitWithAck:@"eduJoinClass" with:dic block:^(RTMACKModel * _Nonnull ackModel) {
+    NSDictionary *dic = @{@"room_id" : roomID ?: @"",
+                          @"user_name" : [LocalUserComponent userModel].name};
+    dic = [JoinRTSParams addTokenToParams:dic];
+    [[EduBreakoutRTCManager shareRtc] emitWithAck:@"eduJoinClass" with:dic block:^(RTMACKModel * _Nonnull ackModel) {
         
         EduClassModel *classModel = [[EduClassModel alloc] init];
         if (ackModel.result && [ackModel.response isKindOfClass:[NSDictionary class]]) {
@@ -41,7 +41,7 @@
             }else{
                 classModel = [[EduBreakoutClassModel alloc] initWithDic:ackModel.response];
             }
-            [PublicParameterCompoments share].roomId = classModel.roomModel.roomId;
+            [PublicParameterComponent share].roomId = classModel.roomModel.roomId;
         }
         classModel.ackModel = ackModel;
         if (block) {
@@ -53,9 +53,9 @@
 }
 
 + (void)leaveClass:(NSString *)roomID block:(void (^)(RTMACKModel *model))block {
-    NSDictionary *dic = @{@"room_id" : roomID};
-    dic = [PublicParameterCompoments addTokenToParams:dic];
-    [[EduRTCManager shareRtc] emitWithAck:@"eduLeaveClass" with:dic block:^(RTMACKModel * _Nonnull ackModel) {
+    NSDictionary *dic = @{@"room_id" : roomID ?: @""};
+    dic = [JoinRTSParams addTokenToParams:dic];
+    [[EduBreakoutRTCManager shareRtc] emitWithAck:@"eduLeaveClass" with:dic block:^(RTMACKModel * _Nonnull ackModel) {
         if (ackModel.result && [ackModel.response isKindOfClass:[NSDictionary class]]) {
             if (block) {
                 block(ackModel);
@@ -66,9 +66,9 @@
 }
 
 + (void)handsUp:(NSString *)roomID block:(void (^)(RTMACKModel *model))block {
-    NSDictionary *dic = @{@"room_id" : roomID};
-    dic = [PublicParameterCompoments addTokenToParams:dic];
-    [[EduRTCManager shareRtc] emitWithAck:@"eduHandsUp" with:dic block:^(RTMACKModel * _Nonnull ackModel) {
+    NSDictionary *dic = @{@"room_id" : roomID ?: @""};
+    dic = [JoinRTSParams addTokenToParams:dic];
+    [[EduBreakoutRTCManager shareRtc] emitWithAck:@"eduHandsUp" with:dic block:^(RTMACKModel * _Nonnull ackModel) {
         if (ackModel.result && [ackModel.response isKindOfClass:[NSDictionary class]]) {
             if (block) {
                 block(ackModel);
@@ -79,9 +79,9 @@
 }
 
 + (void)cancelHandsUp:(NSString *)roomID block:(void (^)(RTMACKModel *model))block {
-    NSDictionary *dic = @{@"room_id" : roomID};
-    dic = [PublicParameterCompoments addTokenToParams:dic];
-    [[EduRTCManager shareRtc] emitWithAck:@"eduCancelHandsUp" with:dic block:^(RTMACKModel * _Nonnull ackModel) {
+    NSDictionary *dic = @{@"room_id" : roomID ?: @""};
+    dic = [JoinRTSParams addTokenToParams:dic];
+    [[EduBreakoutRTCManager shareRtc] emitWithAck:@"eduCancelHandsUp" with:dic block:^(RTMACKModel * _Nonnull ackModel) {
         if (ackModel.result && [ackModel.response isKindOfClass:[NSDictionary class]]) {
             if (block) {
                 block(ackModel);

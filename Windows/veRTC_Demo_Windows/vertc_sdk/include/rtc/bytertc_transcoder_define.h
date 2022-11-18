@@ -20,13 +20,14 @@
 #define TRANSCODE_ERR_AUTHENTICATION_BY_CDN 1098
 #define TRANSCODE_ERR_TIMEOUT_BY_SIGNALING 1099
 #define TRANSCODE_ERR_PUSH_PUBLIC_STREAM_FAIL 1100
+#define TRANSCODE_ERR_MIX_IMAGE_FAIL 1101
+#define TRANSCODE_ERR_UNKNOW_ERROR_BY_SERVER 1102
 #define TRANSCODE_ERR_MAX 1199
 
 namespace bytertc {
-
 /** 
  * @type keytype
- * @brief 合流事件类型
+ * @brief 转推直播事件
  */
 enum StreamMixingEvent {
     /**
@@ -34,62 +35,88 @@ enum StreamMixingEvent {
      */
     kStreamMixingBase = 0,
     /** 
-     * @brief 合流功能触发
+     * @brief 请求发起转推直播任务
      */
     kStreamMixingStart = 1,
     /** 
-     * @brief 合流成功
+     * @brief 发起转推直播任务成功
      */
     kStreamMixingStartSuccess = 2,
     /** 
-     * @brief 合流启动失败
+     * @brief 发起转推直播任务失败
      */
     kStreamMixingStartFailed = 3,
     /** 
-     * @brief 更新合流
+     * @brief 请求更新转推直播任务配置
      */
     kStreamMixingUpdate = 4,
     /** 
-     * @brief 合流结束
+     * @brief 成功更新转推直播任务配置
      */
-    kStreamMixingStop = 5,
+    kStreamMixingUpdateSuccess = 5,
     /** 
-     * @brief 合流类型发生改变
+     * @brief 更新转推直播任务配置失败
      */
-    kStreamMixingChangeMixType = 6,
+    kStreamMixingUpdateFailed = 6,
     /** 
-     * @brief 收到客户端合流音频首帧
+     * @brief 请求结束转推直播任务
      */
-    kStreamMixingFirstAudioFrameByClientMix = 7,
+    kStreamMixingStop = 7,
+    /** 
+     * @brief 结束转推直播任务成功
+     */
+    kStreamMixingStopSuccess = 8,
+    /** 
+     * @brief 结束转推直播任务失败
+     */
+    kStreamMixingStopFailed = 9,
+    /** 
+     * @brief 更新转推直播任务配置的请求超时
+     */
+    kStreamMixingChangeMixType = 10,
+    /** 
+     * @brief 得到客户端合流音频首帧
+     */
+    kStreamMixingFirstAudioFrameByClientMix = 11,
     /** 
      * @brief 收到客户端合流视频首帧
      */
-    kStreamMixingFirstVideoFrameByClientMix = 8,
+    kStreamMixingFirstVideoFrameByClientMix = 12,
     /** 
-     * @brief 更新合流超时
+     * @brief 更新转推直播任务配置超时
      */
-    kStreamMixingUpdateTimeout = 9,
+    kStreamMixingUpdateTimeout = 13,
     /** 
-     * @brief 开始合流超时
+     * @brief 发起转推直播任务配置超时
      */
-    kStreamMixingStartTimeout = 10,
+    kStreamMixingStartTimeout = 14,
     /** 
      * @brief 合流布局参数错误
      */
-    kStreamMixingRequestParamError = 11,
+    kStreamMixingRequestParamError = 15,
     /** 
-     * @hidden
-     * @brief 合流加图片
-     */
-    kStreamMixingMixImageEvent = 12,
-    /**
-     * @hidden
-     */
-    kStreamMixingMax = 15,
+    * @brief 合流加图片
+    */
+    kStreamMixingMixImageEvent = 16,
+};
+
+
+/** 
+ * @hidden
+ * @brief 343 需求，缺注释，需补齐
+ */
+enum SingleStreamPushEvent {
+    kSingleStreamPushBase = 0,
+    kSingleStreamPushStart = 1,
+    kSingleStreamPushSuccess = 2,
+    kSingleStreamPushFailed = 3,
+    kSingleStreamPushStop = 4,
+    kSingleStreamPushTimeout = 5,
+    kSingleStreamPushParamError = 6,
 };
 
 /** 
- * @type keytype
+ * @type errorcode
  * @brief 转推直播错误码
  */
 enum StreamMixingErrorCode {
@@ -98,11 +125,11 @@ enum StreamMixingErrorCode {
      */
     kStreamMixingErrorOK = 0,
     /** 
-     * 未定义的合流错误
+     * @brief 未定义的合流错误
      */
     kStreamMixingErrorBase= 1090,
     /** 
-     * @brief 客户端 SDK 检测到无效推流参数，请检查合流参数合法性。
+     * @brief 客户端 SDK 检测到无效推流参数。
      */
     kStreamMixingErrorInvalidParam = 1091,
     /** 
@@ -118,11 +145,11 @@ enum StreamMixingErrorCode {
      */
     kStreamMixingErrorTimeout = 1094,
     /** 
-     *@brief 服务端检测到错误的推流参数
+     * @brief 服务端检测到错误的推流参数
      */
     kStreamMixingErrorInvalidParamByServer = 1095,
     /** 
-     * @brief 服务端检测到订阅流超时
+     * @brief 对流的订阅超时
      */
     kStreamMixingErrorSubTimeoutByServer = 1096,
     /** 
@@ -138,10 +165,13 @@ enum StreamMixingErrorCode {
      */
     kStreamMixingErrorTimeoutBySignaling = 1099,
     /** 
-     * @hidden
      * @brief 图片合流失败。
      */
     kStreamMixingErrorMixImageFail = 1100,
+    /** 
+     * @brief 服务端未知错误。
+     */
+    kStreamMixingErrorUnKnownByServer = 1101,
     /**
      * @hidden
      */
@@ -242,17 +272,14 @@ enum TranscoderRenderMode {
 };
 
 /** 
- * @hidden
  * @type keytype
  * @brief 合流布局区域类型
  */
 enum TranscoderLayoutRegionType {
-    
     /** 
      * @brief 合流布局区域类型为视频。
      */
     kLayoutRegionTypeVideoStream = 0,
-    
     /** 
      * @brief 合流布局区域类型为图片。
      */
@@ -260,7 +287,6 @@ enum TranscoderLayoutRegionType {
 };
 
 /** 
- * @hidden
  * @type keytype
  * @brief 图片合流相关参数
  */
@@ -324,8 +350,8 @@ typedef struct IDataFrame {
 
 /** 
  * @type keytype
- * @brief 单个视频流在合流中的布局信息。  <br>
- *        开启转推直播功能后，在多路视频流合流时，你可以设置其中一路视频流在合流中的预设布局信息。
+ * @brief 单个图片或视频流在合流中的布局信息。  <br>
+ *        开启转推直播功能后，在多路图片或视频流合流时，你可以设置其中一路流在合流中的预设布局信息。
  */
 typedef struct TranscoderLayoutRegion {
     /** 
@@ -333,8 +359,8 @@ typedef struct TranscoderLayoutRegion {
      */
     const char* region_id;
    /** 
-     * @brief 媒体流所在房间的房间 ID。<br>
-     *        如果此媒体流是通过 StartForwardStreamToRooms{@link #IRtcRoom#StartForwardStreamToRooms} 转发到你所在房间的媒体流时，你应将房间 ID 设置为你所在的房间 ID。
+     * @brief 图片或视频流所在房间的房间 ID。必填。<br>
+     *        如果此图片或视频流是通过 startForwardStreamToRooms{@link #IRTCRoom#startForwardStreamToRooms} 转发到你所在房间的媒体流时，你应将房间 ID 设置为你所在的房间 ID。
      */
     const char* room_id;
     /** 
@@ -382,24 +408,20 @@ typedef struct TranscoderLayoutRegion {
      */
     TranscoderRenderMode render_mode;
     /** 
-     * @hidden
      * @type keytype
      * @brief 合流布局区域类型，参看 TranscoderLayoutRegionType{@link #TranscoderLayoutRegionType}。
      */
     TranscoderLayoutRegionType type;
     /** 
-     * @hidden
      * @type keytype
      * @brief 图片合流布局区域类型对应的数据。类型为图片时传入图片 RGBA 数据，当类型为视频流时传空。
      */
     uint8_t* data;
     /** 
-     * @hidden
      * @type keytype
      * @brief 合流布局区域数据的对应参数。当类型为视频流时传空，类型为图片时传入对应图片的参数，参看 TranscoderLayoutRegionDataParam{@link #TranscoderLayoutRegionDataParam}。
      */
     TranscoderLayoutRegionDataParam data_param;
-    
 } TranscoderLayoutRegion;
 
 /** 
@@ -427,7 +449,7 @@ typedef struct TranscoderAudioParam {
 
 /** 
  * @type keytype
- * @brief 合流视频参数
+ * @brief 合流视频转码参数
  */
 typedef struct TranscoderVideoParam {
     /** 
@@ -477,42 +499,42 @@ public:
      * @brief 获取合流类型
      * @return 合流类型，参看 StreamMixingType{@link #StreamMixingType}
      */
-    virtual StreamMixingType ExpectedMixingType() = 0;
+    virtual StreamMixingType expectedMixingType() = 0;
     /** 
      * @type api
      * @region 转码
      * @brief 获取合流用户 ID
      * @return 合流用户 ID
      */
-    virtual const char* UserID() = 0;
+    virtual const char* userID() = 0;
     /** 
      * @type api
      * @region 转推直播
      * @brief 获取推流地址
      * @return 推流地址
      */
-    virtual const char* Uri() = 0;
+    virtual const char* uri() = 0;
     /** 
      * @type api
      * @region 转推直播
      * @brief 获取 SEI 信息
      * @return SEI 信息
      */
-    virtual const char* AppData() = 0;
+    virtual const char* appData() = 0;
     /** 
      * @type api
      * @region 转推直播
      * @brief 获取合流音频参数
      * @return 合流音频参数内容，参看 TranscoderAudioParam{@link #TranscoderAudioParam}
      */
-    virtual TranscoderAudioParam AudioParam() = 0;
+    virtual TranscoderAudioParam audioParam() = 0;
     /** 
      * @type api
      * @region 转推直播
-     * @brief 获取合流视频参数
-     * @return 合流视频参数内容，参看 TranscoderVideoParam{@link #TranscoderVideoParam}
+     * @brief 获取合流视频转码参数
+     * @return 合流视频转码参数内容，参看 TranscoderVideoParam{@link #TranscoderVideoParam}
      */
-    virtual TranscoderVideoParam VideoParam() = 0;
+    virtual TranscoderVideoParam videoParam() = 0;
     /** 
      * @type api
      * @region 转推直播
@@ -520,8 +542,8 @@ public:
      * @param [in] index 视窗对应下标
      * @return 合流视窗布局信息，参看 TranscoderLayoutRegion{@link #TranscoderLayoutRegion}
      */
-    virtual TranscoderLayoutRegion LayoutRegionByIndex(int32_t index) = 0;
-    
+    virtual TranscoderLayoutRegion layoutRegionByIndex(int32_t index) = 0;
+
     /** 
      * @hidden
      * @type api
@@ -529,7 +551,7 @@ public:
      * @brief 获取动态扩展自定义参数
      * @return 动态扩展自定义参数
      */
-    virtual const char* AdvancedConfig() = 0;
+    virtual const char* advancedConfig() = 0;
     /** 
      * @hidden
      * @type api
@@ -537,42 +559,42 @@ public:
      * @brief  获取业务透传鉴权信息
      * @return 业务透传鉴权信息
      */
-    virtual const char* AuthInfo() = 0;
+    virtual const char* authInfo() = 0;
     /** 
      * @type api
      * @region 转推直播
      * @brief 设置合流类型
      * @param [in] expected_mix_type 合流类型，参看 StreamMixingType{@link #StreamMixingType}
      */
-    virtual void SetExpectedMixingType(StreamMixingType expected_mix_type) = 0;
+    virtual void setExpectedMixingType(StreamMixingType expected_mix_type) = 0;
     /** 
      * @type api
      * @region 转推直播
      * @brief 设置合流用户 ID
      * @param [in] user_id 发起合流的用户的 ID
      */
-    virtual void SetUserID(const char* user_id) = 0;
+    virtual void setUserID(const char* user_id) = 0;
     /** 
      * @type api
      * @region 转推直播
      * @brief 设置推流地址
      * @param [in] uri 推流地址
      */
-    virtual void SetUri(const char* uri) = 0;
+    virtual void setUri(const char* uri) = 0;
     /** 
      * @type api
      * @region 转推直播
      * @brief 设置音频参数
      * @param [in] TranscoderAudioParam 音频参数，参看 TranscoderAudioParam{@link #TranscoderAudioParam}
      */
-    virtual void SetAudioParam(const TranscoderAudioParam&) = 0;
+    virtual void setAudioParam(const TranscoderAudioParam&) = 0;
     /** 
      * @type api
      * @region 转推直播
      * @brief 设置视频参数
      * @param [in] TranscoderVideoParam 视频参数，参看 TranscoderVideoParam{@link #TranscoderVideoParam}
      */
-    virtual void SetVideoParam(const TranscoderVideoParam&) = 0;
+    virtual void setVideoParam(const TranscoderVideoParam&) = 0;
     /** 
      * @type api
      * @region 转推直播
@@ -582,7 +604,7 @@ public:
      * @param [in] bg_color 合流背景颜色
      * @param [in] app_data 用户额外需要传入的数据
      */
-    virtual void SetLayoutParam(
+    virtual void setLayoutParam(
             TranscoderLayoutRegion regions[], int32_t regions_size, const char* bg_color, const char* app_data) = 0;
     /** 
      * @hidden
@@ -591,7 +613,7 @@ public:
      * @brief 设置动态扩展自定义参数
      * @param [in] advancedConfig 动态扩展自定义参数
      */
-    virtual void SetAdvancedConfig(const char* advancedConfig) = 0;
+    virtual void setAdvancedConfig(const char* advancedConfig) = 0;
     /** 
      * @hidden
      * @type api
@@ -599,8 +621,8 @@ public:
      * @brief  设置业务透传鉴权信息
      * @param [in] authInfo 业务透传鉴权信息
      */
-    virtual void SetAuthInfo(const char* authInfo) = 0;
-   
+    virtual void setAuthInfo(const char* authInfo) = 0;
+
     /** 
      * @type api
      * @region 转推直播
@@ -608,8 +630,8 @@ public:
      * @param [in] json_str json 格式字符串
      * @return 转换后的 ITranscoderParam 结构体
      */
-    virtual ITranscoderParam* Inflatten(const char* json_str) = 0;
-    
+    virtual ITranscoderParam* inflatten(const char* json_str) = 0;
+
     /** 
      * @type api
      * @region 转推直播
@@ -622,5 +644,27 @@ public:
      */
     virtual ~ITranscoderParam() = default;
 };
-
+/** 
+ * @hidden not available in 343
+ * @type keytype
+ * @brief 单流转推直播配置参数。
+ */
+typedef struct PushSingleStreamParam {
+    /** 
+     * @brief 媒体流所在的房间 ID
+     */
+    const char* room_id;
+    /** 
+     * @brief 媒体流所属的用户 ID
+     */
+    const char* user_id;
+    /** 
+     * @brief 推流地址
+     */
+    const char* uri;
+    /** 
+     * @brief 媒体流是否为屏幕流。
+     */
+    const bool is_screen_stream;
+}PushSingleStreamParam;
 }  // namespace bytertc

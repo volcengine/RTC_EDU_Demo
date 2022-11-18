@@ -39,7 +39,7 @@ namespace vrd
 		this->wdt_video_->setStyleSheet("border-radius: 2px; background-color: black;");
 		this->wdt_video_->setUpdatesEnabled(false);
 		this->wdt_stacked_->addWidget(this->wdt_video_);
-
+		this->wdt_stacked_->setCurrentIndex(0);
 		main_layout->addWidget(this->wdt_stacked_, 0, Qt::AlignHCenter);
 
 		QWidget *wdt_bottom = new QWidget();
@@ -120,76 +120,75 @@ namespace vrd
 		lbl_user_name_->setText(wide_name);
 	}
 
-	void StudentVideo::forceUpdateVideo()
-	{
-		if (show_video_)
-		{
-			wdt_video_->setUpdatesEnabled(true);
+    void StudentVideo::forceUpdateVideo()
+    {
+        if (show_video_)
+        {
+            wdt_video_->setUpdatesEnabled(true);
+            QTimer::singleShot(50, this, [this]()
+                {
+                    wdt_video_->setUpdatesEnabled(false);
+                });
+        }
+    }
 
-			QTimer::singleShot(50, this, [this]()
-				{
-					wdt_video_->setUpdatesEnabled(false);
-				}
-			);
-		}
-	}
+    void StudentVideo::onClicked()
+    {
+        if (nullptr != presenter_)
+        {
+            auto presenter = presenter_;
+            auto user_id = user_id_;
 
-	void StudentVideo::onClicked()
-	{
-		if (nullptr != presenter_)
-		{
-			auto presenter = presenter_;
-			auto user_id = user_id_;
-
-			if (util::showAlertConfirm("是否确认将该学生下台？"))
-			{
-				presenter->disconnect(user_id);
-			}
-		}
-	}
+            if (util::showAlertConfirm("是否确认将该学生下台？"))
+            {
+                presenter->disconnect(user_id);
+            }
+        }
+    }
 
 	void StudentVideo::tryShowVideo()
 	{
 		if (presenter_ != nullptr)
 		{
-            setShowVideo(true);
-			/*if (presenter_->hasVideo(user_id_))
+			//setShowVideo(true);
+			if (presenter_->hasVideo(user_id_))
 			{
 				setShowVideo(true);
 			}
 			else
 			{
 				setShowVideo(false);
-			}*/
-		}
-	}
-
-	void StudentVideo::setShowVideo(bool show)
-	{
-		if (show_video_ != show)
-		{
-			show_video_ = show;
-
-			if (show_video_)
-			{
-				wdt_stacked_->setCurrentIndex(1);
-
-				if (presenter_ != nullptr)
-				{
-					presenter_->setVideoWindow(user_id_, getVideoWindow());
-				}
-			}
-			else
-			{
-				wdt_stacked_->setCurrentIndex(0);
-
-				if (presenter_ != nullptr)
-				{
-					presenter_->setVideoWindow(user_id_, NULL);
-				}
 			}
 		}
 	}
+
+    void StudentVideo::setShowVideo(bool show)
+    {
+        if (show_video_ != show)
+        {
+            show_video_ = show;
+
+            if (show_video_)
+            {
+                wdt_stacked_->setCurrentIndex(1);
+
+                if (presenter_ != nullptr)
+                {
+                    forceUpdateVideo();
+                    presenter_->setVideoWindow(user_id_, getVideoWindow());
+                }
+            }
+            else
+            {
+                wdt_stacked_->setCurrentIndex(0);
+                if (presenter_ != nullptr)
+                {
+                    wdt_video_->setUpdatesEnabled(true);
+                    presenter_->setVideoWindow(user_id_, NULL);
+                }
+            }
+        }
+    }
 
 	WId StudentVideo::getVideoWindow()
 	{

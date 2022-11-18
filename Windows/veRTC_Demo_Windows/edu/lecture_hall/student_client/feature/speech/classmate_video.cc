@@ -36,7 +36,7 @@ namespace vrd
 		this->wdt_video_->setStyleSheet("border-radius: 2px; background-color: black;");
 		this->wdt_video_->setUpdatesEnabled(false);
 		this->wdt_stacked_->addWidget(this->wdt_video_);
-
+		this->wdt_stacked_->setCurrentIndex(0);
 		main_layout->addWidget(this->wdt_stacked_, 0, Qt::AlignHCenter);
 
 		this->lbl_user_name_ = new QLabel();
@@ -120,15 +120,14 @@ namespace vrd
 	{
 		if (presenter_ != nullptr)
 		{
-            setShowVideo(true);
-		/*	if (presenter_->hasVideo(user_id_))
+			if (presenter_->hasVideo(user_id_))
 			{
 				setShowVideo(true);
 			}
 			else
 			{
 				setShowVideo(false);
-			}*/
+			}
 		}
 	}
 
@@ -144,6 +143,7 @@ namespace vrd
 
 				if (presenter_ != nullptr)
 				{
+					forceUpdateVideo();
 					presenter_->setVideoWindow(user_id_, getVideoWindow());
 				}
 			}
@@ -153,6 +153,7 @@ namespace vrd
 
 				if (presenter_ != nullptr)
 				{
+					wdt_video_->setUpdatesEnabled(true);
 					presenter_->setVideoWindow(user_id_, NULL);
 				}
 			}

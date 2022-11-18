@@ -4,10 +4,10 @@
 #include "rtc/bytertc_advance.h"
 #include "rtc/bytertc_defines.h"
 #include "rtc/bytertc_engine_interface.h"
-#include "rtc/bytertc_engine_lite_interface.h"
+#include "bytertc_room.h"
 
-using RoomPtr = bytertc::IRtcRoom*;
-using Room = bytertc::IRtcRoom;
+using RoomPtr = bytertc::IRTCRoom*;
+using Room = bytertc::IRTCRoom;
 using Role = bytertc::UserRoleType;
 using UserInfo = bytertc::UserInfo;
 using RoomType = bytertc::RoomProfileType;

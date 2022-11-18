@@ -2,7 +2,7 @@
 //  EduRTMStudentManager.h
 //  EduDemo
 //
-//  Created by ByteDance on 2022/6/7.
+//  Created by on 2022/6/7.
 //
 
 #import <Foundation/Foundation.h>

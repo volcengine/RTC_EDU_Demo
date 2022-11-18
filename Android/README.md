@@ -52,7 +52,7 @@
 
 进入 `scene-core/gradle.properties` 文件，填写 **LoginUrl**。
 
-当前你可以使用 **`http://rtc-test.bytedance.com/rtc_demo_special/login`** 作为测试服务器域名，仅提供跑通测试服务，无法保障正式需求。
+当前你可以使用 **`https://common.rtc.volcvideo.com/rtc_demo_special/login`** 作为测试服务器域名，仅提供跑通测试服务，无法保障正式需求。
 
 
 <img src="https://lf6-volc-editor.volccdn.com/obj/volcfe/sop-public/upload_290f3994a5ee5b998172646aa0f5ab5e" width="500px" >
@@ -60,11 +60,13 @@
 3. **填写 APPID、APPKey、AccessKeyID、SecretAccessKey、ACCOUNT\_ID 和 VOD\_SPACE**
 	
 
-进入根目录下 `gradle.properties`文件，填写 **APPID、APPKey、AccessKeyID、SecretAccessKey、ACCOUNT\_ID 和 VOD\_SPACE**
+进入 `component/joinrtsparams` 目录下 `gradle.properties`文件，填写 **APPID、APPKey、AccessKeyID、SecretAccessKey**
 
 <img src="https://lf3-volc-editor.volccdn.com/obj/volcfe/sop-public/upload_65379093c831aef59eb9cd045cd0aa6e" width="500px" >
 
 <img src="https://lf3-volc-editor.volccdn.com/obj/volcfe/sop-public/upload_479b099eccd68eb417b8f3b8eba00066" width="500px" >
+
+进入 `solutions/meeting` 目录下 `gradle.properties`文件，填写 **ACCOUNT_ID 和 VOD_SPACE**
 
 ### 步骤 6：编译运行
 

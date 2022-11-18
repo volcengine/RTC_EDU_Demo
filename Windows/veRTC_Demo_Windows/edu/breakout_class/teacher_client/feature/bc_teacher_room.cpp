@@ -10,6 +10,8 @@
 #include <QJsonArray>
 #include <QtDebug>
 
+#include "core/application.h"
+#include "core/navigator_interface.h"
 #include "OnLineItem.h"
 #include "core/edu_rtc_engine_wrap.h"
 #include "edu/core/data_mgr.h"
@@ -191,8 +193,8 @@ void TeacherRoom::closeEvent(QCloseEvent* event) {
     dialog->close();
   });
   connect(btn_close, &QPushButton::clicked, [] {
-    QApplication* app;
-    app->exit(0);
+      VRD_FUNC_GET_COMPONET(vrd::INavigator)->quit();
+      QApplication::quit();
   });
   btn_cancel->setFixedSize(240, 36);
   btn_close->setText("仅关闭软件,不下课");
@@ -393,12 +395,12 @@ void TeacherRoom::UpdateGroupStudentInfo() {
 void TeacherRoom::InitSigSlots() {
   QObject::connect(m_local_preview_, &Videocell::SigMuteAudio, this,
                    [this](bool mute) {
-                     EduRTCEngineWrap::muteLocalAudio(mute);
-                     if (mute) {
-                       WSS_SESSION->eduTurnOffMic(m_room_id_, m_user_id_, NULL);
-                     } else {
-                       WSS_SESSION->eduTurnOnMic(m_room_id_, m_user_id_, NULL);
-                     }
+                        EduRTCEngineWrap::muteLocalAudio(mute);
+                        if (mute) {
+                        WSS_SESSION->eduTurnOffMic(m_room_id_, m_user_id_, NULL);
+                        } else {
+                        WSS_SESSION->eduTurnOnMic(m_room_id_, m_user_id_, NULL);
+                        }
                    });
   QObject::connect(
       m_local_preview_, &Videocell::SigMuteVideo, this, [this](bool mute) {
@@ -440,6 +442,7 @@ void TeacherRoom::InitSigSlots() {
   });
 
   QObject::connect(ui->btn_groupspeak, &QPushButton::clicked, this, [this] {
+    ui->btn_groupspeak->setEnabled(false);
     if (m_is_goupspeak_) {
       WSS_SESSION->closeGroupSpeech(
           vrd::DataMgr::instance().room_id(), vrd::DataMgr::instance().user_id(), [this](int code) {
@@ -447,6 +450,7 @@ void TeacherRoom::InitSigSlots() {
               m_is_goupspeak_ = false;
               ui->btn_groupspeak->setStyleSheet(kBtnActive);
               ui->btn_groupspeak->setText("集体发言");
+              ui->btn_groupspeak->setEnabled(true);
               ui->btn_interact->setFixedWidth(80);
               ui->btn_interact->setEnabled(true);
               ui->btn_interact->setStyleSheet(kBtnActive);
@@ -465,6 +469,7 @@ void TeacherRoom::InitSigSlots() {
               ui->btn_groupspeak->setText("结束集体发言");
               ui->btn_groupspeak->setFixedWidth(108);
               ui->btn_groupspeak->setStyleSheet(kBtnStartClass);
+              ui->btn_groupspeak->setEnabled(true);
               ui->btn_interact->setEnabled(false);
               ui->btn_interact->setStyleSheet(kBtnNegative);
               ui->btn_inspect->setEnabled(false);
@@ -477,6 +482,7 @@ void TeacherRoom::InitSigSlots() {
   });
 
   QObject::connect(ui->btn_interact, &QPushButton::clicked, this, [this] {
+    ui->btn_interact->setEnabled(false);
     if (false == m_is_interacting) {
       WSS_SESSION->openVideoInteract(
             vrd::DataMgr::instance().room_id(), vrd::DataMgr::instance().user_id(), [this](int code) {
@@ -485,6 +491,7 @@ void TeacherRoom::InitSigSlots() {
             ui->btn_interact->setText("结束视频互动");
             ui->btn_interact->setFixedWidth(108);
             ui->btn_interact->setStyleSheet(kBtnStartClass);
+            ui->btn_interact->setEnabled(true);
             ui->btn_groupspeak->setEnabled(false);
             ui->btn_groupspeak->setStyleSheet(kBtnNegative);
             ui->btn_inspect->setEnabled(false);
@@ -505,6 +512,7 @@ void TeacherRoom::InitSigSlots() {
             ui->btn_interact->setText("视频互动");
             ui->btn_interact->setStyleSheet(kBtnActive);
             ui->btn_interact->setFixedWidth(80);
+            ui->btn_interact->setEnabled(true);
             ui->btn_groupspeak->setEnabled(true);
             ui->btn_groupspeak->setStyleSheet(kBtnActive);
             ui->btn_inspect->setEnabled(true);
@@ -549,6 +557,7 @@ void TeacherRoom::InitSigSlots() {
 
 void TeacherRoom::TriggerStartClass() {
   qInfo() << "------> BeginClass" << Qt::endl;
+  ui->btn_finish_class->setEnabled(false);
   WSS_SESSION->beginClass(
       vrd::DataMgr::instance().room_id(), vrd::DataMgr::instance().user_id(), [this](int code) {
         RES_CODE_CHECK(code);
@@ -561,6 +570,7 @@ void TeacherRoom::TriggerStartClass() {
         ui->btn_interact->setEnabled(true);
         ui->btn_finish_class->setStyleSheet(kBtnStopClass);
         ui->btn_finish_class->setText("");
+        ui->btn_finish_class->setEnabled(true);
         ui->btn_inspect->setStyleSheet(kBtnActive);
         ui->btn_inspect->setEnabled(true);
         ui->lab_record->setVisible(true);
@@ -684,6 +694,7 @@ void TeacherRoom::RtcInit() {
   EduRTCEngineWrap::setMainUserRole(Role::kUserRoleTypeBroadcaster);
   const auto token = DATAMGR_INS.current_room().token;
   const auto uid = vrd::DataMgr::instance().user_id();
+  EduRTCEngineWrap::setDefaultVideoProfiles();
   EduRTCEngineWrap::joinMainRoom(token, roomId, uid);
   EduRTCEngineWrap::enableLocalAudio(true);
   EduRTCEngineWrap::enableLocalVideo(true);

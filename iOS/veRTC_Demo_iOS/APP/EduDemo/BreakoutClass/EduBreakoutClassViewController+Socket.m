@@ -2,8 +2,8 @@
 //  EduBreakoutClassViewController+Socket.m
 //  veRTC_Demo
 //
-//  Created by bytedance on 2021/8/6.
-//  Copyright © 2021 . All rights reserved.
+//  Created by on 2021/8/6.
+//  
 //
 
 #import "EduBreakoutClassViewController+Socket.h"
@@ -24,7 +24,7 @@
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 AlertActionModel *alertModel = [[AlertActionModel alloc] init];
                 alertModel.title = @"确定";
-                [[AlertActionManager shareAlertActionManager] showWithMessage:@"课堂已结束" actions:@[alertModel]];
+                [[AlertActionManager shareAlertActionManager] showWithMessage:@"课程已结束" actions:@[alertModel]];
             });
         }
     }];
@@ -103,7 +103,7 @@
     
     [EduRTMManager onStuMicOnWithBlock:^(NSString * _Nonnull roomID, NSString * _Nonnull uid, NSString * _Nonnull userName) {
         if (wself) {
-            if ([uid isEqualToString:[LocalUserComponents userModel].uid]) {
+            if ([uid isEqualToString:[LocalUserComponent userModel].uid]) {
                 [wself approveMic:YES];
             }
             [wself changeStudentMic:YES uid:uid name:userName];
@@ -113,7 +113,7 @@
     [EduRTMManager onStuMicOffWithBlock:^(NSString * _Nonnull roomID, NSString * _Nonnull uid) {
         if (wself) {
             [wself changeStudentMic:NO uid:uid name:@""];
-            if ([uid isEqualToString:[LocalUserComponents userModel].uid]) {
+            if ([uid isEqualToString:[LocalUserComponent userModel].uid]) {
                 [wself approveMic:NO];
             }
         }

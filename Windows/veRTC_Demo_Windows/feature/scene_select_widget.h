@@ -9,20 +9,19 @@ class SceneSelectWidget : public QWidget {
 	void resizeEvent(QResizeEvent* e);
 	void closeEvent(QCloseEvent*);
 	void enableMask(bool enabled);
+	void updateUserName();
 	QStackedWidget* getMainStackWidget();
 
  signals:
 	void sigLogOut();
 	void enterScene(QString sceneName);
 
-public slots:
-	void updateData();
-
  private:
 	void initControls();
 	void initConnects();
 	void setupEduSceneButton();
 	void setupMoreSceneButton();
+	int scene_count_{ 0 };
 
  private:
 	bool enabled_controls_;

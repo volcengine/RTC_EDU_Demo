@@ -2,12 +2,12 @@
 //  EduUserModel.m
 //  veRTC_Demo
 //
-//  Created by bytedance on 2021/5/28.
-//  Copyright © 2021 . All rights reserved.
+//  Created by on 2021/5/28.
+//  
 //
 
 #import "EduBreakoutRTCManager.h"
-#import "EduRTCManager.h"
+#import "EduBreakoutRTCManager.h"
 #import "EduUserModel.h"
 
 @implementation EduUserModel
@@ -54,10 +54,10 @@
         case EduUserRoomTypeLeature: {
             if (self.isSelf) {
                 //Local Video
-                [[EduRTCManager shareRtc] setupLocalVideo:_canvas];
+                [[EduBreakoutRTCManager shareRtc] setupLocalVideo:_canvas];
             } else {
                 //Remote Video
-                [[EduRTCManager shareRtc] setupRemoteVideo:_canvas];
+                [[EduBreakoutRTCManager shareRtc] setupRemoteVideo:_canvas];
             }
         } break;
         case EduUserRoomTypeBreakoutHost: {
@@ -95,7 +95,7 @@
 }
 
 - (BOOL)isSelf {
-    if ([self.uid isEqualToString:[LocalUserComponents userModel].uid]) {
+    if ([self.uid isEqualToString:[LocalUserComponent userModel].uid]) {
         return YES;
     } else {
         return NO;
@@ -103,7 +103,7 @@
 }
 
 - (BOOL)isVideoStream {
-    if ([self.uid isEqualToString:[LocalUserComponents userModel].uid]) {
+    if ([self.uid isEqualToString:[LocalUserComponent userModel].uid]) {
         return YES;
     } else {
         return _isVideoStream;

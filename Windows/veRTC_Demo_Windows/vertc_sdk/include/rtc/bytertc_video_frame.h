@@ -12,6 +12,9 @@
 #include <stddef.h>
 #include <memory>
 #include "bytertc_common_defines.h"
+#ifdef BYTERTC_ANDROID
+#include <jni.h>
+#endif
 
 namespace bytertc {
 
@@ -63,11 +66,11 @@ enum VideoRotation {
 
 /** 
  * @type keytype
- * @brief 视频帧缩放模式
+ * @brief 视频帧缩放模式，默认值为 FitWithCropping。
  */
 enum VideoStreamScaleMode {
     /** 
-     * @brief 自动模式，默认值为 FitWithCropping。
+     * @brief 自动模式
      */
     kVideoStreamScaleModeAuto = 0,
     /** 
@@ -164,11 +167,11 @@ enum CameraID {
  */
 struct VideoSolution {
     /** 
-     * @brief 宽（像素）
+     * @brief 视频宽度，单位：像素
      */
     int width;
     /** 
-     * @brief 高（像素）
+     * @brief 视频高度，单位：像素
      */
     int height;
     /** 
@@ -176,22 +179,17 @@ struct VideoSolution {
      */
     int fps;
     /** 
-     * @brief 最高编码码率（千比特每秒）<br>
-     *        建议使用默认设置。
+     * @brief 最大发送编码码率（kbps），建议使用默认的自动码率。<li>-1: 自动码率</li><li>0: 不开启上限</li><li>>0: 填写预估码率<li>
      */
     int max_send_kbps = SEND_KBPS_AUTO_CALCULATE;
-    /** 
-     * @brief 视频帧缩放模式。你可以设置缩放以适应视窗，参看 VideoStreamScaleMode{@link #VideoStreamScaleMode}
-     */
-    VideoStreamScaleMode scale_mode = VideoStreamScaleMode::kVideoStreamScaleModeAuto;
     /** 
      * @brief 视频编码质量策略，参看 VideoEncodePreference{@link #VideoEncodePreference}
      */
     VideoEncodePreference encode_preference = VideoEncodePreference::kVideoEncodePreferenceFramerate;
 };
-/** 
+/**  
  * @type keytype
- * @brief 视频参数
+ * @brief 视频编码配置。参考 [设置视频发布参数](https://www.volcengine.com/docs/6348/70122)
  */
 struct VideoEncoderConfig {
     /** 
@@ -213,11 +211,7 @@ struct VideoEncoderConfig {
      */
     int maxBitrate = SEND_KBPS_AUTO_CALCULATE;
     /** 
-     * @brief 视频帧缩放模式。你可以设置缩放以适应视窗，参看 VideoStreamScaleMode{@link #VideoStreamScaleMode}
-     */
-    VideoStreamScaleMode scaleMode = VideoStreamScaleMode::kVideoStreamScaleModeAuto;
-    /** 
-     * @brief 视频编码质量策略，参看 VideoEncodePreference{@link #VideoEncodePreference}
+     * @brief 视频编码质量策略，默认质量优先，参看 VideoEncodePreference{@link #VideoEncodePreference}
      */
     VideoEncodePreference encoderPreference = VideoEncodePreference::kVideoEncodePreferenceFramerate;
 };
@@ -228,19 +222,24 @@ struct VideoEncoderConfig {
  */
 struct VideoSolutionDescription {
     /** 
-     * @brief 宽（像素）
+     * @brief 宽（像素）<br>
+     *        默认值为 `1920` <br>
+     *        为 `0` 时，保持源的宽。
      */
     int width;
     /** 
-     * @brief 高（像素）
+     * @brief 高（像素）<br>
+     *        默认值为 `1080` <br>
+     *        为 `0` 时，保持源的高。
      */
     int height;
     /** 
-     * @brief 视频帧率
+     * @brief 视频帧率(fps)，默认为 15 fps
      */
     int fps;
     /** 
-     * @brief 最大发送速率（千比特每秒）
+     * @brief 最大发送速率（千比特每秒）。<br>
+     *        默认为 `-1`，适配码率模式，系统将根据输入的分辨率和帧率自动计算适用的码率
      */
     int max_send_kbps;
     /** 
@@ -314,6 +313,21 @@ enum VideoPixelFormat {
      * @brief TextureOES格式
      */
     kVideoPixelFormatTextureOES = 0x8D65,
+};
+
+/** 
+ * @type keytype
+ * @brief 视频内容类型
+ */
+enum VideoContentType {
+    /** 
+     * @brief 普通视频
+     */
+    kVideoContentTypeNormalFrame = 0,
+    /** 
+     * @brief 黑帧视频
+     */
+    kVideoContentTypeBlackFrame,
 };
 
 /** 
@@ -493,6 +507,25 @@ typedef struct VideoFrameBuilder {
      */
     int64_t timestamp_us = 0;
     /** 
+    * @brief 硬件加速Context对象(AKA Opengl Context, Vulkan Context)
+    */
+    void* hwaccel_context = nullptr;
+#ifdef __ANDROID__
+    /** 
+     * @brief 硬件加速Context的Java对象(Only for Android, AKA Opengl Context)
+     */
+    jobject android_hwaccel_context = nullptr;
+#endif
+    /** 
+     * @brief 纹理矩阵(仅针对纹理类型的frame生效)
+     */
+    float tex_matrix[16] = { };
+    /** 
+     * @brief 纹理ID(仅针对纹理类型的frame生效)
+     */
+    uint32_t texture_id = 0;
+
+    /** 
      * @brief 用户定义的视频帧释放回调函数指针，如果指针不为空，方法会被调用用来释放内存空间
      */
     int (*memory_deleter)(struct VideoFrameBuilder* builder) = nullptr;
@@ -507,15 +540,20 @@ public:
     /** 
      * @brief 获取视频帧类型，参看 VideoFrameType{@link #VideoFrameType}
      */
-    virtual VideoFrameType frame_type() const = 0;
+    virtual VideoFrameType frameType() const = 0;
     /** 
      * @brief 获取视频帧格式，参看 VideoPixelFormat{@link #VideoPixelFormat}
      */
-    virtual VideoPixelFormat pixel_format() const = 0;
+    virtual VideoPixelFormat pixelFormat() const = 0;
+    /** 
+     * @brief 获取视频内容类型，参看 VideoContentType{@link #VideoContentType}。
+     */
+    virtual VideoContentType videoContentType() const = 0;
+
     /** 
      * @brief 获取视频帧时间戳，单位：微秒
      */
-    virtual int64_t timestamp_us() const = 0;
+    virtual int64_t timestampUs() const = 0;
     /** 
      * @brief 获取视频帧宽度，单位：px
      */
@@ -540,40 +578,59 @@ public:
     /** 
      * @brief 获取视频帧颜色空间，参看 ColorSpace{@link #ColorSpace}
      */
-    virtual ColorSpace color_space() const = 0;
+    virtual ColorSpace colorSpace() const = 0;
     /** 
      * @brief 视频帧颜色 plane 数量
      * @notes yuv 数据存储格式分为打包（packed）存储格式和平面（planar）存储格式，planar 格式中 Y、U、V 分平面存储，packed 格式中 Y、U、V 交叉存储
      */
-    virtual int number_of_planes() const = 0;
+    virtual int numberOfPlanes() const = 0;
     /** 
      * @brief 获取 plane 数据指针
      * @param [in] plane_index plane 数据索引
      */
-    virtual uint8_t* get_plane_data(int plane_index) = 0;
+    virtual uint8_t* getPlaneData(int plane_index) = 0;
     /** 
      * @brief 获取 plane 中数据行的长度
      * @param [in] plane_index plane 数据索引
      */
-    virtual int get_plane_line_size(int plane_index) = 0;
+    virtual int getPlaneStride(int plane_index) = 0;
     /** 
      * @brief 获取扩展数据指针
      * @param [in] size 扩展数据字节数
      */
-    virtual uint8_t* get_extra_data_info(int& size) const = 0;  // NOLINT
+    virtual uint8_t* getExtraDataInfo(int& size) const = 0;  // NOLINT
     /** 
      * @brief 获取补充数据指针
      * @param [in] size 补充数据字节数
      */
-    virtual uint8_t* get_supplementary_info(int& size) const = 0;  // NOLINT
+    virtual uint8_t* getSupplementaryInfo(int& size) const = 0;  // NOLINT
     /** 
      * @brief 获取本地缓冲区指针
      */
-    virtual void* get_hwaccel_buffer() = 0;
+    virtual void* getHwaccelBuffer() = 0;
+    /** 
+     * @brief 获取硬件加速Context对象(AKA Opengl Context, Vulkan Context)
+     */
+    virtual void* getHwaccelContext() = 0;
+#ifdef __ANDROID__
+    /** 
+     * @brief 获取硬件加速Context的Java对象(Only for Android, AKA Opengl Context)
+     * @return 返回JavaLocalRef, 当不再使用时，需要手动执行DeleteLocalRef(env, jobject)方法释放该对象
+     */
+    virtual jobject getAndroidHwaccelContext() = 0;
+#endif
+    /** 
+     * @brief 获取纹理矩阵(仅针对纹理类型的frame生效)
+     */
+    virtual void getTexMatrix(float matrix[16]) = 0;
+    /** 
+     * @brief 获取纹理ID(仅针对纹理类型的frame生效)
+     */
+    virtual uint32_t getTextureId() = 0;
     /** 
      * @brief 浅拷贝视频帧并返回指针
      */
-    virtual IVideoFrame* shallow_copy() = 0;
+    virtual IVideoFrame* shallowCopy() = 0;
     /** 
      * @brief 释放视频帧
      */
@@ -581,11 +638,11 @@ public:
     /** 
      * @brief 转换为i420格式的视频帧
      */
-    virtual void to_i420() = 0;
+    virtual void toI420() = 0;
     /** 
      * @brief 获取视频帧的摄像头信息，参看 CameraID{@link #CameraID}
      */
-    virtual CameraID get_cameraId() const = 0;
+    virtual CameraID getCameraId() const = 0;
 /**
  * @hidden
  */
@@ -655,19 +712,19 @@ public:
      * @brief 获取视频编码类型
      * @return 视频编码类型，参看 VideoCodecType{@link #VideoCodecType}
      */
-    virtual VideoCodecType codec_type() const = 0;
+    virtual VideoCodecType codecType() const = 0;
     /** 
      * @type api
      * @brief 获取视频采集时间戳
      * @return 视频采集时间戳，单位：微秒
      */
-    virtual int64_t timestamp_us() const = 0;
+    virtual int64_t timestampUs() const = 0;
     /** 
      * @type api
      * @brief 获取视频编码时间戳
      * @return 视频编码时间戳，单位：微秒
      */
-    virtual int64_t timestamp_dts_us() const = 0;
+    virtual int64_t timestampDtsUs() const = 0;
     /** 
      * @type api
      * @brief 获取视频帧宽度
@@ -685,7 +742,7 @@ public:
      * @brief 获取视频编码帧类型
      * @return 视频编码帧类型，参看 VideoPictureType{@link #VideoPictureType}
      */
-    virtual VideoPictureType picture_type() const = 0;
+    virtual VideoPictureType pictureType() const = 0;
     /** 
      * @type api
      * @brief 获取视频帧旋转角度
@@ -703,12 +760,12 @@ public:
      * @brief 获取视频帧数据大小
      * @return 视频帧数据大小
      */
-    virtual int data_size() const = 0;
+    virtual int dataSize() const = 0;
     /** 
      * @type api
      * @brief 浅拷贝视频帧并返回指针
      */
-    virtual IEncodedVideoFrame* shallow_copy() const = 0;
+    virtual IEncodedVideoFrame* shallowCopy() const = 0;
     /** 
      * @type api
      * @brief 释放视频帧
@@ -720,7 +777,7 @@ public:
      * @param [in] builder 视频帧参数，参看 EncodedVideoFrameBuilder{@link #EncodedVideoFrameBuilder}
      * @return IEncodedVideoFrame 创建的视频帧的指针
      */
-    static IEncodedVideoFrame* build_encoded_video_frame(const EncodedVideoFrameBuilder& builder);
+    static IEncodedVideoFrame* buildEncodedVideoFrame(const EncodedVideoFrameBuilder& builder);
     /**
      * @hidden
      */

@@ -2,15 +2,15 @@
 //  EduBreakoutClassViewController.m
 //  veRTC_Demo
 //
-//  Created by bytedance on 2021/8/4.
-//  Copyright © 2021 . All rights reserved.
+//  Created by on 2021/8/4.
+//  
 //
 
 #import "EduBreakoutClassViewController+Socket.h"
 #import "EduBreakoutClassViewController.h"
 #import "EduBreakoutRTCManager.h"
 #import "EduClassCpmponents.h"
-#import "EduEndCompoments.h"
+#import "EduEndComponent.h"
 #import "EduRTMStudentManager.h"
 #import "UIViewController+Orientation.h"
 #import "NetworkingTool.h"
@@ -27,7 +27,7 @@
 @property (nonatomic, strong) EduClassStudentListView *studentListView;
 @property (nonatomic, strong) EduClassStudentsScrollView *groupListView;
 @property (nonatomic, strong) EduClassGroupSpeechView *groupSpeechView;
-@property (nonatomic, strong) EduEndCompoments *exitAlertView;
+@property (nonatomic, strong) EduEndComponent *exitAlertView;
 @property (nonatomic, strong) UIButton *showStudentsButton;
 @property (nonatomic, strong) EduUserModel *teacherModel;
 
@@ -50,16 +50,14 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [[NSUserDefaults standardUserDefaults] setObject:@"EduBreakoutRTCManager" forKey:@"KEduRTCManager"];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationBecomeActive) name:UIApplicationWillEnterForegroundNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationEnterBackground) name: UIApplicationDidEnterBackgroundNotification object:nil];
+    [[NSUserDefaults standardUserDefaults] setObject:@"EduBreakoutRTCManager" forKey:@"KEduBreakoutRTCManager"];
     [[NSUserDefaults standardUserDefaults]synchronize];
-    [self addNotification];
+    [self addOrientationNotice];
     [self buildUI];
     [self addSocketListener];
     [self joinClass];
-}
-
-- (void)addNotification {
-    [self addOrientationNotice];
 }
 
 - (void)buildUI {
@@ -165,7 +163,7 @@
 #pragma mark - privateAction
 
 - (void)joinClass {
-    [[PublicParameterCompoments share]setRoomId:self.roomModel.roomId];
+    [[PublicParameterComponent share] setRoomId:self.roomModel.roomId];
     WeakSelf;
     [EduRTMStudentManager joinClass:self.roomModel.roomId roomType:NO block:^(EduClassModel *classModel) {
         if(classModel.ackModel.result){
@@ -198,9 +196,9 @@
         }
     };
     
-    [[EduBreakoutRTCManager shareRtc] joinHostRoomWithToken:classModel.token roomID:self.roomModel.roomId uid:[LocalUserComponents userModel].uid];
+    [[EduBreakoutRTCManager shareRtc] joinHostRoomWithToken:classModel.token roomID:self.roomModel.roomId uid:[LocalUserComponent userModel].uid];
 
-    [[EduBreakoutRTCManager shareRtc] joinGroupRoomWithToken:classModel.groupRtcToken roomID:classModel.groupRoomId uid:[LocalUserComponents userModel].uid];
+    [[EduBreakoutRTCManager shareRtc] joinGroupRoomWithToken:classModel.groupRtcToken roomID:classModel.groupRoomId uid:[LocalUserComponent userModel].uid];
 
     self.teacherModel = classModel.teacherUserModel;
     self.teacherLiveView.name = classModel.teacherUserModel.name;
@@ -210,7 +208,7 @@
     EduUserModel *myModel;
     NSMutableArray *groupList = classModel.groupUserList.mutableCopy;
     for (EduUserModel *model in classModel.groupUserList) {
-        if ([model.uid isEqualToString:[LocalUserComponents userModel].uid]) {
+        if ([model.uid isEqualToString:[LocalUserComponent userModel].uid]) {
             myModel = model;
             [groupList removeObject:model];
         }
@@ -256,6 +254,8 @@
         [self.groupSpeechView removeFromSuperview];
         self.groupSpeechView = nil;
     }
+    [self.groupListView joinCollectiveSpeech:show];
+    [self.myLiveView joinCollectiveSpeech:show];
 }
 
 - (void)showVideoInteractView:(BOOL)show {
@@ -280,11 +280,12 @@
     } else {
         BOOL isOnMic = NO;
         for (EduUserModel *onMicUserModel in self.studentListView.studnetArray) {
-            if ([onMicUserModel.uid isEqualToString:[LocalUserComponents userModel].uid]) {
+            if ([onMicUserModel.uid isEqualToString:[LocalUserComponent userModel].uid]) {
                 isOnMic = YES;
                 break;
             }
         }
+        [self.groupListView leavePodiumAllUserModel];
         [self.studentListView removeFromSuperview];
         [self.showStudentsButton removeFromSuperview];
         self.studentListView = nil;
@@ -309,7 +310,7 @@
 }
 
 - (void)navBackAction:(UIButton *)sender {
-    EduEndCompoments *endComponent = [[EduEndCompoments alloc] init];
+    EduEndComponent *endComponent = [[EduEndComponent alloc] init];
     [endComponent showWithStatus:EduEndStatusStudent];
     self.exitAlertView = endComponent;
 
@@ -343,7 +344,7 @@
             
         }
         if (type.length > 0) {
-            NSDictionary *dic = @{@"type" : type};
+            NSDictionary *dic = @{@"type" : type ?: @""};
             [wself educontrolChange:dic];
         }
     }];
@@ -361,7 +362,19 @@
     }
 }
 
+#pragma mark - NSNotification
 
+- (void)applicationBecomeActive {
+    // APP 恢复活跃状态时，如果是开启相机状态需要恢复相机采集。
+    // When the APP returns to the active state, if the camera is turned on, the camera acquisition needs to be resumed.
+    if ([[EduBreakoutRTCManager shareRtc] currentCameraState]) {
+        [[EduBreakoutRTCManager shareRtc] enableLocalVideo:YES];
+    }
+}
+
+- (void)applicationEnterBackground {
+    [[EduBreakoutRTCManager shareRtc] enableLocalVideo:NO];
+}
 
 #pragma mark - Broadcast Notification Action
 
@@ -421,7 +434,7 @@
 }
 
 - (void)addGroupUser:(NSString *)uid name:(NSString *)name {
-    if ([uid isEqualToString:[LocalUserComponents userModel].uid]) {
+    if ([uid isEqualToString:[LocalUserComponent userModel].uid]) {
         return;
     }
     //lock
@@ -470,11 +483,13 @@
         [self.studentListView addUser:userModel];
         self.studentListView.hidden = NO;
         self.showStudentsButton.hidden = YES;
+        [self.groupListView joinPodium:userModel];
     } else {
         [self.studentListView removeUser:userModel];
+        [self.groupListView leavePodium:userModel];
     }
     
-    if ([uid isEqualToString:[LocalUserComponents userModel].uid]) {
+    if ([uid isEqualToString:[LocalUserComponent userModel].uid]) {
         self.myLiveView.isMicOn = open;
     }
 }
@@ -484,10 +499,11 @@
 
     if (isOn == NO) {
         EduUserModel *myModel = [[EduUserModel alloc] init];
-        myModel.uid = [LocalUserComponents userModel].uid;
+        myModel.uid = [LocalUserComponent userModel].uid;
         myModel.roomType = EduUserRoomTypeBreakoutGroup;
         [self.myLiveView startPreview:myModel];
         self.myLiveView.name = myModel.name;
+        self.myLiveView.isMicOn = isOn;
     }
 }
 
@@ -546,9 +562,9 @@
     return _groupSpeechView;
 }
 
-- (EduEndCompoments *)exitAlertView {
+- (EduEndComponent *)exitAlertView {
     if (!_exitAlertView) {
-        _exitAlertView = [[EduEndCompoments alloc] init];
+        _exitAlertView = [[EduEndComponent alloc] init];
     }
     return _exitAlertView;
 }

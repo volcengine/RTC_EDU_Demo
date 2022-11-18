@@ -2,18 +2,19 @@
 //  EduRTMManager.m
 //  EduDemo
 //
-//  Created by ByteDance on 2022/6/7.
+//  Created by on 2022/6/7.
 //
 
 #import "EduRTMManager.h"
-#import "EduRTCManager.h"
+#import "EduBreakoutRTCManager.h"
+#import "JoinRTSParams.h"
 
 @implementation EduRTMManager
 
 #pragma mark - reconnect
 + (void)reconnectWithBlock:(void (^)(RTMACKModel *model))block {
-    NSDictionary *dic = [PublicParameterCompoments addTokenToParams:nil];
-    [[EduRTCManager shareRtc] emitWithAck:@"eduReconnect" with:dic block:^(RTMACKModel * _Nonnull ackModel) {
+    NSDictionary *dic = [JoinRTSParams addTokenToParams:nil];
+    [[EduBreakoutRTCManager shareRtc] emitWithAck:@"eduReconnect" with:dic block:^(RTMACKModel * _Nonnull ackModel) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (block) {
                 block(ackModel);
@@ -26,8 +27,8 @@
 #pragma mark - Get edu data
 
 + (void)getHistoryRoomListWithBlock:(void (^)(NSArray<EduRoomModel *> *list ,RTMACKModel *model))block {
-    NSDictionary *dic = [PublicParameterCompoments addTokenToParams:nil];
-    [[EduRTCManager shareRtc] emitWithAck:@"eduGetHistoryRoomList" with:dic block:^(RTMACKModel * _Nonnull ackModel) {
+    NSDictionary *dic = [JoinRTSParams addTokenToParams:nil];
+    [[EduBreakoutRTCManager shareRtc] emitWithAck:@"eduGetHistoryRoomList" with:dic block:^(RTMACKModel * _Nonnull ackModel) {
         NSMutableArray *modelLists = [[NSMutableArray alloc] init];
         if (ackModel.result && [ackModel.response isKindOfClass:[NSArray class]]) {
             NSArray *list = (NSArray *)ackModel.response;
@@ -46,9 +47,9 @@
 }
 
 + (void)getHistoryRecordList:(NSString *)roomID block:(void (^)(NSArray *list ,RTMACKModel *model))block {
-    NSDictionary *dic = @{@"room_id" : roomID};
-    dic = [PublicParameterCompoments addTokenToParams:dic];
-    [[EduRTCManager shareRtc] emitWithAck:@"eduGetHistoryRecordList" with:dic block:^(RTMACKModel * _Nonnull ackModel) {
+    NSDictionary *dic = @{@"room_id" : roomID ?: @""};
+    dic = [JoinRTSParams addTokenToParams:dic];
+    [[EduBreakoutRTCManager shareRtc] emitWithAck:@"eduGetHistoryRecordList" with:dic block:^(RTMACKModel * _Nonnull ackModel) {
         NSMutableArray *modelLists = [[NSMutableArray alloc] init];
         NSArray *list = (NSArray *)ackModel.response;
         for (int i = 0; i < list.count; i++) {
@@ -357,10 +358,7 @@
 #pragma mark - tool
 
 + (Class)getEduManagerClass {
-    
-    NSString *rtcManager = [[NSUserDefaults standardUserDefaults]objectForKey:@"KEduRTCManager"];
-    rtcManager = rtcManager?:@"EduRTCManager";
-    Class class = NSClassFromString(rtcManager);
+    Class class = NSClassFromString(@"EduBreakoutRTCManager");
     
     return class;
     

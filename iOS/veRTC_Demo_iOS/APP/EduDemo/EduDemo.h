@@ -2,7 +2,7 @@
 //  EduDemo.h
 //  EduDemo-EduDemo
 //
-//  Created by ByteDance on 2022/6/7.
+//  Created by on 2022/6/7.
 //
 
 #import "BaseHomeDemo.h"

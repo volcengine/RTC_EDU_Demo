@@ -43,4 +43,6 @@ class TopBarWidget : public QWidget {
   QLabel* lbl_user_ = nullptr;
   QLabel* lbl_setting_logo_ = nullptr;
   PushButtonWarp* lbl_setting_ = nullptr;
+  PushButtonWarp* feed_back_ = nullptr;
+
 };

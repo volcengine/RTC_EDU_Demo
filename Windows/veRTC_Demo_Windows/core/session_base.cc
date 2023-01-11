@@ -116,8 +116,9 @@ void SessionBase::initConnections() {
         });
 }
 
+
 void SessionBase::netBroken() {
-    vrd::util::showFixedToastInfo("域名链接失败，请检查配置");
+    vrd::util::showFixedToastInfo("网络链接已断开，请检查设置");
 }
 
 void SessionBase::changeUserName(CSTRING_REF_PARAM name,

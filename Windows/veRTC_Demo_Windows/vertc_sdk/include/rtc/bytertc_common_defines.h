@@ -1102,6 +1102,16 @@ enum ErrorCode {
      */
     kErrorCodeRoomAlreadyExist = -1013,
     /** 
+     * @brief 加入房间错误。 <br>
+     *        服务端license过期，拒绝进房。
+     */
+    kErrorCodeJoinRoomServerLicenseExpired = -1017,
+    /** 
+     * @brief 加入房间错误。 <br>
+     *        超过服务端license许可的并发量上限，拒绝进房。
+     */
+    kErrorCodeJoinRoomExceedsTheUpperLimit = -1018,
+    /** 
      * @brief 订阅音视频流失败，订阅音视频流总数超过上限。
      *        游戏场景下，为了保证音视频通话的性能和质量，服务器会限制用户订阅的音视频流总数。当用户订阅的音视频流总数已达上限时，继续订阅更多流时会失败，同时用户会收到此错误通知。
      */

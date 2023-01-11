@@ -89,7 +89,7 @@ namespace vrd
 		for (int i = kTitleCount; i < video_count; ++i)
 		{
 			QListWidgetItem *list_item = item(i);
-			std::string old_user_id = list_item->data(Qt::UserRole).value<QString>().toUtf8();
+			std::string old_user_id = std::string(list_item->data(Qt::UserRole).value<QString>().toUtf8());
 			GroupVideo *video = qobject_cast<GroupVideo*>(itemWidget(list_item));
 
 			if (new_user_ids.find(old_user_id) == new_user_ids.cend())
@@ -134,7 +134,7 @@ namespace vrd
 
 				QListWidgetItem *list_item = new QListWidgetItem();
 				list_item->setFlags(Qt::NoItemFlags);
-				list_item->setData(Qt::UserRole, classmate->user_id.c_str());
+				list_item->setData(Qt::UserRole, QString::fromStdString(classmate->user_id));
 				list_item->setSizeHint(video->sizeHint());
 
 				insertItem(video_count++, list_item);
@@ -155,7 +155,7 @@ namespace vrd
 		for (int i = kTitleCount; i < video_count; ++i)
 		{
 			QListWidgetItem *list_item = item(i);
-			std::string user_id = list_item->data(Qt::UserRole).value<QString>().toUtf8();
+			std::string user_id = std::string(list_item->data(Qt::UserRole).value<QString>().toUtf8());
 			GroupVideo *video = qobject_cast<GroupVideo*>(itemWidget(list_item));
 
 			if (speaker_ids.find(user_id) != speaker_ids.cend())
@@ -175,7 +175,7 @@ namespace vrd
 		for (int i = kTitleCount; i < video_count; ++i)
 		{
 			QListWidgetItem *list_item = item(i);
-			std::string user_id = list_item->data(Qt::UserRole).value<QString>().toUtf8();
+			std::string user_id = std::string(list_item->data(Qt::UserRole).value<QString>().toUtf8());
 			GroupVideo *video = qobject_cast<GroupVideo*>(itemWidget(list_item));
 
 			if (discuss)

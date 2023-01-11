@@ -23,8 +23,7 @@ Pod::Spec.new do |spec|
                                 '#import "EduClassModel.h"',
                                 '#import "EduBreakoutClassModel.h"',
                                 '#import "EduRoomModel.h"'
-                                
-  spec.vendored_frameworks = 'HFOpenApi.framework'
+
   spec.dependency 'Core'
   spec.dependency 'YYModel'
   spec.dependency 'Masonry'

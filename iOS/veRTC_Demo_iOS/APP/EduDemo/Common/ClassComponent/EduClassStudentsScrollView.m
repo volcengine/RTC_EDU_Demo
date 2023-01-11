@@ -87,7 +87,9 @@
 
 - (void)joinCollectiveSpeech:(BOOL)isJoin {
     for (EduClassStudentView *studentView in self.scrollView.subviews) {
-        studentView.isCollectiveSpeech = isJoin;
+        if ([studentView isKindOfClass:[EduClassStudentView class]]) {
+            studentView.isCollectiveSpeech = isJoin;
+        }
     }
 }
 

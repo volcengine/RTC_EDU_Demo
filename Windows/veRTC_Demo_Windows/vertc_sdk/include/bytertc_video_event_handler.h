@@ -691,7 +691,7 @@ public:
      * @param [in] errorCode 公共流订阅结果状态码。<br>
      *             `200`: 订阅成功
      */
-    virtual void onPlayPublicStreamResult(const char* public_stream_id, PublicStreamErrorCode errorCode) {
+    virtual void onPlayPublicStreamResult(const char* public_stream_id, int errorCode) {
         (void)public_stream_id;
         (void)errorCode;
     }
@@ -981,9 +981,10 @@ public:
      *        调用 startPushPublicStream{@link #IRTCVideo#startPushPublicStream} 接口发布公共流后，启动结果通过此回调方法通知用户。
      * @param [in] room_id 流的发布房间的 ID
      * @param [in] public_streamid 公共流 ID
-     * @param [in] errorCode 公共流发布结果状态码。详见 PublicStreamErrorCode{@link #PublicStreamErrorCode}
+     * @param [in] errorCode 公共流发布结果状态码。<br>
+     *             `200`: 发布成功
      */
-    virtual void onPushPublicStreamResult(const char* room_id, const char* public_streamid, PublicStreamErrorCode errorCode) {
+    virtual void onPushPublicStreamResult(const char* room_id, const char* public_streamid, int errorCode) {
         (void)room_id;
         (void)public_streamid;
         (void)errorCode;

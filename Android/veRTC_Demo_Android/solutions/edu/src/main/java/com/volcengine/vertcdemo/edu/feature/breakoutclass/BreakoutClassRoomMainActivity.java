@@ -19,8 +19,10 @@ import com.ss.video.rtc.demo.basic_module.ui.CommonDialog;
 import com.ss.video.rtc.demo.basic_module.utils.GsonUtils;
 import com.volcengine.vertcdemo.core.eventbus.SDKJoinChannelSuccessEvent;
 import com.volcengine.vertcdemo.core.eventbus.SolutionDemoEventManager;
+import com.volcengine.vertcdemo.core.net.IRequestCallback;
 import com.volcengine.vertcdemo.edu.R;
 import com.volcengine.vertcdemo.edu.bean.EduUserInfo;
+import com.volcengine.vertcdemo.edu.bean.GetUserListResponse;
 import com.volcengine.vertcdemo.edu.core.EduConstants;
 import com.volcengine.vertcdemo.edu.core.EduRTCManager;
 import com.volcengine.vertcdemo.edu.event.EduClassEvent;
@@ -135,6 +137,8 @@ public class BreakoutClassRoomMainActivity extends BaseActivity {
         SolutionDemoEventManager.register(this);
 
         requestPermissions(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO);
+
+        getUserListFromServer();
     }
 
     private void initArgs() {
@@ -253,6 +257,28 @@ public class BreakoutClassRoomMainActivity extends BaseActivity {
         return false;
     }
 
+    /**
+     * 从服务端主动获取同组用户列表
+     */
+    public void getUserListFromServer() {
+        IRequestCallback<GetUserListResponse> callback = new IRequestCallback<GetUserListResponse>() {
+            @Override
+            public void onSuccess(GetUserListResponse data) {
+                if (data != null && data.groupUserList != null) {
+                    mMainData.mGroupUserList.clear();
+                    mMainData.mGroupUserList.addAll(data.groupUserList);
+                    setGroupStudent();
+                }
+            }
+
+            @Override
+            public void onError(int errorCode, String message) {
+
+            }
+        };
+        EduRTCManager.ins().getRTMClient().getUserList(mMainData.mRoomId, callback);
+    }
+
     private void showJoinFailedDialog(int errorCode) {
         CommonDialog dialog = new CommonDialog(this);
         dialog.setCancelable(false);
@@ -312,6 +338,9 @@ public class BreakoutClassRoomMainActivity extends BaseActivity {
         EduRTCManager.clearUserRenderView();
     }
 
+    /**
+     * 刷新同小组内用户的UI
+     */
     private void setGroupStudent() {
         Iterator<EduUserInfo> iterator = mMainData.mGroupUserList.iterator();
         while (iterator.hasNext()) {

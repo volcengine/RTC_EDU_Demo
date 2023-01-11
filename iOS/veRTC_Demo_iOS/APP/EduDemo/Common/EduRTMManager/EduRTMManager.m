@@ -66,6 +66,27 @@
     }];
 }
 
++ (void)getUserListWithblock:(void (^)(NSArray * _Nonnull groupUserList,
+                                       RTMACKModel *model))block {
+    NSDictionary *dic = [JoinRTSParams addTokenToParams:nil];
+    [[EduBreakoutRTCManager shareRtc] emitWithAck:@"eduGetUserList"
+                                             with:dic
+                                            block:^(RTMACKModel * _Nonnull ackModel) {
+        NSMutableArray *modelLists = [[NSMutableArray alloc] init];
+        NSArray *groupUserList = (NSArray *)ackModel.response[@"group_user_list"];
+        for (int i = 0; i < groupUserList.count; i++) {
+            NSDictionary *dic = groupUserList[i];
+            EduUserModel *userModel = [EduUserModel yy_modelWithJSON:dic];
+            userModel.roomType = EduUserRoomTypeBreakoutGroup;
+            if (userModel) {
+                [modelLists addObject:userModel];
+            }
+        }
+        if (block) {
+            block([modelLists copy], ackModel);
+        }
+    }];
+}
 
 #pragma mark - Broadcast Notification Message
 

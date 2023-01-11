@@ -18,7 +18,7 @@ int main(int argc, char* argv[]) {
     QApplication a(argc, argv);
     QApplication::setQuitOnLastWindowClosed(false);
     regComponents();
-
+ 
  #ifdef USERNAME_LOGIN
     UserNameLogin w;
     w.checkSaveData();

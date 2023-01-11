@@ -33,6 +33,14 @@ static const CGFloat DefaultTimeout = 3;
  */
 + (void)getHistoryRecordList:(NSString *)roomID block:(void (^)(NSArray *list ,RTMACKModel *model))block;
 
+/*
+ * Get user list
+ * @param block Callback
+ */
++ (void)getUserListWithblock:(void (^)(NSArray * _Nonnull groupUserList,
+                                       RTMACKModel *model))block;
+
+
 #pragma mark - Broadcast Notification Message
 
 /*

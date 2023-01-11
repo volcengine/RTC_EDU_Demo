@@ -799,13 +799,9 @@ struct AudioDeviceInfo {
      */
     char device_id[MAX_DEVICE_ID_LENGTH];
     /** 
-     * @brief 设备全称，包含设备类型与设备名称。例如 "扬声器 (XYZ Audio Adapter)"
+     * @brief 设备名称
      */
     char device_name[MAX_DEVICE_ID_LENGTH];
-    /** 
-     * @brief 设备名称，不含设备类型。例如 "XYZ Audio Adapter"
-     */
-    char device_short_name[MAX_DEVICE_ID_LENGTH];
     /** 
      * @brief 设备所连接的声卡 ID，便于选择使用同一声卡的扬声器和麦克风。
      */
@@ -836,7 +832,6 @@ struct AudioDeviceInfo {
     AudioDeviceInfo() {
         memset(device_id, 0, MAX_DEVICE_ID_LENGTH);
         memset(device_name, 0, MAX_DEVICE_ID_LENGTH);
-        memset(device_short_name, 0, MAX_DEVICE_ID_LENGTH);
         memset(device_container_id, 0, MAX_DEVICE_ID_LENGTH);
         this->device_vid = 0;
         this->device_pid = 0;
@@ -853,11 +848,9 @@ struct AudioDeviceInfo {
         if (this != &src) {
             strncpy(device_id, src.device_id, MAX_DEVICE_ID_LENGTH - 1);
             strncpy(device_name, src.device_name, MAX_DEVICE_ID_LENGTH - 1);
-            strncpy(device_short_name, src.device_short_name, MAX_DEVICE_ID_LENGTH - 1);
             strncpy(device_container_id, src.device_container_id, MAX_DEVICE_ID_LENGTH - 1);
             device_id[MAX_DEVICE_ID_LENGTH - 1] = '\0';
             device_name[MAX_DEVICE_ID_LENGTH - 1] = '\0';
-            device_short_name[MAX_DEVICE_ID_LENGTH - 1] = '\0';
             device_container_id[MAX_DEVICE_ID_LENGTH - 1] = '\0';
             device_vid = src.device_vid;
             device_pid = src.device_pid;

@@ -44,29 +44,22 @@
 
 ### 步骤 5：构建工程
 
-1. 使用 Android Studio 打开该项目的`RTC_EDU_Demo-master/Android/veRTC_Demo_Android` 文件夹
+1. 使用 Android Studio 打开该项目的`RTC_EDU_Demo/Android/veRTC_Demo_Android` 文件夹
 	
 
-2. 填写 **LoginUrl。** 
-	
-
-进入 `scene-core/gradle.properties` 文件，填写 **LoginUrl**。
-
-当前你可以使用 **`https://common.rtc.volcvideo.com/rtc_demo_special/login`** 作为测试服务器域名，仅提供跑通测试服务，无法保障正式需求。
+2. 填写 **HEAD_URL。** <br>
+    进入 `scene-core/gradle.properties` 文件，填写 **HEAD_URL**。<br>
+    当前你可以使用 **`https://common.rtc.volcvideo.com/rtc_demo_special`** 作为测试服务器域名，仅提供跑通测试服务，无法保障正式需求。 <br>
+    <img src="https://portal.volccdn.com/obj/volcfe/cloud-universal-doc/upload_15703882819ea292a62bd928120e3047.png" width="500px" >
 
 
-<img src="https://lf6-volc-editor.volccdn.com/obj/volcfe/sop-public/upload_290f3994a5ee5b998172646aa0f5ab5e" width="500px" >
+3. 填写**APPID、APPKey、AccessKeyID 和 SecretAccessKey**<br>
+    进入 `component/joinrtsparams` 目录下 `gradle.properties`文件，填写 **APPID、APPKey、AccessKeyID、SecretAccessKey**<br>
+    <img src="https://portal.volccdn.com/obj/volcfe/cloud-universal-doc/upload_7de621528819a3a73e847b48f1ff8cee.png" width="500px" >
 
-3. **填写 APPID、APPKey、AccessKeyID、SecretAccessKey、ACCOUNT\_ID 和 VOD\_SPACE**
-	
-
-进入 `component/joinrtsparams` 目录下 `gradle.properties`文件，填写 **APPID、APPKey、AccessKeyID、SecretAccessKey**
-
-<img src="https://lf3-volc-editor.volccdn.com/obj/volcfe/sop-public/upload_65379093c831aef59eb9cd045cd0aa6e" width="500px" >
-
-<img src="https://lf3-volc-editor.volccdn.com/obj/volcfe/sop-public/upload_479b099eccd68eb417b8f3b8eba00066" width="500px" >
-
-进入 `solutions/meeting` 目录下 `gradle.properties`文件，填写 **ACCOUNT_ID 和 VOD_SPACE**
+4. 填写**ACCOUNT_ID 和 VOD_SPACE**<br>
+    进入 `solutions/meeting` 目录下 `gradle.properties`文件，填写 **ACCOUNT_ID 和 VOD_SPACE**<br>
+    <img src="https://portal.volccdn.com/obj/volcfe/cloud-universal-doc/upload_f4536c93ec9bfc0b9ccb394b0346b8c9.png" width="500px" >
 
 ### 步骤 6：编译运行
 

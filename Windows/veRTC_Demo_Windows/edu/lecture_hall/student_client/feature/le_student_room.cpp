@@ -263,6 +263,7 @@ void StudentRoom::InitSigSlots() {
 void StudentRoom::InitTimer() {
 	m_globalTimer_->setInterval(100);
 	connect(m_globalTimer_, &QTimer::timeout, this, &StudentRoom::TimerTick);
+	m_globalTimer_->start();
 }
 
 void StudentRoom::DropCall() {
@@ -358,8 +359,10 @@ void StudentRoom::RtcInit() {
 	std::string token = DATAMGR_INS.student_join_class_room().token;
 	std::string uid = vrd::DataMgr::instance().user_id();
 	EduRTCEngineWrap::setDefaultVideoProfiles();
-	EduRTCEngineWrap::setUserRole(Role::kUserRoleTypeSilentAudience);
 	EduRTCEngineWrap::joinRoom(token.c_str(), roomID.c_str(), uid.c_str());
+	EduRTCEngineWrap::setUserRole(Role::kUserRoleTypeSilentAudience);
+    EduRTCEngineWrap::muteLocalAudio(false);
+    EduRTCEngineWrap::muteLocalVideo(false);
 }
 
 void StudentRoom::InitRoomInfo() {
@@ -394,8 +397,6 @@ void StudentRoom::InitRoomInfo() {
 	void* view = m_teacher_preview_->GetView();
 	EduRTCEngineWrap::setupRemoteView(
 		view, bytertc::RenderMode::kRenderModeHidden, ti.user_id);
-
-	m_globalTimer_->start();
 
 	auto bEnable_interact = DATAMGR_INS.current_room().enable_interactive;
 	auto bEnable_group_speech = DATAMGR_INS.current_room().enable_group_speech;

@@ -1838,8 +1838,6 @@ public:
     */
    virtual void disableAudioProcessor(AudioProcessorMethod method) = 0;
     /** 
-     * @hidden
-     * @deprecated
      * @type api
      * @region 视频数据回调
      * @brief 注册视频数据回调观察者
@@ -2502,7 +2500,7 @@ public:
      * @param [in] config 媒体流信息同步的相关配置，详见 StreamSycnInfoConfig{@link #StreamSycnInfoConfig} 。
      * @return  <br>
      *        + >=0: 消息发送成功。返回成功发送的次数。  <br>
-     *        + -1: 消息发送失败。消息长度大于 255 字节。  <br>
+     *        + -1: 消息发送失败。消息长度大于 16 字节。  <br>
      *        + -2: 消息发送失败。传入的消息内容为空。  <br>
      *        + -3: 消息发送失败。通过屏幕流进行消息同步时，此屏幕流还未发布。  <br>
      *        + -4: 消息发送失败。通过用麦克风或自定义设备采集到的音频流进行消息同步时，此音频流还未发布，详见错误码 ErrorCode{@link #ErrorCode}。  <br>
@@ -2582,20 +2580,6 @@ public:
     virtual void setVideoWatermark(StreamIndex index, const char * image_path, RTCWatermarkConfig config) = 0;
 
     virtual void clearVideoWatermark(StreamIndex index) = 0;
-    /** 
-     * @type api
-     * @region 视频管理
-     * @brief 设置静态图片路径，该图片在用户关闭摄像头后用来推送到远端
-     * @param file_path 静态图片路径，支持本地文件绝对路径和Asset 资源路径（/assets/xx.png），长度限制为 512 字节。   <br>
-     *        静态图片为 BMP, PNG 或 JPG 格式。
-     * @notes  <br>
-     *        + 当设置的路径为空字符串时移除指定的静态图片。  <br>
-     *        + 只有主流能设置静态图片，屏幕流不支持设置。新设置的图片会代替上一次的设置。  <br>
-     *        + 进入房间前后均可调用此方法。  <br>
-     *        + 设置的静态图片不会在本地预览中显示  <br>
-     *        + 开启大小流后，静态图片对大小流均生效，且针对小流进行等比例缩小。
-     */
-    virtual int setDummyCaptureImagePath(const char* file_path) = 0;
 
   /** 
      * @hidden
@@ -3248,8 +3232,7 @@ public:
      *        + 同一用户使用同一公共流 ID 多次调用本接口无效。如果你希望更新公共流参数，调用 updatePublicStreamParam{@link #IRtcEngine#updatePublicStreamParam} 接口。<br>
      *        + 不同用户使用同一公共流 ID 多次调用本接口时，RTC 将使用最后一次调用时传入的参数更新公共流。<br>
      *        + 使用不同的 ID 多次调用本接口可以发布多路公共流。<br>
-     *        + 调用 stopPushPublicStream{@link #IRtcEngine#stopPushPublicStream} 停止发布公共流。<br>
-     *        + 关于公共流功能的介绍，详见[发布和订阅公共流](https://www.volcengine.com/docs/6348/108930)
+     *        + 调用 stopPushPublicStream{@link #IRtcEngine#stopPushPublicStream} 停止发布公共流。
      */
     virtual int startPushPublicStream(const char* public_stream_id, IPublicStreamParam* param) = 0;
     /** 

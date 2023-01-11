@@ -87,6 +87,32 @@ DeviceSetting::DeviceSetting(QWidget* parent) : QWidget(parent) {
 		timer_->start(10);
 		});
 
+    QObject::connect(
+        &RtcEngineWrap::instance(), &RtcEngineWrap::sigOnAudioDeviceStateChanged,
+        this, [=](std::string device_id, bytertc::RTCAudioDeviceType type,
+            bytertc::MediaDeviceState state, bytertc::MediaDeviceError error) {
+				if (this->isVisible() && type == bytertc::kRTCAudioDeviceTypeCaptureDevice) {
+                    std::vector<RtcDevice> devices;
+                    auto setting = Edu::DataMgr::instance().current_device_setting();
+                    RtcEngineWrap::instance().getAudioInputDevices(devices);
+                    init_cmb_data(ui.cmb_micro, devices, setting.curAudioCaptureIndex);
+                    RtcEngineWrap::instance().getAudioOutputDevices(devices);
+                    init_cmb_data(ui.cmb_audio_play, devices, setting.curAudioPlaybackIndex);
+                }
+        });
+
+    QObject::connect(
+        &RtcEngineWrap::instance(), &RtcEngineWrap::sigOnVideoDeviceStateChanged,
+        this, [=](std::string device_id, bytertc::RTCVideoDeviceType type,
+            bytertc::MediaDeviceState state, bytertc::MediaDeviceError error) {
+                if (this->isVisible() && type == bytertc::kRTCVideoDeviceTypeCaptureDevice) {
+                    std::vector<RtcDevice> devices;
+					auto setting = Edu::DataMgr::instance().current_device_setting();
+                    EduRTCEngineWrap::getVideoCaptureDevices(devices);
+                    init_cmb_data(ui.cmb_camrea, devices, setting.curVideoDevIndex);
+                }
+        });
+
 	timer_ = new QTimer(this);
 	connect(timer_, &QTimer::timeout, [=]() {
 		std::random_device rd;

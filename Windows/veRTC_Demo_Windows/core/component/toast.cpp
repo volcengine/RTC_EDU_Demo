@@ -29,7 +29,7 @@ Toast::Toast(QWidget* parent) : QWidget(parent) {
     btn_close_ = new QPushButton();
     btn_close_->setFlat(true);
     btn_close_->setFixedSize(16, 16);
-    btn_close_->setIcon(QIcon(":/img/close"));
+    btn_close_->setIcon(QIcon(":/img//image/close.png"));
     btn_close_->setIconSize(QSize(12, 12));
     btn_close_->setStyleSheet("border: none;");
     hbox_layout->addWidget(btn_close_, 0, Qt::AlignVCenter);

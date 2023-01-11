@@ -234,7 +234,22 @@
         self.myLiveView.name = myModel.name;
     }
 
-    self.groupListView.studnetArray = groupList;
+    [self loadDataWithGetUserList];
+}
+
+- (void)loadDataWithGetUserList {
+    __weak __typeof(self) wself = self;
+    [EduRTMManager getUserListWithblock:^(NSArray * _Nonnull groupUserList,
+                                          RTMACKModel * _Nonnull model) {
+        NSMutableArray *list = [groupUserList mutableCopy];
+        for (EduUserModel *model in list) {
+            if ([model.uid isEqualToString:[LocalUserComponent userModel].uid]) {
+                [list removeObject:model];
+                break;
+            }
+        }
+        wself.groupListView.studnetArray = [list copy];
+    }];
 }
 
 - (void)touchBarClicked:(UIButton *)button {

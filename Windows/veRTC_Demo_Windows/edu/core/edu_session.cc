@@ -502,38 +502,37 @@ void EduSession::_endClass(CSTRING_REF_PARAM room_id, CSTRING_REF_PARAM user_id,
 void EduSession::_openGroupSpeech(CSTRING_REF_PARAM room_id,
                                   CSTRING_REF_PARAM user_id,
                                   CallBackFunction&& callback) {
-  QJsonObject req;
-  req["login_token"] = QString::fromStdString(base_->_token());
-  req["room_id"] = QString::fromStdString(room_id);
-  req["user_id"] = QString::fromStdString(user_id);
+    QJsonObject req;
+    req["login_token"] = QString::fromStdString(base_->_token());
+    req["room_id"] = QString::fromStdString(room_id);
+    req["user_id"] = QString::fromStdString(user_id);
 
+    base_->_emitMessage("eduOpenGroupSpeech", req,
+        [this, callback](const QJsonObject& msg) {
+            int code = msg["code"].toInt();
 
-  base_->_emitMessage("eduOpenGroupSpeech", req,
-	  [this, callback](const QJsonObject& msg) {
-		  int code = msg["code"].toInt();
-
-		  if (callback) {
-			  callback(code);
-		  }
-	  });
+            if (callback) {
+                callback(code);
+            }
+        });
 }
 
 void EduSession::_closeGroupSpeech(CSTRING_REF_PARAM room_id,
                                    CSTRING_REF_PARAM user_id,
                                    CallBackFunction&& callback) {
-	QJsonObject req;
-	req["login_token"] = QString::fromStdString(base_->_token());
-	req["room_id"] = QString::fromStdString(room_id);
-	req["user_id"] = QString::fromStdString(user_id);
+    QJsonObject req;
+    req["login_token"] = QString::fromStdString(base_->_token());
+    req["room_id"] = QString::fromStdString(room_id);
+    req["user_id"] = QString::fromStdString(user_id);
 
-  base_->_emitMessage("eduCloseGroupSpeech", req,
-	  [this, callback](const QJsonObject& msg) {
-		  int code = msg["code"].toInt();
+    base_->_emitMessage("eduCloseGroupSpeech", req,
+        [this, callback](const QJsonObject& msg) {
+            int code = msg["code"].toInt();
 
-		  if (callback) {
-			  callback(code);
-		  }
-	  });
+            if (callback) {
+                callback(code);
+            }
+        });
 }
 
 void EduSession::_openVideoInteract(CSTRING_REF_PARAM room_id,

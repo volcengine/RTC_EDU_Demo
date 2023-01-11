@@ -17,6 +17,7 @@ import com.volcengine.vertcdemo.core.net.rts.RTSBizResponse;
 import com.volcengine.vertcdemo.core.net.rts.RTSInfo;
 import com.volcengine.vertcdemo.edu.bean.EduResponse;
 import com.volcengine.vertcdemo.edu.bean.EduUserInfo;
+import com.volcengine.vertcdemo.edu.bean.GetUserListResponse;
 import com.volcengine.vertcdemo.edu.bean.JoinClassResult;
 import com.volcengine.vertcdemo.edu.event.EduClassEvent;
 import com.volcengine.vertcdemo.edu.event.EduGroupSpeechEvent;
@@ -42,6 +43,7 @@ public class EduRTSClient extends RTSBaseClient {
     private static final String CMD_EDU_CANCEL_HANDS_UP = "eduCancelHandsUp";
     private static final String CMD_EDU_GET_HISTORY_ROOM_LIST = "eduGetHistoryRoomList";
     private static final String CMD_EDU_GET_HISTORY_RECORD_LIST = "eduGetHistoryRecordList";
+    private static final String CMD_EDU_GET_USER_LIST = "eduGetUserList"; // 获取房间内所有用户列表
 
     public static final String ON_BEGIN_CLASS = "onBeginClass";
     public static final String ON_END_CLASS = "onEndClass";
@@ -192,22 +194,6 @@ public class EduRTSClient extends RTSBaseClient {
         sendServerMessageOnNetwork(roomId, params, UpdateHistoryListOfClassEvent.class, callback);
     }
 
-    /*
-                if (response.getCode() == 200 && response.getData() != null) {
-                result.roomInfo.now = response.getTimestamp();
-                String roomName = result.roomInfo.roomName;
-                if (!TextUtils.isEmpty(roomName)) {
-                    try {
-                        result.roomInfo.roomName = URLDecoder.decode(roomName, "UTF-8");
-                    } catch (UnsupportedEncodingException e) {
-                        e.printStackTrace();
-                    }
-                }
-            } else {
-                result = new JoinClassResult();
-                result.errorCode = response.getCode();
-            }
-     */
     public void joinClass(String roomId, IRequestCallback<JoinClassResult> callback) {
         JsonObject params = getCommonParams(CMD_EDU_JOIN_CLASS);
         params.addProperty("room_id", roomId);
@@ -219,6 +205,12 @@ public class EduRTSClient extends RTSBaseClient {
         JsonObject params = getCommonParams(CMD_EDU_LEAVE_CLASS);
         params.addProperty("room_id", roomId);
         sendServerMessageOnNetwork(roomId, params, EduResponse.class, callback);
+    }
+
+    public void getUserList(String roomId, IRequestCallback<GetUserListResponse> callback) {
+        JsonObject params = getCommonParams(CMD_EDU_GET_USER_LIST);
+        params.addProperty("room_id", roomId);
+        sendServerMessageOnNetwork(roomId, params, GetUserListResponse.class, callback);
     }
 
     public void handsUp(String roomId, IRequestCallback<EduResponse> callback) {

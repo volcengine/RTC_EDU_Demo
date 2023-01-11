@@ -653,9 +653,10 @@ public:
      * @brief 订阅公共流的结果回调<br>
      *        通过 startPlayPublicStream{@link #IRtcEngine#startPlayPublicStream} 订阅公共流后，可以通过本回调获取订阅结果。
      * @param [in] public_stream_id 公共流的 ID
-     * @param [in] errorCode 公共流订阅结果状态码。详见 PublicStreamErrorCode{@link #PublicStreamErrorCode}。
+     * @param [in] errorCode 公共流订阅结果状态码。<br>
+     *             `200`: 订阅成功
      */
-    virtual void onPlayPublicStreamResult(const char* public_stream_id, PublicStreamErrorCode errorCode) {
+    virtual void onPlayPublicStreamResult(const char* public_stream_id, int errorCode) {
         (void)public_stream_id;
         (void)errorCode;
     }
@@ -1478,7 +1479,7 @@ public:
      *        + 若被封禁用户退房后再进房，则依然是封禁状态，且房间内所有人会再次收到该回调。  <br>
      *        + 若被封禁用户断网后重连进房，则依然是封禁状态，且只有本人会再次收到该回调。  <br>
      *        + 指定用户被封禁后，房间内其他用户退房后再进房，会再次收到该回调。  <br>
-     *        + 在控制台开启大会模式后，只有被封禁/解禁用户会收到该回调。  <br>
+     *        + 通话人数超过 5 人时，只有被封禁/解禁用户会收到该回调。  <br>
      *        + 同一房间解散后再次创建，房间内状态清空。
      */
     virtual void onVideoStreamBanned(const char* uid, bool banned) {
@@ -1500,7 +1501,7 @@ public:
      *        + 若被封禁用户退房后再进房，则依然是封禁状态，且房间内所有人会再次收到该回调。  <br>
      *        + 若被封禁用户断网后重连进房，则依然是封禁状态，且只有本人会再次收到该回调。  <br>
      *        + 指定用户被封禁后，房间内其他用户退房后再进房，会再次收到该回调。  <br>
-     *        + 在控制台开启大会模式后，只有被封禁/解禁用户会收到该回调。   <br>
+     *        + 通话人数超过 5 人时，只有被封禁/解禁用户会收到该回调。   <br>
      *        + 同一房间解散后再次创建，房间内状态清空。
      */
     virtual void onAudioStreamBanned(const char* uid, bool banned) {
@@ -1545,9 +1546,10 @@ public:
      * @brief 公共流发布结果回调。<br>
      *        调用 startPushPublicStream{@link #IRtcEngine#startPushPublicStream} 接口发布公共流后，启动结果通过此回调方法通知用户。
      * @param [in] public_streamid 公共流 ID
-     * @param [in] errorCode 详见 PublicStreamErrorCode{@link #PublicStreamErrorCode}。
+     * @param [in] errorCode 公共流发布结果状态码。<br>
+     *             `200`: 发布成功
      */
-    virtual void onPushPublicStreamResult(const char* public_streamid, PublicStreamErrorCode errorCode) {
+    virtual void onPushPublicStreamResult(const char* public_streamid, int errorCode) {
         (void)public_streamid;
         (void)errorCode;
     }

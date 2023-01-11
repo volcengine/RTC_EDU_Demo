@@ -115,7 +115,7 @@ namespace vrd
 		for (int i = 0; i < video_count_; ++i)
 		{
 			QListWidgetItem *list_item = item(i);
-			std::string old_user_id = list_item->data(Qt::UserRole).value<QString>().toUtf8();
+			std::string old_user_id = std::string(list_item->data(Qt::UserRole).value<QString>().toUtf8());
 
 			if (new_user_ids.find(old_user_id) == new_user_ids.cend())
 			{
@@ -145,7 +145,7 @@ namespace vrd
 
 				QListWidgetItem *list_item = new QListWidgetItem();
 				list_item->setFlags(Qt::NoItemFlags);
-				list_item->setData(Qt::UserRole, speaker->user_id.c_str());
+				list_item->setData(Qt::UserRole, QString::fromStdString(speaker->user_id));
 				list_item->setSizeHint(video->sizeHint());
 
 				insertItem(video_count_++, list_item);

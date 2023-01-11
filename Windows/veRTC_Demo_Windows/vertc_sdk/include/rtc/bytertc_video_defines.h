@@ -1143,37 +1143,6 @@ enum RTCVideoDeviceType {
 };
 
 /** 
- * @type keytype
- * @brief 公共流状态码
- */
-enum PublicStreamErrorCode {
-    /** 
-     * @brief 发布或订阅成功
-     */
-    kPublicStreamOK = 0,
-    /** 
-     * @brief 公共流的参数异常，请修改参数后重试
-     */
-    kPublicStreamPushInvalidParam = 1191,
-    /** 
-     * @brief 服务端状态异常，将自动重试
-     */
-    kPublicStreamPushInvalidStatus = 1192,
-    /** 
-     * @brief 内部错误，不可恢复，请重试。
-     */
-    kPublicStreamPushInternalError = 1193,
-    /** 
-     * @brief 推流失败，将自动重试，用户不需要处理
-     */
-    kPublicStreamPushFailed = 1195,
-    /** 
-     * @brief 推流失败，10s 后会重试，重试 3 次失败后自动停止。
-     */
-    kPublicStreamPushTimeout = 1196,
-};
-
-/** 
  * @hidden(Windows, MacOS, Linux)
  * @type keytype
  * @brief 视频旋转模式

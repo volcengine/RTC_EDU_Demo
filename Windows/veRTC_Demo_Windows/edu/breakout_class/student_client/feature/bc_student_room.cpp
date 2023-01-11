@@ -252,6 +252,7 @@ void StudentRoom::onCloseVideoInteract() {
 void StudentRoom::InitTimer() {
   m_globalTimer_->setInterval(100);
   connect(m_globalTimer_, &QTimer::timeout, this, &StudentRoom::TimerTick);
+  m_globalTimer_->start();
 }
 
 void StudentRoom::InitSigSlots() {
@@ -441,10 +442,7 @@ void StudentRoom::InitRoomInfos() {
     QTimer::singleShot(500, this, [this]() { onOpenVideoInteract(); });
   }
 
-  m_globalTimer_->start();
-
   int status = DATAMGR_INS.current_room().status;
-
   qInfo("initRoomInfo - status:%d", status);
 
   if (status == 2) {

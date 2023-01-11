@@ -13,8 +13,16 @@
 		<file alias="rdo_hover">image/rdo_hover.png</file>
 		<file alias="rdo_normal">image/rdo_normal.png</file>
 		<file alias="user_bg">image/user.png</file>
+		<file alias="arrow_down">image/arrow_down.svg</file>
+		<file alias="arrow_up">image/arrow_up.svg</file>
+		<file alias="checkbox_checked">image/checkbox_checked.svg</file>
+		<file alias="checkbox_unchecked">image/checkbox_unchecked.svg</file>
+		<file alias="issue_description">image/issue_description.svg</file>
+		<file alias="issue_phone">image/issue_phone.svg</file>
+		<file alias="issue_scene">image/issue_scene.svg</file>
+		<file alias="issue_type">image/issue_type.svg</file>
 		<file>image/photo_bg.png</file>
-		<file alias="close">image/close.png</file>
 		<file>image/error.png</file>
+		<file>image/close.png</file>
     </qresource>
 </RCC>

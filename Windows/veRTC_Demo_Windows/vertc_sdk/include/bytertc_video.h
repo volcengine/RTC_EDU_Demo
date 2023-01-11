@@ -338,7 +338,7 @@ public:
      * @brief <span id="IRTCVideo-setvideoencoderconfig-2"></span>
      *        视频发布端设置推送多路流时各路流的参数，包括分辨率、帧率、码率、缩放模式、网络不佳时的回退策略等。
      * @param [in] channel_solutions 要推送的多路视频流的参数需注意，所设置的分辨率是各路流的最大分辨率。参看 VideoEncoderConfig{@link #VideoEncoderConfig}。
-     * @param [in] solution_num 视频参数数组长度，最多支持设置 3 路参数，超过 3 路时默认取前 3 路的值。当设置了多路参数时，分辨率和帧率必须是从大到小排列。需注意，所设置的分辨率是各路流的最大分辨率。
+     * @param [in] solution_num 视频参数数组长度，最多支持设置 3 路参数，超过 3 路时默认取前 3 路的值。当设置了多路参数时，分辨率必须是从大到小排列。
      * @return 方法调用结果： <br>
      *        + 0：成功  <br>
      *        + !0：失败  <br>
@@ -1066,8 +1066,6 @@ public:
    virtual void disableAudioProcessor(AudioProcessorMethod method) = 0;
 
     /** 
-     * @hidden
-     * @deprecated
      * @type api
      * @region 视频数据回调
      * @author sunhang.io
@@ -1648,8 +1646,7 @@ public:
      *        + 同一用户使用同一公共流 ID 多次调用本接口无效。如果你希望更新公共流参数，调用 updatePublicStreamParam{@link #IRTCVideo#updatePublicStreamParam} 接口。<br>
      *        + 不同用户使用同一公共流 ID 多次调用本接口时，RTC 将使用最后一次调用时传入的参数更新公共流。<br>
      *        + 使用不同的 ID 多次调用本接口可以发布多路公共流。<br>
-     *        + 调用 stopPushPublicStream{@link #IRTCVideo#stopPushPublicStream} 停止发布公共流。<br>
-     *        + 关于公共流功能的介绍，详见[发布和订阅公共流](https://www.volcengine.com/docs/6348/108930)
+     *        + 调用 stopPushPublicStream{@link #IRTCVideo#stopPushPublicStream} 停止发布公共流。
      */
     virtual int startPushPublicStream(const char* public_stream_id, IPublicStreamParam* param) = 0;
     /** 
@@ -1828,7 +1825,7 @@ public:
      * @param [in] config 媒体流信息同步的相关配置，详见 StreamSycnInfoConfig{@link #StreamSycnInfoConfig} 。
      * @return  <br>
      *        + >=0: 消息发送成功。返回成功发送的次数。  <br>
-     *        + -1: 消息发送失败。消息长度大于 255 字节。  <br>
+     *        + -1: 消息发送失败。消息长度大于 16 字节。  <br>
      *        + -2: 消息发送失败。传入的消息内容为空。  <br>
      *        + -3: 消息发送失败。通过屏幕流进行消息同步时，此屏幕流还未发布。  <br>
      *        + -4: 消息发送失败。通过用麦克风或自定义设备采集到的音频流进行消息同步时，此音频流还未发布，详见错误码 ErrorCode{@link #ErrorCode}。  <br>
@@ -1939,29 +1936,6 @@ public:
 
     /** 
      * @type api
-     * @region 音视频传输
-     * @author jinzicai
-     * @brief 摄像头处于关闭状态时，使用静态图片填充本地推送的视频流。
-     *        可重复调用该接口来更新图片。若要停止发送图片，可传入空字符串或启用内部摄像头采集。
-     * @param filePath 设置静态图片的路径。  <br>
-     *        支持本地文件绝对路径，不支持网络链接，长度限制为 512 字节。   <br>
-     *        静态图片支持类型为 JPEG/JPG、PNG、BMP。  <br>
-     *        若图片宽高比与设置的编码宽高比不一致，图片会被等比缩放，黑边填充空白区域。推流帧率与码率与设置的编码参数一致。
-     * @return  <br>
-     *        + 0: 成功。  <br>
-     *        + -1: 失败。
-     * @notes  <br>
-     *        + 该接口只适用于 SDK 内部摄像头采集，不适用于自定义视频采集。  <br>
-     *        + 本地预览无法看到静态图片。  <br>
-     *        + 进入房间前后均可调用此方法。在多房间场景中，静态图片仅在发布的房间中生效。  <br>
-     *        + 针对该静态图片，滤镜和镜像效果不生效，水印效果生效。  <br>
-     *        + 只有主流能设置静态图片，屏幕流不支持设置。  <br>
-     *        + 开启大小流后，静态图片对大小流均生效，且针对小流进行等比例缩小。
-     */
-    virtual int setDummyCaptureImagePath(const char* file_path) = 0;
-
-    /** 
-     * @type api
      * @region 云代理
      * @author daining.nemo
      * @brief 开启云代理
@@ -2028,8 +2002,8 @@ public:
      * @region 引擎管理
      * @author chenweiming.push
      * @brief 创建 IRTCVideo 实例。  <br>
-     *        如果当前进程中未创建引擎实例，那么你必须先使用此方法，以使用 RTC 提供的各种音视频能力。  <br>
-     *        如果当前进程中已创建了引擎实例，再次调用此方法时，会返回已创建的引擎实例。
+     *        如果当前线程中未创建引擎实例，那么你必须先使用此方法，以使用 RTC 提供的各种音视频能力。  <br>
+     *        如果当前线程中已创建了引擎实例，再次调用此方法时，会返回已创建的引擎实例。
      * @param [in] app_id 每个应用的唯一标识符。只有使用相同的 app_id 生成的实例，才能够进行音视频通信。
      * @param [in] event_handler SDK 回调给应用层的 Callback 对象，详见 IRTCVideoEventHandler{@link #IRTCVideoEventHandler} 。
      * @param [in] parameters 用以覆盖默认参数的本引擎实例参数。JSON 字符串格式。

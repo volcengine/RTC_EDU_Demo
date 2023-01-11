@@ -516,7 +516,7 @@ int RtcEngineWrap::setAudioOutputDevice(int index) {
         || index < 0)
         return -API_CALL_ERROR;
     current_audio_output_idx_ = index;
-    audio_device_manager_->followSystemCaptureDevice(false);
+    audio_device_manager_->followSystemPlaybackDevice(false);
     return audio_device_manager_->setAudioPlaybackDevice(
         audio_output_devices_[index].device_id.c_str());
 }
@@ -828,8 +828,8 @@ void RtcEngineWrap::onLeaveRoom(const bytertc::RtcRoomStats& stats) {
 void RtcEngineWrap::onUserJoined(const bytertc::UserInfo& userInfo,
                                  int elapsed) {
     UserInfoWrap wrap;
-    wrap.uid = userInfo.uid;
-    wrap.extra_info = userInfo.extra_info;
+    wrap.uid = std::string(userInfo.uid);
+    wrap.extra_info = std::string(userInfo.extra_info);
     ForwardEvent::PostEvent(this, [=] { emit sigOnUserJoined(wrap, elapsed); });
 }
 

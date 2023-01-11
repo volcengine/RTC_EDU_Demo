@@ -359,7 +359,7 @@ typedef struct TranscoderLayoutRegion {
      */
     const char* region_id;
    /** 
-     * @brief 图片或视频流所在房间的房间 ID。必填。<br>
+     * @brief 图片或视频流所在房间的房间 ID。<br>
      *        如果此图片或视频流是通过 startForwardStreamToRooms{@link #IRTCRoom#startForwardStreamToRooms} 转发到你所在房间的媒体流时，你应将房间 ID 设置为你所在的房间 ID。
      */
     const char* room_id;

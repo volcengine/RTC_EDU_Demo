@@ -110,15 +110,16 @@ TeacherRoom::TeacherRoom(QWidget* parent)
       ui(new Ui::BCTeacherLayout),
       m_globalTimer_(new QTimer(parent)),
       m_class_status_(CLASS_STATUS::READY) {
-  ui->setupUi(this);
+    ui->setupUi(this);
 
-  EduRTCEngineWrap::initDevice();
-  InitTimer();
-  InitTeacherVideoCell();
-  InitUIElements();
-  InitRoomInfos();
-  InitSigSlots();
-  RtcInit();
+    EduRTCEngineWrap::initDevice();
+
+    InitUIElements();
+    InitTeacherVideoCell();
+    InitRoomInfos();
+    InitTimer();
+    InitSigSlots();
+    RtcInit();
 }
 
 TeacherRoom::~TeacherRoom() {
@@ -496,8 +497,6 @@ void TeacherRoom::InitSigSlots() {
             ui->btn_groupspeak->setStyleSheet(kBtnNegative);
             ui->btn_inspect->setEnabled(false);
             ui->btn_inspect->setStyleSheet(kBtnNegative);
-            ui->btn_inspect->setEnabled(false);
-            ui->btn_inspect->setStyleSheet(kBtnNegative);
 
             pRoomView_ = new vrd::RoomView();
             pRoomView_->setFixedWidth(272);
@@ -515,8 +514,6 @@ void TeacherRoom::InitSigSlots() {
             ui->btn_interact->setEnabled(true);
             ui->btn_groupspeak->setEnabled(true);
             ui->btn_groupspeak->setStyleSheet(kBtnActive);
-            ui->btn_inspect->setEnabled(true);
-            ui->btn_inspect->setStyleSheet(kBtnActive);
             ui->btn_inspect->setEnabled(true);
             ui->btn_inspect->setStyleSheet(kBtnActive);
 
@@ -584,8 +581,9 @@ void TeacherRoom::TriggerStartClass() {
 }
 
 void TeacherRoom::InitTimer() {
-  m_globalTimer_->setInterval(1000);
-  connect(m_globalTimer_, &QTimer::timeout, this, &TeacherRoom::TimerTick);
+    m_globalTimer_->setInterval(1000);
+    connect(m_globalTimer_, &QTimer::timeout, this, &TeacherRoom::TimerTick);
+    m_globalTimer_->start();
 }
 
 void TeacherRoom::DropCall() {
@@ -689,18 +687,14 @@ void TeacherRoom::DropCall() {
 }
 
 void TeacherRoom::RtcInit() {
-  auto roomId = vrd::DataMgr::instance().room_id();
-  EduRTCEngineWrap::createMainRoom(roomId);
-  EduRTCEngineWrap::setMainUserRole(Role::kUserRoleTypeBroadcaster);
-  const auto token = DATAMGR_INS.current_room().token;
-  const auto uid = vrd::DataMgr::instance().user_id();
-  EduRTCEngineWrap::setDefaultVideoProfiles();
-  EduRTCEngineWrap::joinMainRoom(token, roomId, uid);
-  EduRTCEngineWrap::enableLocalAudio(true);
-  EduRTCEngineWrap::enableLocalVideo(true);
-  EduRTCEngineWrap::muteLocalAudio(false);
-  EduRTCEngineWrap::muteLocalVideo(false);
-  EduRTCEngineWrap::publishMainRoom();
+    auto roomId = vrd::DataMgr::instance().room_id();
+    EduRTCEngineWrap::createMainRoom(roomId);
+    EduRTCEngineWrap::setMainUserRole(Role::kUserRoleTypeBroadcaster);
+    const auto token = DATAMGR_INS.current_room().token;
+    const auto uid = vrd::DataMgr::instance().user_id();
+    EduRTCEngineWrap::setDefaultVideoProfiles();
+    EduRTCEngineWrap::joinMainRoom(token, roomId, uid);
+    EduRTCEngineWrap::publishMainRoom();
 }
 
 void TeacherRoom::InitRoomInfos() {
@@ -708,9 +702,6 @@ void TeacherRoom::InitRoomInfos() {
 	m_room_id_ = DATAMGR_INS.current_room().room_id;
 	m_user_id_ = DATAMGR_INS.current_room().create_user_id;
 	m_user_name_ = DATAMGR_INS.current_room().teacher_name;
-
-	bool bEnable_interact = DATAMGR_INS.current_room().enable_interactive;
-	bool bEnable_group_speech = DATAMGR_INS.current_room().enable_group_speech;
 
 	bool bMic_on = DATAMGR_INS.teacher_info().is_mic_on;
 	bool bCamera_on = DATAMGR_INS.teacher_info().is_camera_on;
@@ -728,7 +719,6 @@ void TeacherRoom::InitRoomInfos() {
 	if (bCamera_on) {
 		EduRTCEngineWrap::enableLocalVideo(true);
 		EduRTCEngineWrap::muteLocalVideo(false);
-
 	}
 	else {
 		EduRTCEngineWrap::enableLocalVideo(false);
@@ -736,55 +726,10 @@ void TeacherRoom::InitRoomInfos() {
 	}
 	m_local_preview_->RemoteSetVideoMute(!bCamera_on);
 
-	if (bEnable_group_speech) {
-		m_is_goupspeak_ = true;
-		ui->btn_groupspeak->setStyleSheet(kBtnNegative);
-		ui->btn_groupspeak->setText("结束集体发言");
-		ui->btn_groupspeak->setFixedWidth(108);
-		ui->btn_groupspeak->setStyleSheet(kBtnStartClass);
-		ui->btn_interact->setEnabled(false);
-		ui->btn_interact->setStyleSheet(kBtnNegative);
-		ui->btn_inspect->setEnabled(false);
-		ui->btn_inspect->setStyleSheet(kBtnNegative);
-
-		ShowGroupSpeaker();
-	}
-	if (bEnable_interact) {
-		m_is_interacting = true;
-		ui->btn_interact->setText("结束视频互动");
-		ui->btn_interact->setFixedWidth(108);
-		ui->btn_interact->setStyleSheet(kBtnStartClass);
-		ui->btn_groupspeak->setEnabled(false);
-		ui->btn_groupspeak->setStyleSheet(kBtnNegative);
-		ui->btn_inspect->setEnabled(false);
-		ui->btn_inspect->setStyleSheet(kBtnNegative);
-		ui->btn_inspect->setEnabled(false);
-		ui->btn_inspect->setStyleSheet(kBtnNegative);
-
-		pRoomView_ = new vrd::RoomView();
-		pRoomView_->setFixedWidth(272);
-		pRoomView_->setAttribute(Qt::WA_DeleteOnClose);
-		ui->hbox_content->insertWidget(0, pRoomView_);
-	}
-
 	ui->lab_room_name->setText(QString::fromStdString(m_room_name_));
 	ui->lab_room_id->setText("课堂ID: " + QString::fromStdString(m_room_id_));
 	m_local_preview_->SetDisplayName(QString::fromStdString(m_user_name_));
 
-	Edu::TeacherInfo ti = DATAMGR_INS.teacher_info();
-	const bool video_mute = !ti.is_camera_on;
-	const bool audio_mute = !ti.is_mic_on;
-
-	if (video_mute) {
-		m_local_preview_->RemoteSetVideoMute(true);
-		EduRTCEngineWrap::stopPreview();
-	}
-	else {
-		m_local_preview_->RemoteSetVideoMute(false);
-		EduRTCEngineWrap::startPreview();
-	}
-	EduRTCEngineWrap::muteLocalAudio(audio_mute);
-	m_globalTimer_->start();
 	int status = DATAMGR_INS.current_room().status;
 	if (status == 2) {
 		close();
@@ -812,6 +757,38 @@ void TeacherRoom::InitRoomInfos() {
 		int diff = (sec - real) / 1000000000;
 		m_duaration_class = diff;
 	}
+
+    bool bEnable_group_speech = DATAMGR_INS.current_room().enable_group_speech;
+    if (bEnable_group_speech) {
+        m_is_goupspeak_ = true;
+        ui->btn_groupspeak->setStyleSheet(kBtnNegative);
+        ui->btn_groupspeak->setText("结束集体发言");
+        ui->btn_groupspeak->setFixedWidth(108);
+        ui->btn_groupspeak->setStyleSheet(kBtnStartClass);
+        ui->btn_interact->setEnabled(false);
+        ui->btn_interact->setStyleSheet(kBtnNegative);
+        ui->btn_inspect->setEnabled(false);
+        ui->btn_inspect->setStyleSheet(kBtnNegative);
+
+        ShowGroupSpeaker();
+    }
+
+    bool bEnable_interact = DATAMGR_INS.current_room().enable_interactive;
+    if (bEnable_interact) {
+        m_is_interacting = true;
+        ui->btn_interact->setText("结束视频互动");
+        ui->btn_interact->setFixedWidth(108);
+        ui->btn_interact->setStyleSheet(kBtnStartClass);
+        ui->btn_groupspeak->setEnabled(false);
+        ui->btn_groupspeak->setStyleSheet(kBtnNegative);
+        ui->btn_inspect->setEnabled(false);
+        ui->btn_inspect->setStyleSheet(kBtnNegative);
+
+        pRoomView_ = new vrd::RoomView();
+        pRoomView_->setFixedWidth(272);
+        pRoomView_->setAttribute(Qt::WA_DeleteOnClose);
+        ui->hbox_content->insertWidget(0, pRoomView_);
+    }
 }
 
 void TeacherRoom::InitUIElements() {
@@ -853,24 +830,10 @@ void TeacherRoom::InitUIElements() {
 }
 
 void TeacherRoom::InitTeacherVideoCell() {
-	m_local_preview_ = new Videocell(true, ui->widget);
-	EduRTCEngineWrap::setupLocalView(m_local_preview_->GetView(), bytertc::RenderMode::kRenderModeHidden, "local");
-	Edu::TeacherInfo ti = DATAMGR_INS.teacher_info();
-	bool video_mute = !ti.is_camera_on;
-	bool audio_mute = !ti.is_mic_on;
-
-	if (video_mute) {
-		m_local_preview_->RemoteSetVideoMute(true);
-		EduRTCEngineWrap::stopPreview();
-	}
-	else {
-		m_local_preview_->RemoteSetVideoMute(false);
-		EduRTCEngineWrap::startPreview();
-	}
-
-	EduRTCEngineWrap::muteLocalAudio(audio_mute);
-	m_local_preview_->RemoteSetAudioMute(false);
-	m_local_preview_->RemoteSetVideoMute(true);
+    m_local_preview_ = new Videocell(true, ui->widget);
+    EduRTCEngineWrap::setupLocalView(m_local_preview_->GetView(), bytertc::RenderMode::kRenderModeHidden, "local");
+    m_local_preview_->RemoteSetAudioMute(false);
+    m_local_preview_->RemoteSetVideoMute(true);
 }
 
 void TeacherRoom::UpdateOnlineTitle(int num) {

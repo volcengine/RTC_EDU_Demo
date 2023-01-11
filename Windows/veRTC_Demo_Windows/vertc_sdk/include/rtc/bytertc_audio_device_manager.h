@@ -10,7 +10,6 @@
 namespace bytertc {
 
 /** 
- * @hidden
  * @type api
  * @region 引擎管理
  * @brief 音视频设备相关的信息
@@ -24,7 +23,6 @@ public:
     IDeviceCollection() {
     }
     /** 
-     * @hidden
      * @type api
      * @region 引擎管理
      * @brief 获取当前系统内音视频设备数量
@@ -32,7 +30,6 @@ public:
      */
     virtual int getCount() = 0;
     /** 
-     * @hidden
      * @type api
      * @region 引擎管理
      * @brief 根据索引号，获取设备信息
@@ -45,7 +42,6 @@ public:
      */
     virtual int getDevice(int index, char device_name[MAX_DEVICE_ID_LENGTH], char device_id[MAX_DEVICE_ID_LENGTH]) = 0;
     /** 
-     * @hidden
      * @type api
      * @region 引擎管理
      * @brief 释放当前 IAudioDeviceCollection{@link #IAudioDeviceCollection} 对象占用的资源。
@@ -107,7 +103,7 @@ public:
      * @region 引擎管理
      * @brief 根据索引号，获取设备信息
      * @param [in] index 设备索引号，从 0 开始，注意需小于 getCount{@link #IAudioDeviceCollection#getCount} 返回值。
-     * @param [out] audio_device_info 设备信息，详见 AudioDeviceInfo{@link #AudioDeviceInfo}
+     * @param [out] audio_device_info 设备信息
      * @return  <br>
      *        + 0：方法调用成功  <br>
      *        + !0：方法调用失败  <br>

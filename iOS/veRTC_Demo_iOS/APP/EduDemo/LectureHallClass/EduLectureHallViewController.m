@@ -251,10 +251,12 @@
 - (void)joinClass {
     [[PublicParameterComponent share] setRoomId:self.roomModel.roomId];
     WeakSelf;
-    [EduRTMStudentManager joinClass:self.roomModel.roomId roomType:YES block:^(EduClassModel *classModel) {
-        if(classModel.ackModel.result){
+    [EduRTMStudentManager joinClass:self.roomModel.roomId
+                           roomType:YES
+                              block:^(EduClassModel *classModel) {
+        if (classModel.ackModel.result) {
             [wself joinClassWithClassModel:classModel];
-        }else{
+        } else {
             [wself leaveClass];
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 AlertActionModel *alertModel = [[AlertActionModel alloc] init];

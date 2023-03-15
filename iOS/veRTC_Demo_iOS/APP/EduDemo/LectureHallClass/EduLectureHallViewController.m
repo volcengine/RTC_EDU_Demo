@@ -321,7 +321,7 @@
     if ([dic isKindOfClass:[NSDictionary class]]) {
         NSString *type = dic[@"type"];
         if ([type isEqualToString:@"resume"]) {
-            [self joinClass];
+
         } else if ([type isEqualToString:@"exit"]) {
             [self leaveClass];
         } else {

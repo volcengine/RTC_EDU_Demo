@@ -58,14 +58,16 @@ void SceneSelectWidget::initControls() {
     this->resize(QSize(1180, 700));
 	this->setStyleSheet(kMainQss);
 	this->setContentsMargins(0, 0, 0, 0);
-	ui.txt_sdk_ver->setText(QString("App版本 v12.0.5 / SDK版本 v") +
+	ui.txt_sdk_ver->setText(QString("App版本 v12.0.6 / SDK版本 v") +
 		RtcEngineWrap::getSDKVersion().c_str());
 	QApplication::setEffectEnabled(Qt::UI_AnimateCombo, false);
+
 
 #ifdef EDU_SCENE
 	vrd::EduModule::addThis();
 	setupEduSceneButton();
 #endif // EDU_SCENE
+
 
 #ifdef MORE_SCENE
 	vrd::SceneSelectModule::addThis();

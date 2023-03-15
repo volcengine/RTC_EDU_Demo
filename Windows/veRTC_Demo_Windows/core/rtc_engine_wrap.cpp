@@ -724,6 +724,7 @@ int RtcEngineWrap::startScreenCaptureByWindowId(void* window_id) {
   bytertc::ScreenCaptureParameters screenCaptureParams;
   screenCaptureParams.capture_mouse_cursor =
       bytertc::kMouseCursorCaptureStateOff;
+  screenCaptureParams.content_hint = bytertc::kContentHintMotion;
   auto nRet =
       video_engine_->startScreenVideoCapture(screenSourceInfo, screenCaptureParams);
   if (nRet == 0 && getRtcRoom(room_id_)) {

@@ -1,3 +1,6 @@
+// Copyright (c) 2023 Beijing Volcano Engine Technology Ltd.
+// SPDX-License-Identifier: MIT
+
 package com.volcengine.vertcdemo.edu.view;
 
 import android.content.Context;
@@ -11,9 +14,9 @@ import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.ss.video.rtc.demo.basic_module.utils.Utilities;
 import com.volcengine.vertcdemo.edu.R;
 import com.volcengine.vertcdemo.edu.bean.EduUserInfo;
+import com.volcengine.vertcdemo.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +27,7 @@ public class GroupStudentLayout extends FrameLayout {
     private final List<EduUserInfo> mStudentList = new ArrayList<>();
 
     private final LayoutParams mStudentParams = new LayoutParams(
-            (int) Utilities.dip2Px(120), (int) Utilities.dip2Px(80));
+            (int) Utils.dp2Px(120), (int) Utils.dp2Px(80));
 
     public GroupStudentLayout(@NonNull Context context) {
         super(context);
@@ -45,8 +48,8 @@ public class GroupStudentLayout extends FrameLayout {
         LayoutInflater.from(getContext()).inflate(R.layout.layout_group_student_layout, this, true);
         mGroupStudentContainer = findViewById(R.id.layout_group_student_container);
 
-        mStudentParams.leftMargin = (int) Utilities.dip2Px(4);
-        mStudentParams.rightMargin = (int) Utilities.dip2Px(4);
+        mStudentParams.leftMargin = (int) Utils.dp2Px(4);
+        mStudentParams.rightMargin = (int) Utils.dp2Px(4);
     }
 
     public void setStudentList(List<EduUserInfo> infoList) {

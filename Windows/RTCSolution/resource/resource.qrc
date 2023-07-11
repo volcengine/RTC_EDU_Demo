@@ -1,0 +1,30 @@
+<RCC>
+    <qresource prefix="/img">
+		<file alias="demo_logo">image/demo_logo.png</file>
+		<file alias="full_demo_logo">image/full_demo_logo.png</file>
+		<file alias="setting">image/setting.png</file>
+		<file alias="setting_selected">image/setting_selected.png</file>
+		<file alias="back">image/back.png</file>
+		<file alias="rdo_chk">image/rdo_chk.png</file>
+		<file alias="rdo_unchk">image/rdo_unchk.png</file>
+		<file alias="rdo_unchk@2x">image/rdo_unchk@2x.png</file>
+		<file alias="real_time_big_logo">image/real_time_big_logo.png</file>
+		<file alias="rdo_hover">image/rdo_hover.png</file>
+		<file alias="rdo_normal">image/rdo_normal.png</file>
+		<file alias="user_bg">image/user.png</file>
+		<file alias="arrow_down">image/arrow_down.svg</file>
+		<file alias="arrow_up">image/arrow_up.svg</file>
+		<file alias="checkbox_checked">image/checkbox_checked.svg</file>
+		<file alias="checkbox_unchecked">image/checkbox_unchecked.svg</file>
+		<file alias="issue_description">image/issue_description.svg</file>
+		<file alias="issue_phone">image/issue_phone.svg</file>
+		<file alias="issue_scene">image/issue_scene.svg</file>
+		<file alias="issue_type">image/issue_type.svg</file>
+		<file>image/photo_bg.png</file>
+		<file>image/error.png</file>
+		<file>image/close.png</file>
+    </qresource>
+	<qresource prefix="/translations">
+		<file alias="common_zh_CN">translations/common_zh_CN.qm</file>
+    </qresource>
+</RCC>

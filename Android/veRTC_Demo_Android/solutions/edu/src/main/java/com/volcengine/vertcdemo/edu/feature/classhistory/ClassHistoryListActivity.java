@@ -1,28 +1,30 @@
+// Copyright (c) 2023 Beijing Volcano Engine Technology Ltd.
+// SPDX-License-Identifier: MIT
+
 package com.volcengine.vertcdemo.edu.feature.classhistory;
+
+import static androidx.recyclerview.widget.RecyclerView.VERTICAL;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ss.video.rtc.demo.basic_module.acivities.BaseActivity;
+import com.volcengine.vertcdemo.common.CommonTitleLayout;
+import com.volcengine.vertcdemo.common.SolutionBaseActivity;
 import com.volcengine.vertcdemo.core.net.IRequestCallback;
 import com.volcengine.vertcdemo.edu.R;
 import com.volcengine.vertcdemo.edu.bean.EduRecordInfo;
 import com.volcengine.vertcdemo.edu.core.EduRTCManager;
 import com.volcengine.vertcdemo.edu.event.UpdateHistoryListOfClassEvent;
 
-import static androidx.recyclerview.widget.RecyclerView.VERTICAL;
-
 import java.util.List;
 
-public class ClassHistoryListActivity extends BaseActivity {
+public class ClassHistoryListActivity extends SolutionBaseActivity {
 
     public static final String EXTRA_ROOM_TITLE = "room_title";
     public static final String EXTRA_CLASS_ID = "class_id";
@@ -39,17 +41,10 @@ public class ClassHistoryListActivity extends BaseActivity {
         setContentView(R.layout.activity_history);
         mClassName = getIntent().getStringExtra(EXTRA_ROOM_TITLE);
         mRoomId = getIntent().getStringExtra(EXTRA_CLASS_ID);
-    }
 
-    @Override
-    protected void onGlobalLayoutCompleted() {
-        super.onGlobalLayoutCompleted();
-
-        ImageView backArrow = findViewById(R.id.title_bar_left_iv);
-        backArrow.setImageResource(R.drawable.back_arrow);
-        backArrow.setOnClickListener(v -> finish());
-        TextView title = findViewById(R.id.title_bar_title_tv);
-        title.setText(mClassName);
+        CommonTitleLayout titleLayout = findViewById(R.id.title_bar_layout);
+        titleLayout.setLeftBack(v -> onBackPressed());
+        titleLayout.setTitle(mClassName);
 
         RecyclerView recyclerView = findViewById(R.id.meeting_record_recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, VERTICAL, false));

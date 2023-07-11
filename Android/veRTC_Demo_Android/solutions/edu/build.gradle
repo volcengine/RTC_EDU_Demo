@@ -33,12 +33,6 @@ android {
     }
 }
 
-
-repositories {
-    flatDir {
-        dirs 'libs', project(':scene-core').files('libs')
-    }
-}
 dependencies {
     implementation "androidx.appcompat:appcompat:$AppCompatVersion"
     implementation "androidx.recyclerview:recyclerview:$RecyclerViewVersion"
@@ -48,9 +42,9 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    implementation project(':component:ToolKit')
 
-    implementation project(":scene-core")
-    implementation project(":component:$project.JOIN_RTS_MODULE")
+    implementation project(":component:$JOIN_RTS_MODULE")
 
     implementation "org.greenrobot:eventbus:$EventBusVersion"
     implementation "com.google.code.gson:gson:$GsonVersion"

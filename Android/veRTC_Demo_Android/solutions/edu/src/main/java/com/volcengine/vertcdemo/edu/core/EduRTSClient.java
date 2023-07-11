@@ -1,3 +1,6 @@
+// Copyright (c) 2023 Beijing Volcano Engine Technology Ltd.
+// SPDX-License-Identifier: MIT
+
 package com.volcengine.vertcdemo.edu.core;
 
 import android.text.TextUtils;
@@ -6,8 +9,8 @@ import androidx.annotation.NonNull;
 
 import com.google.gson.JsonObject;
 import com.ss.bytertc.engine.RTCVideo;
-import com.ss.video.rtc.demo.basic_module.utils.AppExecutors;
 import com.volcengine.vertcdemo.common.AbsBroadcast;
+import com.volcengine.vertcdemo.common.AppExecutors;
 import com.volcengine.vertcdemo.core.SolutionDataManager;
 import com.volcengine.vertcdemo.core.eventbus.SolutionDemoEventManager;
 import com.volcengine.vertcdemo.core.net.IRequestCallback;
@@ -19,6 +22,7 @@ import com.volcengine.vertcdemo.edu.bean.EduResponse;
 import com.volcengine.vertcdemo.edu.bean.EduUserInfo;
 import com.volcengine.vertcdemo.edu.bean.GetUserListResponse;
 import com.volcengine.vertcdemo.edu.bean.JoinClassResult;
+import com.volcengine.vertcdemo.edu.bean.ReconnectResponse;
 import com.volcengine.vertcdemo.edu.event.EduClassEvent;
 import com.volcengine.vertcdemo.edu.event.EduGroupSpeechEvent;
 import com.volcengine.vertcdemo.edu.event.EduLoginElseWhereEvent;
@@ -44,6 +48,7 @@ public class EduRTSClient extends RTSBaseClient {
     private static final String CMD_EDU_GET_HISTORY_ROOM_LIST = "eduGetHistoryRoomList";
     private static final String CMD_EDU_GET_HISTORY_RECORD_LIST = "eduGetHistoryRecordList";
     private static final String CMD_EDU_GET_USER_LIST = "eduGetUserList"; // 获取房间内所有用户列表
+    private static final String CMD_RECONNECT = "eduReconnect";
 
     public static final String ON_BEGIN_CLASS = "onBeginClass";
     public static final String ON_END_CLASS = "onEndClass";
@@ -70,9 +75,15 @@ public class EduRTSClient extends RTSBaseClient {
         initEventListener();
     }
 
+    public void reconnect(String roomId, IRequestCallback<ReconnectResponse> callback) {
+        JsonObject params = getCommonParams(CMD_RECONNECT);
+        params.addProperty("login_token", SolutionDataManager.ins().getToken());
+        sendServerMessageOnNetwork(roomId, params, ReconnectResponse.class, callback);
+    }
+
     private JsonObject getCommonParams(String cmd) {
         JsonObject params = new JsonObject();
-        params.addProperty("app_id", mRtmInfo.appId);
+        params.addProperty("app_id", mRTSInfo.appId);
         params.addProperty("room_id", "");
         params.addProperty("user_id", SolutionDataManager.ins().getUserId());
         params.addProperty("event_name", cmd);

@@ -1,6 +1,9 @@
+// Copyright (c) 2023 Beijing Volcano Engine Technology Ltd.
+// SPDX-License-Identifier: MIT
+
 package com.volcengine.vertcdemo.edu.feature.classroomlist;
 
-import static com.volcengine.vertcdemo.core.net.rts.RTSInfo.KEY_RTM;
+import static com.volcengine.vertcdemo.core.net.rts.RTSInfo.KEY_RTS;
 import static com.volcengine.vertcdemo.edu.feature.classhistory.ClassHistoryListActivity.EXTRA_CLASS_ID;
 import static com.volcengine.vertcdemo.edu.feature.classhistory.ClassHistoryListActivity.EXTRA_ROOM_TITLE;
 
@@ -15,7 +18,6 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 
 import androidx.annotation.Keep;
 import androidx.annotation.NonNull;
@@ -23,14 +25,13 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ss.video.rtc.demo.basic_module.acivities.BaseActivity;
-import com.ss.video.rtc.demo.basic_module.ui.CommonDialog;
-import com.ss.video.rtc.demo.basic_module.utils.SafeToast;
-import com.ss.video.rtc.demo.basic_module.utils.Utilities;
-import com.ss.video.rtc.demo.basic_module.utils.WindowUtils;
 import com.vertcdemo.joinrtsparams.bean.JoinRTSRequest;
 import com.vertcdemo.joinrtsparams.common.JoinRTSManager;
+import com.volcengine.vertcdemo.common.CommonTitleLayout;
 import com.volcengine.vertcdemo.common.IAction;
+import com.volcengine.vertcdemo.common.SolutionBaseActivity;
+import com.volcengine.vertcdemo.common.SolutionCommonDialog;
+import com.volcengine.vertcdemo.common.SolutionToast;
 import com.volcengine.vertcdemo.core.SolutionDataManager;
 import com.volcengine.vertcdemo.core.net.IRequestCallback;
 import com.volcengine.vertcdemo.core.net.ServerResponse;
@@ -39,15 +40,17 @@ import com.volcengine.vertcdemo.core.net.rts.RTSInfo;
 import com.volcengine.vertcdemo.edu.R;
 import com.volcengine.vertcdemo.edu.bean.JoinClassResult;
 import com.volcengine.vertcdemo.edu.core.EduConstants;
-import com.volcengine.vertcdemo.edu.feature.breakoutclass.BreakoutClassRoomMainActivity;
 import com.volcengine.vertcdemo.edu.core.EduRTCManager;
 import com.volcengine.vertcdemo.edu.core.EducationDataManager;
 import com.volcengine.vertcdemo.edu.event.UpdateActiveClassListEvent;
 import com.volcengine.vertcdemo.edu.event.UpdateHistoryClassListEvent;
+import com.volcengine.vertcdemo.edu.feature.breakoutclass.BreakoutClassRoomMainActivity;
 import com.volcengine.vertcdemo.edu.feature.classhistory.ClassHistoryListActivity;
 import com.volcengine.vertcdemo.edu.feature.lecturehall.LectureClassRoomMainActivity;
+import com.volcengine.vertcdemo.utils.AppUtil;
+import com.volcengine.vertcdemo.utils.Utils;
 
-public class ClassRoomListActivity extends BaseActivity {
+public class ClassRoomListActivity extends SolutionBaseActivity {
 
     private static final String TAG = "ClassRoomListActivity";
 
@@ -99,34 +102,10 @@ public class ClassRoomListActivity extends BaseActivity {
         EducationDataManager.init();
         requestPermissions(Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA);
         initRtmInfo();
-    }
 
-    /**
-     * 获取RTM信息
-     */
-    private void initRtmInfo() {
-        Intent intent = getIntent();
-        if (intent == null) {
-            return;
-        }
-        mRtmInfo = intent.getParcelableExtra(RTSInfo.KEY_RTM);
-        if (mRtmInfo == null || !mRtmInfo.isValid()) {
-            finish();
-        }
-    }
-
-    @Override
-    protected void onGlobalLayoutCompleted() {
-        super.onGlobalLayoutCompleted();
-
-        // title
-        ImageView backArrow = findViewById(R.id.title_bar_left_iv);
-        backArrow.setImageResource(R.drawable.back_arrow);
-        backArrow.setOnClickListener(v -> finish());
-        ImageView refresh = findViewById(R.id.title_bar_right_iv);
-        refresh.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        refresh.setImageResource(R.drawable.refresh);
-        refresh.setOnClickListener(v -> getRoomList());
+        CommonTitleLayout titleLayout = findViewById(R.id.title_bar_layout);
+        titleLayout.setLeftBack(v -> onBackPressed());
+        titleLayout.setRightRefresh(v -> getRoomList());
 
         // list
         RecyclerView classListRv = findViewById(R.id.class_list_rv);
@@ -139,6 +118,20 @@ public class ClassRoomListActivity extends BaseActivity {
     }
 
     /**
+     * 获取RTM信息
+     */
+    private void initRtmInfo() {
+        Intent intent = getIntent();
+        if (intent == null) {
+            return;
+        }
+        mRtmInfo = intent.getParcelableExtra(RTSInfo.KEY_RTS);
+        if (mRtmInfo == null || !mRtmInfo.isValid()) {
+            finish();
+        }
+    }
+
+    /**
      * 初始化RTC
      */
     private void initRTC() {
@@ -148,11 +141,11 @@ public class ClassRoomListActivity extends BaseActivity {
             finish();
             return;
         }
-        rtmClient.login(mRtmInfo.rtmToken, (resultCode, message) -> {
+        rtmClient.login(mRtmInfo.rtsToken, (resultCode, message) -> {
             if (resultCode == RTSBaseClient.LoginCallBack.SUCCESS) {
                 getRoomList();
             } else {
-                SafeToast.show("Login Rtm Fail Error:" + resultCode + ",Message:" + message);
+                SolutionToast.show("Login Rtm Fail Error:" + resultCode + ",Message:" + message);
             }
         });
     }
@@ -182,12 +175,6 @@ public class ClassRoomListActivity extends BaseActivity {
 
             }
         });
-    }
-
-
-    @Override
-    protected void setupStatusBar() {
-        WindowUtils.setLayoutFullScreen(getWindow());
     }
 
     @Override
@@ -259,7 +246,7 @@ public class ClassRoomListActivity extends BaseActivity {
     }
 
     private void showClassEndDialog() {
-        CommonDialog dialog = new CommonDialog(this);
+        SolutionCommonDialog dialog = new SolutionCommonDialog(this);
         dialog.setCancelable(true);
         dialog.setMessage("课程已结束");
         dialog.setPositiveListener((v) -> dialog.dismiss());
@@ -267,7 +254,7 @@ public class ClassRoomListActivity extends BaseActivity {
     }
 
     public static class ClassItemDecoration extends RecyclerView.ItemDecoration {
-        private final float mHeight = Utilities.dip2Px(36);
+        private final float mHeight = Utils.dp2Px(36);
         private final Paint mPaint = new Paint();
 
         public ClassItemDecoration() {
@@ -283,9 +270,9 @@ public class ClassRoomListActivity extends BaseActivity {
 
         @Override
         public void onDraw(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
-            float left = (float) parent.getWidth() / 2 - Utilities.dip2Px(32);
+            float left = (float) parent.getWidth() / 2 - Utils.dp2Px(32);
             int childCount = parent.getChildCount();
-            mPaint.setTextSize(Utilities.sp2px(16));
+            mPaint.setTextSize(Utils.dp2Px(16));
             mPaint.setColor(Color.WHITE);
             mPaint.setStyle(Paint.Style.FILL);
             ClassRoomListAdapter adapter = (ClassRoomListAdapter) parent.getAdapter();
@@ -293,7 +280,7 @@ public class ClassRoomListActivity extends BaseActivity {
                 View child = parent.getChildAt(i);
                 int pos = parent.getChildAdapterPosition(child);
                 if (adapter != null && pos == adapter.getActiveClassSize()) {
-                    c.drawText("历史课堂", left, child.getTop() - Utilities.dip2Px(23), mPaint);
+                    c.drawText("历史课堂", left, child.getTop() - Utils.dp2Px(23), mPaint);
                 }
             }
         }
@@ -312,8 +299,8 @@ public class ClassRoomListActivity extends BaseActivity {
                     return;
                 }
                 Intent intent = new Intent(Intent.ACTION_MAIN);
-                intent.setClass(Utilities.getApplicationContext(), ClassRoomListActivity.class);
-                intent.putExtra(KEY_RTM, data);
+                intent.setClass(AppUtil.getApplicationContext(), ClassRoomListActivity.class);
+                intent.putExtra(KEY_RTS, data);
                 activity.startActivity(intent);
                 if (doneAction != null) {
                     doneAction.act(null);
@@ -327,12 +314,7 @@ public class ClassRoomListActivity extends BaseActivity {
                 }
             }
         };
-        JoinRTSRequest request = new JoinRTSRequest();
-        request.scenesName = EduConstants.SOLUTION_NAME_ABBR;
-        request.loginToken = SolutionDataManager.ins().getToken();
-        request.volcAccountId = EduConstants.ACCOUNT_ID;
-        request.vodSpace = EduConstants.VOD_SPACE;
-
+        EduJoinRTSRequest request = new EduJoinRTSRequest();
         JoinRTSManager.setAppInfoAndJoinRTM(request, callback);
     }
 }

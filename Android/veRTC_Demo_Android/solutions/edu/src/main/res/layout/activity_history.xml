@@ -4,13 +4,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <include
-        android:id="@+id/meeting_record_title_bar_layout"
-        layout="@layout/layout_title_bar" />
+    <com.volcengine.vertcdemo.common.CommonTitleLayout
+        android:id="@+id/title_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/meeting_record_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/meeting_record_title_bar_layout" />
+        android:layout_below="@+id/title_bar_layout" />
 </RelativeLayout>

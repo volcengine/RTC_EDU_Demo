@@ -1,3 +1,6 @@
+// Copyright (c) 2023 Beijing Volcano Engine Technology Ltd.
+// SPDX-License-Identifier: MIT
+
 package com.volcengine.vertcdemo.edu.view;
 
 import android.content.Context;
@@ -13,10 +16,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.ss.video.rtc.demo.basic_module.utils.Utilities;
 import com.volcengine.vertcdemo.edu.R;
 import com.volcengine.vertcdemo.edu.bean.EduUserInfo;
 import com.volcengine.vertcdemo.edu.core.EduRTCManager;
+import com.volcengine.vertcdemo.utils.Utils;
 
 public class TeacherVideoView extends ConstraintLayout {
     private FrameLayout mViewContainer;
@@ -66,7 +69,7 @@ public class TeacherVideoView extends ConstraintLayout {
         EduRTCManager.setUidInClass(uid, true);
         if (isOn) {
             TextureView view = EduRTCManager.getUserRenderView(uid);
-            Utilities.removeFromParent(view);
+            Utils.removeFromParent(view);
             EduRTCManager.setupClassRemoteVideo(uid, view);
             mViewContainer.addView(view, new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,

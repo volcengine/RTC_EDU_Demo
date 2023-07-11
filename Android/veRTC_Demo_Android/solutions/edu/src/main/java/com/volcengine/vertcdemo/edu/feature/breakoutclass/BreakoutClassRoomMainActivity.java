@@ -1,3 +1,6 @@
+// Copyright (c) 2023 Beijing Volcano Engine Technology Ltd.
+// SPDX-License-Identifier: MIT
+
 package com.volcengine.vertcdemo.edu.feature.breakoutclass;
 
 import android.Manifest;
@@ -14,17 +17,22 @@ import android.view.View;
 import androidx.core.content.PermissionChecker;
 
 import com.google.gson.reflect.TypeToken;
-import com.ss.video.rtc.demo.basic_module.acivities.BaseActivity;
-import com.ss.video.rtc.demo.basic_module.ui.CommonDialog;
-import com.ss.video.rtc.demo.basic_module.utils.GsonUtils;
+import com.volcengine.vertcdemo.common.GsonUtils;
+import com.volcengine.vertcdemo.common.SolutionBaseActivity;
+import com.volcengine.vertcdemo.common.SolutionCommonDialog;
+import com.volcengine.vertcdemo.common.SolutionToast;
 import com.volcengine.vertcdemo.core.eventbus.SDKJoinChannelSuccessEvent;
+import com.volcengine.vertcdemo.core.eventbus.SDKReconnectToRoomEvent;
 import com.volcengine.vertcdemo.core.eventbus.SolutionDemoEventManager;
+import com.volcengine.vertcdemo.core.net.ErrorTool;
 import com.volcengine.vertcdemo.core.net.IRequestCallback;
 import com.volcengine.vertcdemo.edu.R;
 import com.volcengine.vertcdemo.edu.bean.EduUserInfo;
 import com.volcengine.vertcdemo.edu.bean.GetUserListResponse;
+import com.volcengine.vertcdemo.edu.bean.ReconnectResponse;
 import com.volcengine.vertcdemo.edu.core.EduConstants;
 import com.volcengine.vertcdemo.edu.core.EduRTCManager;
+import com.volcengine.vertcdemo.edu.core.EduRTSClient;
 import com.volcengine.vertcdemo.edu.event.EduClassEvent;
 import com.volcengine.vertcdemo.edu.event.EduGroupSpeechEvent;
 import com.volcengine.vertcdemo.edu.event.EduLoginElseWhereEvent;
@@ -50,7 +58,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.Iterator;
 import java.util.List;
 
-public class BreakoutClassRoomMainActivity extends BaseActivity {
+public class BreakoutClassRoomMainActivity extends SolutionBaseActivity {
 
     private static final int HIDE_TITLE_DELAY = 5000;
 
@@ -80,14 +88,6 @@ public class BreakoutClassRoomMainActivity extends BaseActivity {
         setContentView(R.layout.activity_breakout_class_room_main);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         initArgs();
-    }
-
-    @Override
-    protected void onGlobalLayoutCompleted() {
-        if (mHasLayoutCompleted) {
-            return;
-        }
-        mHasLayoutCompleted = true;
 
         mRootView = findViewById(R.id.root_view);
         mTitleLayout = findViewById(R.id.break_out_title);
@@ -280,7 +280,7 @@ public class BreakoutClassRoomMainActivity extends BaseActivity {
     }
 
     private void showJoinFailedDialog(int errorCode) {
-        CommonDialog dialog = new CommonDialog(this);
+        SolutionCommonDialog dialog = new SolutionCommonDialog(this);
         dialog.setCancelable(false);
         if (errorCode == 405 || errorCode == 407) {
             dialog.setMessage("该用户正在使用老师身份上课，当前无法使用学生身份");
@@ -524,7 +524,7 @@ public class BreakoutClassRoomMainActivity extends BaseActivity {
     }
 
     private void showLoginElseWhereDialog() {
-        CommonDialog dialog = new CommonDialog(this);
+        SolutionCommonDialog dialog = new SolutionCommonDialog(this);
         dialog.setCancelable(false);
         dialog.setMessage("用户在另一台设备加入");
         dialog.setPositiveListener((v) -> finish());
@@ -610,6 +610,25 @@ public class BreakoutClassRoomMainActivity extends BaseActivity {
         setTeacherCameraStatus(mMainData.mTeacherInfo.isCameraOn);
         setGroupStudent();
         onGroupSpeech(mMainData.mIsGroupSpeech, true);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSDKReconnectToRoomEvent(SDKReconnectToRoomEvent event) {
+        EduRTSClient rtsClient = EduRTCManager.ins().getRTMClient();
+        if (rtsClient != null) {
+            rtsClient.reconnect(event.roomId, new IRequestCallback<ReconnectResponse>() {
+                @Override
+                public void onSuccess(ReconnectResponse data) {
+
+                }
+
+                @Override
+                public void onError(int errorCode, String message) {
+                    SolutionToast.show(ErrorTool.getErrorMessageByErrorCode(errorCode, message));
+                    finish();
+                }
+            });
+        }
     }
 
     private boolean addGroupUser(EduUserInfo info) {

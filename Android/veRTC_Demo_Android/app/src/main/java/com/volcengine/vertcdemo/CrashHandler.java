@@ -1,3 +1,6 @@
+// Copyright (c) 2023 Beijing Volcano Engine Technology Ltd.
+// SPDX-License-Identifier: MIT
+
 package com.volcengine.vertcdemo;
 
 import android.app.Activity;
@@ -10,6 +13,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.volcengine.vertcdemo.common.SolutionToast;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -101,7 +106,7 @@ public class CrashHandler implements Thread.UncaughtExceptionHandler {
             @Override
             public void run() {
                 Looper.prepare();
-                Toast.makeText(mContext, mContext.getString(R.string.app_crash_hint), Toast.LENGTH_SHORT).show();
+                SolutionToast.show("app crashed");
                 Looper.loop();
             }
         }.start();

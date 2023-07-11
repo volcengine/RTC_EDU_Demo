@@ -1,3 +1,6 @@
+// Copyright (c) 2023 Beijing Volcano Engine Technology Ltd.
+// SPDX-License-Identifier: MIT
+
 package com.volcengine.vertcdemo.edu.view;
 
 import android.content.Context;
@@ -14,11 +17,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.ss.video.rtc.demo.basic_module.utils.Utilities;
 import com.volcengine.vertcdemo.core.SolutionDataManager;
 import com.volcengine.vertcdemo.edu.R;
 import com.volcengine.vertcdemo.edu.bean.EduUserInfo;
 import com.volcengine.vertcdemo.edu.core.EduRTCManager;
+import com.volcengine.vertcdemo.utils.AppUtil;
+import com.volcengine.vertcdemo.utils.Utils;
 
 public class StudentVideoView extends FrameLayout {
 
@@ -74,7 +78,7 @@ public class StudentVideoView extends FrameLayout {
             TextureView view = EduRTCManager.getUserRenderView(uid);
             // 如果当前子view不是
             if (mViewContainer.getChildCount() == 0 || mViewContainer.getChildAt(0) != view) {
-                Utilities.removeFromParent(view);
+                Utils.removeFromParent(view);
                 if (TextUtils.equals(uid, SolutionDataManager.ins().getUserId())) {
                     EduRTCManager.setupLocalVideo(view);
                 } else {
@@ -89,10 +93,10 @@ public class StudentVideoView extends FrameLayout {
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             }
         } else {
-            TextView tv = new TextView(Utilities.getApplicationContext());
+            TextView tv = new TextView(AppUtil.getApplicationContext());
             tv.setText("上台中");
             tv.setGravity(Gravity.CENTER);
-            tv.setTextSize(Utilities.dip2Px(7));
+            tv.setTextSize(Utils.dp2Px(7));
             tv.setTextColor(Color.parseColor("#86909C"));
             mViewContainer.addView(tv, new FrameLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));

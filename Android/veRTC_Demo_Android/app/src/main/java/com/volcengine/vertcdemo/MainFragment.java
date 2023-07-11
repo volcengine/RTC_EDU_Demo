@@ -1,9 +1,10 @@
+// Copyright (c) 2023 Beijing Volcano Engine Technology Ltd.
+// SPDX-License-Identifier: MIT
+
 package com.volcengine.vertcdemo;
 
 import android.Manifest;
-import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,11 +14,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import com.ss.video.rtc.demo.basic_module.utils.SafeToast;
-import com.volcengine.vertcdemo.core.SolutionDataManager;
-import com.volcengine.vertcdemo.core.eventbus.RTSLogoutEvent;
 import com.volcengine.vertcdemo.core.eventbus.SolutionDemoEventManager;
-import com.volcengine.vertcdemo.core.eventbus.TokenExpiredEvent;
+import com.volcengine.vertcdemo.core.eventbus.AppTokenExpiredEvent;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -44,24 +42,36 @@ public class MainFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        String token = SolutionDataManager.ins().getToken();
-        if (TextUtils.isEmpty(token)) {
-            startActivity(new Intent(Actions.LOGIN));
-        }
-
-        requestPermissions(new String[]{
-                Manifest.permission.RECORD_AUDIO,
-                Manifest.permission.CAMERA,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
-        }, REQUEST_CODE_PERMISSIONS);
-
         mTabScenes = view.findViewById(R.id.tab_scenes);
         mTabScenes.setOnClickListener(v -> switchMainLayout(true));
 
         mTabProfile = view.findViewById(R.id.tab_profile);
         mTabProfile.setOnClickListener(v -> switchMainLayout(false));
 
-        // region 恢复或者创建 Tab 的 Fragment
+        initFragments();
+
+        switchMainLayout(true);
+
+        SolutionDemoEventManager.register(this);
+
+        requestPermission();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        SolutionDemoEventManager.unregister(this);
+    }
+
+    private void requestPermission() {
+        requestPermissions(new String[]{
+                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.CAMERA,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+        }, REQUEST_CODE_PERMISSIONS);
+    }
+
+    private void initFragments() {
         final FragmentManager fragmentManager = getChildFragmentManager();
         Fragment tabScene = fragmentManager.findFragmentByTag(TAG_SCENES);
         if (tabScene == null) {
@@ -83,21 +93,7 @@ public class MainFragment extends Fragment {
                     .commit();
         }
         mFragmentProfile = tabProfile;
-        // endregion
-
-        switchMainLayout(true);
-
-        SolutionDemoEventManager.register(this);
-
-        SolutionDataManager.ins().setAppVersionName(BuildConfig.VERSION_NAME);
     }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        SolutionDemoEventManager.unregister(this);
-    }
-
 
     private void switchMainLayout(boolean isEntrance) {
         mTabScenes.setSelected(isEntrance);
@@ -119,14 +115,7 @@ public class MainFragment extends Fragment {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onTokenExpiredEvent(TokenExpiredEvent event) {
+    public void onTokenExpiredEvent(AppTokenExpiredEvent event) {
         switchMainLayout(true);
-        startActivity(new Intent(Actions.LOGIN));
-    }
-
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onRTSLogoutEvent(RTSLogoutEvent event) {
-        SafeToast.show(R.string.same_account_logut);
-        startActivity(new Intent(Actions.LOGIN));
     }
 }

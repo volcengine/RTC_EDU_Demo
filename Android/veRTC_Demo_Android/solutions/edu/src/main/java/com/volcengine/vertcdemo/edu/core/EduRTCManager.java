@@ -1,3 +1,6 @@
+// Copyright (c) 2023 Beijing Volcano Engine Technology Ltd.
+// SPDX-License-Identifier: MIT
+
 package com.volcengine.vertcdemo.edu.core;
 
 import static com.ss.bytertc.engine.VideoCanvas.RENDER_MODE_HIDDEN;
@@ -17,14 +20,15 @@ import com.ss.bytertc.engine.data.StreamIndex;
 import com.ss.bytertc.engine.data.VideoFrameInfo;
 import com.ss.bytertc.engine.type.ChannelProfile;
 import com.ss.bytertc.engine.type.MediaStreamType;
-import com.ss.video.rtc.demo.basic_module.utils.Utilities;
 import com.volcengine.vertcdemo.common.MLog;
 import com.volcengine.vertcdemo.core.SolutionDataManager;
 import com.volcengine.vertcdemo.core.eventbus.SDKJoinChannelSuccessEvent;
+import com.volcengine.vertcdemo.core.eventbus.SDKReconnectToRoomEvent;
 import com.volcengine.vertcdemo.core.eventbus.SolutionDemoEventManager;
 import com.volcengine.vertcdemo.core.net.rts.RTCRoomEventHandlerWithRTS;
 import com.volcengine.vertcdemo.core.net.rts.RTCVideoEventHandlerWithRTS;
 import com.volcengine.vertcdemo.core.net.rts.RTSInfo;
+import com.volcengine.vertcdemo.utils.AppUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -94,6 +98,8 @@ public class EduRTCManager {
             Log.d(TAG, String.format("onRoomStateChanged: %s, %s, %d, %s", roomId, uid, state, extraInfo));
             if (isFirstJoinRoomSuccess(state,extraInfo)) {
                 SolutionDemoEventManager.post(new SDKJoinChannelSuccessEvent(roomId, uid));
+            } else if (isReconnectSuccess(state, extraInfo)) {
+                SolutionDemoEventManager.post(new SDKReconnectToRoomEvent(roomId));
             }
         }
     };
@@ -116,7 +122,7 @@ public class EduRTCManager {
 
     public void initEngine(RTSInfo info) {
         destroyEngine();
-        sRTCVideo = RTCVideo.createRTCVideo(Utilities.getApplicationContext(), info.appId,
+        sRTCVideo = RTCVideo.createRTCVideo(AppUtil.getApplicationContext(), info.appId,
                 mRTCVideoEventHandler, null, null);
         sRTCVideo.setBusinessId(info.bid);
         sRTCVideo.stopVideoCapture();
@@ -237,25 +243,25 @@ public class EduRTCManager {
         if (sRTCVideo == null) {
             return;
         }
-        VideoCanvas videoCanvas = new VideoCanvas(textureView, RENDER_MODE_HIDDEN, "", false);
+        VideoCanvas videoCanvas = new VideoCanvas(textureView, RENDER_MODE_HIDDEN);
         sRTCVideo.setLocalVideoCanvas(StreamIndex.STREAM_INDEX_MAIN, videoCanvas);
     }
 
     public static void setupClassRemoteVideo(String userId, TextureView textureView) {
         Log.d(TAG, "setClassRemoteVideoView : " + userId);
         if (sClassRoom != null) {
-            VideoCanvas canvas = new VideoCanvas(textureView, RENDER_MODE_HIDDEN, userId, false);
-            canvas.roomId = mClassRoomId;
-            sRTCVideo.setRemoteVideoCanvas(userId, StreamIndex.STREAM_INDEX_MAIN, canvas);
+            VideoCanvas canvas = new VideoCanvas(textureView, RENDER_MODE_HIDDEN);
+            RemoteStreamKey streamKey = new RemoteStreamKey(mClassRoomId, userId, StreamIndex.STREAM_INDEX_MAIN);
+            sRTCVideo.setRemoteVideoCanvas(streamKey, canvas);
         }
     }
 
     public static void setupGroupRemoteVideo(String userId, TextureView textureView) {
         Log.d(TAG, "setGroupRemoteVideoView : " + userId);
         if (sGroupRoom != null) {
-            VideoCanvas canvas = new VideoCanvas(textureView, RENDER_MODE_HIDDEN, userId, false);
-            canvas.roomId = mGroupRoomId;
-            sRTCVideo.setRemoteVideoCanvas(userId, StreamIndex.STREAM_INDEX_MAIN, canvas);
+            VideoCanvas canvas = new VideoCanvas(textureView, RENDER_MODE_HIDDEN);
+            RemoteStreamKey streamKey = new RemoteStreamKey(mGroupRoomId, userId, StreamIndex.STREAM_INDEX_MAIN);
+            sRTCVideo.setRemoteVideoCanvas(streamKey, canvas);
         }
     }
 
@@ -385,7 +391,7 @@ public class EduRTCManager {
         }
         TextureView view = sUserIdView.get(userId);
         if (view == null) {
-            view = new TextureView(Utilities.getApplicationContext());
+            view = new TextureView(AppUtil.getApplicationContext());
             sUserIdView.put(userId, view);
         }
         return view;

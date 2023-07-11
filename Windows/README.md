@@ -61,7 +61,7 @@ cmd 窗口下进入安装包代码下载的目录，执行 `cmake -G "Visual Stu
 
 ### **步骤 7：填写 LoginUrl**
 
-进入 `veRTC_Demo_Windows/feature/rts_params/rtc_build_config.h` 文件，填写 **URL**字段。
+进入 `RTCSolution/feature/joinRTS_params_kit/rtc_build_config.h` 文件，填写 **URL**字段。
 
 当前你可以使用 **`https://common.rtc.volcvideo.com/rtc_demo_special/login`** 作为测试服务器域名，仅提供跑通测试服务，无法保障正式需求。
 
@@ -69,7 +69,7 @@ cmd 窗口下进入安装包代码下载的目录，执行 `cmake -G "Visual Stu
 
 ### **步骤 8：填写 APPID、APPKey、AccessKeyID、SecretAccessKey、AccountId 和 VodSpace**
 
-进入`veRTC_Demo_Windows/feature/rts_params/rtc_build_config.h` 文件，填写 **APPID、APPKey、AccessKeyID、SecretAccessKey、AccountId 和 VodSpace**
+进入`RTCSolution/feature/joinRTS_params_kit/rtc_build_config.h` 文件，填写 **APPID、APPKey、AccessKeyID、SecretAccessKey、AccountId 和 VodSpace**
 
 <img src="https://lf3-static.bytednsdoc.com/obj/eden-cn/ubrbfuhw/20220919181220image.png" width="900px" >
 
@@ -77,17 +77,17 @@ cmd 窗口下进入安装包代码下载的目录，执行 `cmake -G "Visual Stu
 
 ### **步骤 9：编译运行**
 
-1. 进入 `veRTC_Demo_Windows/build_win` 目录，使用 Visual Studio 打开工程文件 `VeRTCDemo.sln`。
+1. 进入 `RTCSolution/build_win` 目录，使用 Visual Studio 打开工程文件 `VeRTC.sln`。
 
-<img src="https://lf3-volc-editor.volccdn.com/obj/volcfe/sop-public/upload_9951d287c9eb07d0666ceb5e5b133708" width="500px" >
+<img src="https://portal.volccdn.com/obj/volcfe/cloud-universal-doc/upload_d0f829fb46c7d28183857e58ca7f916f.png" width="500px" >
 
-2. 将VeRTCDemo设置为启动项。
+2. 将VeRTC设置为启动项。
 
-<img src="https://lf6-volc-editor.volccdn.com/obj/volcfe/sop-public/upload_b76ec6c9c051af48dc6517949f1c9330" width="500px" >
+<img src="https://portal.volccdn.com/obj/volcfe/cloud-universal-doc/upload_a8593ecc0389bb0a52a93766f7438c14.png" width="500px" >
 
-3. 点击Visual Studio上方菜单栏【Debug】->【Start Debuging】开始编译并运行项目。
+3. 点击Visual Studio上方菜单栏【调试】->【开始调试】开始编译并运行项目。
 
-<img src="https://lf3-static.bytednsdoc.com/obj/eden-cn/ubrbfuhw/20220919181742image.png" width="800px" >
+<img src="https://portal.volccdn.com/obj/volcfe/cloud-universal-doc/upload_f44c32e8b5530dec5734beadcb45d5cd.png" width="800px" >
 
 运行开始界面如下：
 

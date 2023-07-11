@@ -11,6 +11,7 @@
         android:layout_weight="1">
 
         <LinearLayout
+            android:id="@+id/setting_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -29,41 +30,10 @@
                 android:textStyle="bold"
                 tools:text="B" />
 
-            <include
+            <com.volcengine.vertcdemo.common.KeyValueView
                 android:id="@+id/profile_user_name"
-                layout="@layout/layout_meeting_item_arrow" />
-
-            <include
-                android:id="@+id/profile_privacy_agreement"
-                layout="@layout/layout_meeting_item_arrow" />
-
-            <include
-                android:id="@+id/profile_user_agreement"
-                layout="@layout/layout_meeting_item_arrow" />
-
-            <include
-                android:id="@+id/profile_service_agreement"
-                layout="@layout/layout_meeting_item_arrow" />
-
-            <include
-                android:id="@+id/profile_disclaimer"
-                layout="@layout/layout_meeting_item_arrow" />
-
-            <include
-                android:id="@+id/profile_sdk_list"
-                layout="@layout/layout_meeting_item_arrow" />
-
-            <include
-                android:id="@+id/used_permissions"
-                layout="@layout/layout_meeting_item_arrow" />
-
-            <include
-                android:id="@+id/profile_demo_version"
-                layout="@layout/layout_meeting_item_value" />
-
-            <include
-                android:id="@+id/profile_sdk_version"
-                layout="@layout/layout_meeting_item_value" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
         </LinearLayout>
     </ScrollView>
 
@@ -76,7 +46,7 @@
         android:layout_marginVertical="16dp"
         android:background="@drawable/logout_bg"
         android:gravity="center"
-        android:text="@string/delete_account"
+        android:text="@string/cancel_account"
         android:textColor="#E5E6EB"
         android:textSize="16sp" />
 
@@ -88,7 +58,7 @@
         android:layout_marginBottom="16dp"
         android:background="@drawable/logout_bg"
         android:gravity="center"
-        android:text="@string/exit_login"
+        android:text="@string/log_out"
         android:textColor="#E5E6EB"
         android:textSize="16sp" />
 </LinearLayout>

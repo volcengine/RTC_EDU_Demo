@@ -1,3 +1,6 @@
+// Copyright (c) 2023 Beijing Volcano Engine Technology Ltd.
+// SPDX-License-Identifier: MIT
+
 package com.volcengine.vertcdemo;
 
 import android.app.Activity;
@@ -20,14 +23,18 @@ import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
-import com.ss.video.rtc.demo.basic_module.utils.SafeToast;
+import com.volcengine.vertcdemo.common.SolutionBaseActivity;
+import com.volcengine.vertcdemo.common.SolutionToast;
 import com.volcengine.vertcdemo.common.IAction;
 import com.volcengine.vertcdemo.core.SolutionDataManager;
+import com.volcengine.vertcdemo.protocol.ProtocolUtil;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class SceneEntryFragment extends Fragment {
     public static final String TAG = "SceneEntryFragment";
@@ -54,6 +61,7 @@ public class SceneEntryFragment extends Fragment {
 
         Collections.sort(scenes, (o1, o2) -> readSolutionIndex(o1) - readSolutionIndex(o2));
 
+        final Set<String> availableSceneNameAbbr = new HashSet<>();
         for (ResolveInfo scene : scenes) {
             View card = inflater.inflate(R.layout.item_scene_entry, cards, false);
             ImageView icon = card.findViewById(R.id.icon);
@@ -69,27 +77,44 @@ public class SceneEntryFragment extends Fragment {
             label.setText(scene.loadLabel(packageManager));
             card.setOnClickListener(createSceneHandler(scene));
             cards.addView(card);
+
+            availableSceneNameAbbr.add(extractSceneNameAbbr(scene));
         }
+
+        ProtocolUtil.initFeedback(view, availableSceneNameAbbr);
     }
 
     private View.OnClickListener createSceneHandler(ResolveInfo scene) {
         return v -> {
             if (scene == null || scene.activityInfo == null || TextUtils.isEmpty(scene.activityInfo.name)) {
-                SafeToast.show("Enter scene failed by activityInfo is empty!");
+                SolutionToast.show("Enter scene failed by activityInfo is empty!");
                 return;
             }
             String sceneNameAbbr = extractSceneNameAbbr(scene);
             if (TextUtils.isEmpty(sceneNameAbbr)) {
-                SafeToast.show("SceneCode not set");
+                SolutionToast.show("SceneCode not set");
                 return;
             }
             String token = SolutionDataManager.ins().getToken();
             if (TextUtils.isEmpty(token)) {
-                SafeToast.show("Token not found.");
+                new ILoginImpl().showLoginView(getContext());
                 return;
             }
             v.setEnabled(false);
-            IAction<Object> action = (o) -> v.setEnabled(true);
+            Activity activity = getActivity();
+            final SolutionBaseActivity solutionBaseActivity;
+            if (activity instanceof SolutionBaseActivity) {
+                solutionBaseActivity = (SolutionBaseActivity) activity;
+                solutionBaseActivity.showLoadingDialog();
+            } else {
+                solutionBaseActivity = null;
+            }
+            IAction<Object> action = (o) -> {
+                v.setEnabled(true);
+                if (solutionBaseActivity != null) {
+                    solutionBaseActivity.dismissLoadingDialog();
+                }
+            };
             startScene(scene.activityInfo.name, action);
         };
     }
@@ -102,7 +127,7 @@ public class SceneEntryFragment extends Fragment {
     private void startScene(String targetActivity, IAction<Object> doneAction) {
         boolean res = invokePrepareSolutionParams(targetActivity, doneAction);
         if (!res) {
-            SafeToast.show("enter solution failed");
+            SolutionToast.show("enter solution failed");
         }
     }
 

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: MIT
 // 
 
-#import <ToolKit/NetworkingManager.h>
+#import <Core/NetworkingManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

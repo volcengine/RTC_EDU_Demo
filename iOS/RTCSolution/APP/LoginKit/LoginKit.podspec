@@ -16,8 +16,8 @@ Pod::Spec.new do |spec|
     'Login' => ['Resource/*.xcassets']
   }
   spec.prefix_header_contents = '#import "Masonry.h"',
-                                '#import "ToolKit.h"'
-  spec.dependency 'ToolKit'
+                                '#import "Core.h"'
+  spec.dependency 'Core'
   spec.dependency 'YYModel'
   spec.dependency 'Masonry'
 end

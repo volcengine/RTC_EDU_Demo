@@ -5,7 +5,7 @@
 
 #import "PhonePrivacyView.h"
 
-static NSString *const ServiceKey = @"https://www.volcengine.com/docs/6348/68917";
+static NSString *const ServiceKey = @"https://www.volcengine.com/docs/6348/70241";
 static NSString *const PrivacyKey = @"https://www.volcengine.com/docs/6348/68918";
 
 @interface PhonePrivacyView () <UITextViewDelegate>

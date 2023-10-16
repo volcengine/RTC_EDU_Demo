@@ -68,7 +68,7 @@
 }
 
 - (void)loginButtonAction:(UIButton *)sender {
-    if (IsEmptyStr(HeadUrl)) {
+    if (IsEmptyStr(LoginUrl)) {
         NSString *errorMessage = @"请在 BuildConfig.h 配置 url 信息";
         [[ToastComponent shareToastComponent] showWithMessage:errorMessage];
         return;
@@ -76,15 +76,19 @@
     __weak __typeof(self) wself = self;
     [[ToastComponent shareToastComponent] showLoading];
     [LoginControlComponent passwordFreeLogin:self.userNameTextFieldView.text
-                                        block:^(BOOL result, NSString * _Nullable errorStr) {
-        [[ToastComponent shareToastComponent] dismiss];
-        if (result) {
+                                        block:^(BOOL success, NSString * _Nullable errorStr) {
+        if (success) {
             [wself dismissViewControllerAnimated:YES completion:^{
-                
             }];
         } else {
             [[ToastComponent shareToastComponent] showWithMessage:errorStr];
         }
+
+        if (wself.loginFinishBlock) {
+            wself.loginFinishBlock(success, errorStr);
+        }
+
+        [[ToastComponent shareToastComponent] dismiss];
     }];
 }
 

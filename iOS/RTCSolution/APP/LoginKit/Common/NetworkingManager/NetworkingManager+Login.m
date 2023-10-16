@@ -15,9 +15,11 @@
                                     NSString * _Nullable,
                                     NetworkingResponse * _Nonnull))block {
     NSDictionary *content = @{@"user_name" : userName ?: @""};
+    
+    
+    
     [self postWithEventName:@"passwordFreeLogin"
-                      space:@"login"
-                    content:content
+                      content:content
                       block:^(NetworkingResponse *response) {
         BaseUserModel *userModel = nil;
         NSString *loginToken = nil;

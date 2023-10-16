@@ -185,7 +185,7 @@
 - (UITextField *)textField {
     if (!_textField) {
         _textField = [[UITextField alloc] init];
-        _textField.textColor = [UIColor whiteColor];
+        _textField.textColor = [UIColor blackColor];
         _textField.font = [UIFont systemFontOfSize:16 weight:UIFontWeightRegular];
         [_textField addTarget:self action:@selector(roomNumTextFieldChange:) forControlEvents:UIControlEventEditingChanged];
     }

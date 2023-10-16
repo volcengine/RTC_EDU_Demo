@@ -1,40 +1,48 @@
-source 'https://github.com/CocoaPods/Specs.git'
+source 'https://cdn.cocoapods.org/'
 source 'https://github.com/volcengine/volcengine-specs.git'
 
 # RTC SDK
-pod 'VolcEngineRTC', '3.52.109'
+pod 'VolcEngineRTC', '3.54.0.557200'
+pod 'VolcEngineRTC/ScreenCapture'
 
-target 'RTCSolution' do
+target 'veRTC Room' do
   platform :ios, '12.0'
   # 依赖 SDK
   # Depends on SDK
   pod 'Masonry'
   pod 'YYModel'
   pod 'AFNetworking', '~> 4.0'
+  pod 'KVOController'
   
   # 基础组件
-  pod 'ToolKit', :path => '../RTCSolution/APP/ToolKit'
+  # Basic components
+  pod 'Core', :path => '../Meeting_Demo_iOS/Core'
 
   # 场景化源码
+  # Scene source code
   # 登录
-  pod 'LoginKit', :path => '../RTCSolution/APP/LoginKit'
+  pod 'LoginKit', :path => '../Meeting_Demo_iOS/APP/LoginKit'
+
 
   # 获取 RTS 登录信息
-  pod 'JoinRTSParamsKit', :path => '../RTCSolution/APP/JoinRTSParamsKit'
+  pod 'veJoinRTSParams', :path => '../Meeting_Demo_iOS/APP/veJoinRTSParams'
   
-  # 在线课堂
-  pod 'EduDemo', :path => '../RTCSolution/APP/EduDemo'
+  # 视频会议
+  pod 'MeetingDemo', :path => '../Meeting_Demo_iOS/APP/MeetingDemo'
   
+  # 教育小班课
+  pod 'EduSmallClassDemo', :path => '../Meeting_Demo_iOS/APP/EduSmallClassDemo'
+  
+  # 教育大班课
+  pod 'EduBigClassDemo', :path => '../Meeting_Demo_iOS/APP/EduBigClassDemo'
+  
+  # 白板
+  pod 'VolcEngineWhiteboard', '1.6.2'
+
 end
 
-post_install do |installer|
-  installer.generated_projects.each do |project|
-    project.targets.each do |target|
-      target.build_configurations.each do |config|
-        
-        config.build_settings['CODE_SIGN_IDENTITY'] = ''
-        
-      end
-    end
-  end
+## 屏幕共享使用
+target 'MeetingScreenShare' do
+  platform :ios, '12.0'
+
 end

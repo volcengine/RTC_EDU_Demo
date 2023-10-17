@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="64dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:background="@color/bottom_bar_background"
+        android:gravity="center_vertical">
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                style="@style/ControlButtonDesc"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="5dp"
+                android:gravity="bottom|center"
+                android:text="@string/device_mic" />
+
+            <ImageView
+                android:id="@+id/room_bottom_mic"
+                style="@style/ControlButtonMic"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingBottom="10dp"
+                android:scaleType="center" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                style="@style/ControlButtonDesc"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="5dp"
+                android:gravity="bottom|center"
+                android:text="@string/device_camera" />
+
+            <ImageView
+                android:id="@+id/room_bottom_camera"
+                style="@style/ControlButtonCamera"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="bottom|center"
+                android:paddingBottom="10dp"
+                android:scaleType="center" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                style="@style/ControlButtonDesc"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="5dp"
+                android:gravity="bottom|center"
+                android:text="@string/action_share" />
+
+            <ImageView
+                android:id="@+id/room_bottom_share"
+                style="@style/ControlButtonShare"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="bottom|center"
+                android:paddingBottom="10dp"
+                android:scaleType="center" />
+
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/room_bottom_participants_counts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginTop="5dp"
+                android:layout_marginRight="3dp"
+                android:gravity="left"
+                android:minWidth="25dp"
+                android:textColor="@color/title_bar_title"
+                android:textSize="12sp"
+                tools:text="99+" />
+
+            <TextView
+                style="@style/ControlButtonDesc"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="5dp"
+                android:gravity="bottom|center"
+                android:text="@string/action_participant" />
+
+            <ImageView
+                android:id="@+id/room_bottom_participants"
+                style="@style/ControlButtonParticipants"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="bottom|center"
+                android:paddingBottom="10dp"
+                android:scaleType="center" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/room_bottom_record_desc"
+                style="@style/ControlButtonDesc"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginBottom="5dp"
+                android:gravity="bottom|center"
+                android:text="@string/action_record" />
+
+            <ImageView
+                android:id="@+id/room_bottom_record"
+                style="@style/ControlButtonRecord"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="bottom|center"
+                android:paddingBottom="10dp"
+                android:scaleType="center" />
+        </FrameLayout>
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_gravity="top"
+        android:background="@color/bottom_bar_divider" />
+</FrameLayout>

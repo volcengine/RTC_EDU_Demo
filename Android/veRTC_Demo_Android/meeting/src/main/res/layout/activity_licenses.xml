@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/title_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/title_bar_height">
+
+        <ImageView
+            android:id="@+id/title_bar_left_iv"
+            style="@style/BackButton"
+            android:layout_width="@dimen/title_bar_icon_width"
+            android:layout_height="@dimen/title_bar_icon_height"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/title_bar_icon_margin"
+            android:padding="@dimen/title_bar_icon_padding" />
+
+        <TextView
+            android:id="@+id/title_bar_title_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:textColor="@color/title_bar_title"
+            android:textSize="@dimen/txt_H1_18sp" />
+
+        <ImageView
+            android:id="@+id/title_bar_right_iv"
+            android:layout_width="@dimen/title_bar_icon_width"
+            android:layout_height="@dimen/title_bar_icon_height"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/title_bar_icon_margin"
+            android:padding="@dimen/title_bar_icon_padding"
+            android:scaleType="center" />
+
+    </RelativeLayout>
+
+    <include
+        android:id="@+id/business_license"
+        layout="@layout/layout_meeting_item_arrow" />
+
+    <View
+        android:id="@+id/divider_1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/color_E5E6EB" />
+
+    <include
+        android:id="@+id/telecom_license"
+        layout="@layout/layout_meeting_item_arrow" />
+
+    <View
+        android:id="@+id/divider_2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/color_E5E6EB" />
+
+    <include
+        android:id="@+id/net_culture_license"
+        layout="@layout/layout_meeting_item_arrow" />
+
+    <View
+        android:id="@+id/divider_3"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/color_E5E6EB" />
+
+    <TextView
+        android:id="@+id/license_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:textColor="@color/black"
+        android:textSize="14sp" />
+
+</LinearLayout>

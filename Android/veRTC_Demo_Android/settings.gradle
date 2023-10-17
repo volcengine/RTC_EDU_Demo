@@ -1,9 +1,4 @@
-include ':app'
-include ':component:ToolKit'
-
+include ':scene-core'
 rootProject.name = "veRTC_Demo"
-
-include ':component:LoginKit'
-include ':component:JoinRTSParamsKit'
-
-include ':solutions:edu'
+include ':meeting'
+include ':login'

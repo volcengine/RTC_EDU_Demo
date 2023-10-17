@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/item_user_height">
+
+    <View
+        android:id="@+id/user_name_highlight"
+        android:layout_width="52dp"
+        android:layout_height="52dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="14dp"
+        android:background="@drawable/bg_user_avatar_highlight"
+        android:visibility="gone"
+        tools:text="B" />
+
+    <TextView
+        android:id="@+id/user_prefix"
+        style="@style/UserAvatarItemTv"
+        android:layout_width="@dimen/item_user_avatar_width"
+        android:layout_height="@dimen/item_user_avatar_height"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/item_user_margin"
+        android:gravity="center"
+        android:textColor="@color/bottom_bar_txt"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        tools:text="B" />
+
+    <ImageView
+        android:id="@+id/user_share_permit"
+        style="@style/ControlButtonSharePermission"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="8dp"
+        android:padding="8dp" />
+
+    <ImageView
+        android:id="@+id/user_video_available"
+        style="@style/ControlButtonCamera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="8dp"
+        android:layout_toLeftOf="@id/user_share_permit"
+        android:padding="8dp" />
+
+    <ImageView
+        android:id="@+id/user_audio_available"
+        style="@style/ControlButtonMic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="8dp"
+        android:layout_toLeftOf="@id/user_video_available"
+        android:padding="8dp" />
+
+    <ImageView
+        android:id="@+id/user_apply_permit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dp"
+        android:layout_toLeftOf="@id/user_audio_available"
+        android:padding="8dp"
+        android:src="@drawable/ic_hands_up" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="9dp"
+        android:layout_toRightOf="@id/user_prefix"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/user_txt_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="2dp"
+            android:textColor="@color/title_bar_title"
+            android:textSize="@dimen/txt_H2_16sp"
+            tools:text="ByteDancer" />
+
+        <TextView
+            android:id="@+id/user_host_tv"
+            style="@style/UserHostItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/user_txt_tv"
+            android:layout_marginTop="2dp"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:textSize="@dimen/txt_H3_14sp"
+            tools:text="@string/role_host_desc_meeting" />
+
+        <TextView
+            android:id="@+id/user_me"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/user_txt_tv"
+            android:layout_marginTop="2dp"
+            android:layout_toRightOf="@+id/user_host_tv"
+            android:paddingLeft="2dp"
+            android:paddingRight="2dp"
+            android:text="@string/me_tag"
+            android:textColor="@color/title_bar_sub_title"
+            android:textSize="@dimen/txt_H3_14sp"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/user_share_screen_status"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_alignTop="@id/user_txt_tv"
+            android:layout_alignBottom="@id/user_txt_tv"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@id/user_txt_tv"
+            android:src="@drawable/ic_share_light"
+            tools:ignore="ContentDescription" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="16dp"
+        android:background="@color/bottom_bar_divider" />
+</RelativeLayout>

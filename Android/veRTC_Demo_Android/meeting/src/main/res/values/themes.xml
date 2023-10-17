@@ -1,0 +1,275 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="MeetingTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+        <item name="colorPrimary">#FFFFFF</item>
+        <item name="colorPrimaryDark">#FFFFFF</item>
+        <item name="colorAccent">#1D2129</item>
+        <item name="android:windowBackground">#F1F2F4</item>
+        <item name="android:statusBarColor" tools:targetApi="l">#FFFFFF</item>
+        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+    </style>
+
+    <style name="MeetingMainTheme" parent="MeetingTheme">
+        <item name="colorAccent">#86909C</item>
+    </style>
+
+    <style name="RadioButtonLg">
+        <item name="android:button">@null</item>
+        <item name="android:drawablePadding">8dp</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:textColor">@color/select_role_txt</item>
+        <item name="android:drawableBottom">@drawable/ic_indicator_role</item>
+    </style>
+
+    <style name="EditTextLg">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@color/transparent</item>
+        <item name="android:gravity">left</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textColorHint">@color/room_input_txt_hint</item>
+        <item name="android:textCursorDrawable">@drawable/eitetext_lg_cursor</item>
+        <item name="android:textSize">@dimen/txt_H2_16sp</item>
+        <item name="android:lines">1</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="ButtonLg">
+        <item name="android:background">@drawable/bg_join_meeting</item>
+        <item name="android:textColor">@color/join_room_txt</item>
+        <item name="android:textSize">@dimen/txt_H2_16sp</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="ControlButtonDesc">
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/bottom_bar_txt</item>
+    </style>
+
+    <style name="ControlButtonMic">
+        <item name="android:src">@drawable/ic_mic_light</item>
+    </style>
+
+    <style name="ControlButtonCamera">
+        <item name="android:src">@drawable/ic_camera_light</item>
+    </style>
+
+    <style name="ControlButtonShare">
+        <item name="android:src">@drawable/ic_share_light</item>
+    </style>
+
+    <style name="ControlButtonParticipants">
+        <item name="android:src">@drawable/ic_participants_light</item>
+    </style>
+
+    <style name="ControlButtonRecord">
+        <item name="android:src">@drawable/ic_record_light</item>
+    </style>
+
+    <style name="ControlButtonAudioRoute">
+        <item name="android:src">@drawable/ic_audio_route_light</item>
+    </style>
+
+    <style name="ControlButtonSwitchCamera">
+        <item name="android:src">@drawable/ic_switch_camera_light</item>
+    </style>
+
+    <style name="ControlButtonSharePermission">
+        <item name="android:src">@drawable/ic_share_permission_light</item>
+    </style>
+
+    <style name="ProfileLayoutItemLeftText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/txt_H3_14sp</item>
+        <item name="android:layout_marginLeft">@dimen/layout_item_margin</item>
+        <item name="android:textColor">#1D2129</item>
+    </style>
+
+    <style name="ProfileLayoutItemRightText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/txt_H3_14sp</item>
+        <item name="android:layout_marginRight">8dp</item>
+        <item name="android:textColor">#4E5969</item>
+    </style>
+
+    <style name="BackButton">
+        <item name="android:src">@drawable/ic_back_light</item>
+    </style>
+
+    <style name="LayoutMuteAll">
+        <item name="android:background">@drawable/bg_participant_mute_all_mic_ight</item>
+    </style>
+
+    <style name="LayoutMuteAllIcon">
+        <item name="android:background">@drawable/ic_mic_off_grey</item>
+    </style>
+
+    <style name="UserAvatarItemTv">
+        <item name="android:background">@drawable/bg_user_avatar</item>
+    </style>
+
+    <style name="UserHostItem">
+        <item name="android:background">#000000</item>
+        <item name="android:textColor">#FFFFFF</item>
+    </style>
+
+    <style name="PopConfirmButton">
+        <item name="android:background">@drawable/bg_leave_normal_light</item>
+    </style>
+
+    <style name="RendererExpandBtn">
+        <item name="android:background">@drawable/ic_renderer_expand_light</item>
+    </style>
+
+    <style name="BgUserView">
+        <item name="android:background">@drawable/bg_user_view_light</item>
+    </style>
+
+    <style name="HostLabelBackground">
+        <item name="android:background">@drawable/bg_host_label_light</item>
+    </style>
+
+    <style name="UserDrawerBackground">
+        <item name="android:background">@drawable/bg_collapse_light</item>
+    </style>
+
+    <style name="PaintSizeTitle">
+        <item name="android:textColor">#1D2129</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="PaintSize">
+        <item name="android:layout_width">25dp</item>
+        <item name="android:layout_height">25dp</item>
+        <item name="android:textColor">#4E5969</item>
+        <item name="android:background">@drawable/wb_bg_item_pen_size</item>
+    </style>
+
+    <style name="ColorPickerTitle">
+        <item name="android:textColor">#1D2129</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="PaintColor">
+        <item name="android:layout_width">24dp</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="android:padding">1dp</item>
+        <item name="android:background">@drawable/wb_bg_item_pen_color</item>
+    </style>
+
+    <style name="WBEditTypes">
+        <item name="android:layout_width">32dp</item>
+        <item name="android:layout_height">32dp</item>
+    </style>
+
+    <style name="WBEditTypesSelectable" parent="WBEditTypes">
+        <item name="android:background">@drawable/wb_bg_edit_type_selected_light</item>
+    </style>
+
+    <style name="WBEditTypesClickable" parent="WBEditTypes">
+        <item name="android:background">@drawable/wb_bg_edit_type_clicked_light</item>
+    </style>
+
+    <style name="WBEditTypesSelect" parent="WBEditTypesSelectable">
+        <item name="android:src">@drawable/wb_ic_edit_type_select_light</item>
+    </style>
+
+    <style name="WBEditTypesPen" parent="WBEditTypesSelectable">
+        <item name="android:src">@drawable/wb_ic_edit_type_pen_light</item>
+    </style>
+
+    <style name="WBEditTypesText" parent="WBEditTypesSelectable">
+        <item name="android:src">@drawable/wb_ic_edit_type_text_light</item>
+    </style>
+
+    <style name="WBEditTypesShapeRect" parent="WBEditTypesSelectable">
+        <item name="android:src">@drawable/wb_ic_edit_type_shape_rect_light</item>
+    </style>
+
+    <style name="WBEditTypesShapeCircle" parent="WBEditTypesSelectable">
+        <item name="android:src">@drawable/wb_ic_edit_type_shape_circle_light</item>
+    </style>
+
+    <style name="WBEditTypesShapeLine" parent="WBEditTypesSelectable">
+        <item name="android:src">@drawable/wb_ic_edit_type_shape_line_light</item>
+    </style>
+
+    <style name="WBEditTypesShapeArrow" parent="WBEditTypesSelectable">
+        <item name="android:src">@drawable/wb_ic_edit_type_shape_arrow</item>
+    </style>
+
+    <style name="WBEditTypesErase" parent="WBEditTypesSelectable">
+        <item name="android:src">@drawable/wb_ic_edit_type_erase_light</item>
+    </style>
+
+    <style name="WBEditTypesUndo" parent="WBEditTypesClickable">
+        <item name="android:src">@drawable/wb_ic_edit_type_undo_light</item>
+    </style>
+
+    <style name="WBEditTypesRedo" parent="WBEditTypesClickable">
+        <item name="android:src">@drawable/wb_ic_edit_type_redo_light</item>
+    </style>
+
+    <style name="WBEditTypesClear" parent="WBEditTypesClickable">
+        <item name="android:src">@drawable/wb_ic_edit_clear_light</item>
+    </style>
+
+    <style name="WBEditTypesDivider">
+        <item name="android:layout_width">1dp</item>
+        <item name="android:layout_height">24dp</item>
+        <item name="android:layout_margin">4dp</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:src">@drawable/wb_ic_edit_divider_light</item>
+        <item name="android:background">@drawable/wb_bg_edit_type_clicked_light</item>
+    </style>
+
+    <style name="WBEditTypesCollapse" parent="WBEditTypesClickable">
+        <item name="android:src">@drawable/wb_ic_edit_collapse_light</item>
+    </style>
+
+    <style name="WBPenPanel">
+        <item name="android:padding">25dp</item>
+        <item name="android:background">@drawable/wb_bg_pen_panel_light</item>
+    </style>
+
+    <style name="WBToolBar">
+        <item name="android:background">@drawable/wb_bg_toolbar_light</item>
+    </style>
+
+    <style name="WBPagePre">
+        <item name="android:layout_height">32dp</item>
+        <item name="android:layout_width">32dp</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:src">@drawable/wb_page_pre_light</item>
+    </style>
+
+    <style name="WBPageInfo">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">#4E5969</item>
+    </style>
+
+    <style name="WBPageNext">
+        <item name="android:layout_height">32dp</item>
+        <item name="android:layout_width">32dp</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:src">@drawable/wb_page_next_light</item>
+    </style>
+
+    <style name="WBPageAdd">
+        <item name="android:layout_height">32dp</item>
+        <item name="android:layout_width">32dp</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:src">@drawable/wb_page_add_light</item>
+    </style>
+
+    <style name="WBExpand">
+        <item name="android:layout_height">32dp</item>
+        <item name="android:layout_width">32dp</item>
+        <item name="android:padding">5dp</item>
+        <item name="android:src">@drawable/wb_ic_expand_light</item>
+    </style>
+</resources>

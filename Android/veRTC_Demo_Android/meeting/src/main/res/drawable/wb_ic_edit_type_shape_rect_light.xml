@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true">
+        <vector android:width="48dp" android:height="48dp" android:viewportWidth="70" android:viewportHeight="70">
+            <group>
+                <clip-path android:pathData="M20,21.875L50,21.875A2.5,2.5 0,0 1,52.5 24.375L52.5,45.625A2.5,2.5 0,0 1,50 48.125L20,48.125A2.5,2.5 0,0 1,17.5 45.625L17.5,24.375A2.5,2.5 0,0 1,20 21.875z" />
+                <path android:fillColor="#00000000" android:pathData="M20,21.875L50,21.875A2.5,2.5 0,0 1,52.5 24.375L52.5,45.625A2.5,2.5 0,0 1,50 48.125L20,48.125A2.5,2.5 0,0 1,17.5 45.625L17.5,24.375A2.5,2.5 0,0 1,20 21.875z" android:strokeWidth="7.5" android:strokeColor="#4080FF" />
+            </group>
+        </vector>
+    </item>
+    <item>
+        <vector android:width="48dp" android:height="48dp" android:viewportWidth="70" android:viewportHeight="70">
+            <group>
+                <clip-path android:pathData="M20,21.875L50,21.875A2.5,2.5 0,0 1,52.5 24.375L52.5,45.625A2.5,2.5 0,0 1,50 48.125L20,48.125A2.5,2.5 0,0 1,17.5 45.625L17.5,24.375A2.5,2.5 0,0 1,20 21.875z" />
+                <path android:fillColor="#00000000" android:pathData="M20,21.875L50,21.875A2.5,2.5 0,0 1,52.5 24.375L52.5,45.625A2.5,2.5 0,0 1,50 48.125L20,48.125A2.5,2.5 0,0 1,17.5 45.625L17.5,24.375A2.5,2.5 0,0 1,20 21.875z" android:strokeWidth="7.5" android:strokeColor="#4E5969" />
+            </group>
+        </vector>
+    </item>
+</selector>

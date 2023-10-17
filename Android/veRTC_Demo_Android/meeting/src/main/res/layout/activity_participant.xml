@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/top_bar_background"
+    android:fitsSystemWindows="true">
+
+    <include
+        android:id="@+id/users_title_bar_layout"
+        layout="@layout/layout_title_bar" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/users_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/users_mute_all_users"
+        android:layout_below="@+id/users_title_bar_layout" />
+
+    <LinearLayout
+        android:id="@+id/users_mute_all_users"
+        style="@style/LayoutMuteAll"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="26dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="26dp"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageView
+            style="@style/LayoutMuteAllIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:gravity="center"
+            android:text="@string/mute_all_audio"
+            android:textColor="@color/bottom_bar_txt"
+            android:textSize="16sp" />
+    </LinearLayout>
+</RelativeLayout>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/main_background"
+    tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/whiteboard_canvas_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#FFFFFF"
+        android:scrollbars="none"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintDimensionRatio="w,4:3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/whiteboard_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:layout_marginTop="20dp"
+        android:drawableRight="@drawable/wb_ic_dropdown"
+        android:drawablePadding="5dp"
+        android:padding="5dp"
+        android:text="@string/black_whiteboard"
+        android:textColor="#1D2129"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.volcengine.vertcdemo.ui.widget.WBPagePanel
+        android:id="@+id/whiteboard_page_panel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="10dp"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/wh_expand"
+            style="@style/WBExpand"
+            android:layout_marginRight="10dp"
+            android:visibility="gone" />
+    </com.volcengine.vertcdemo.ui.widget.WBPagePanel>
+
+
+    <FrameLayout
+        android:id="@+id/whiteboard_paint_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/whiteboard_toolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="gone">
+
+        <com.volcengine.vertcdemo.ui.widget.WBPaintPanel
+            android:id="@+id/whiteboard_paint_panel"
+            style="@style/WBPenPanel"
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|bottom"
+            android:clickable="true"
+            android:focusable="true" />
+
+    </FrameLayout>
+
+    <com.volcengine.vertcdemo.ui.widget.WBToolBar
+        android:id="@+id/whiteboard_toolbar"
+        style="@style/WBToolBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:padding="2dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,41 @@
+<resources>
+    <color name="role_checked">#FFFFFFFF</color>
+    <color name="role_unchecked">#FFFFFFFF</color>
+    <color name="room_input_txt_hint">#FFFFFFFF</color>
+    <color name="room_input_divider_bg">#FFFFFFFF</color>
+    <color name="join_room_txt_enabled">#FFFFFFFF</color>
+    <color name="join_room_txt_disabled">#FFFFFFFF</color>
+    <color name="join_room_bg_enabled">#FF165DFF</color>
+    <color name="join_room_bg_disabled">#66165DFF</color>
+    <color name="top_bar_background">#FFFFFF</color>
+    <color name="main_background">#F1F2F4</color>
+    <color name="bottom_bar_background">#FFFFFF</color>
+    <color name="bottom_bar_txt">#4E5969</color>
+    <color name="bottom_bar_divider">#E5E6EB</color>
+    <color name="title_bar_title">#1D2129</color>
+    <color name="title_bar_sub_title">#86909C</color>
+    <color name="popup_background">#FFFFFF</color>
+    <color name="video_render_background">#DEDFE3</color>
+    <color name="user_name_color">#1D2129</color>
+    <color name="host_name_background">#000000</color>
+    <color name="host_name_txt">#FFFFFF</color>
+    <color name="user_layout_background">#FFFFFF</color>
+    <color name="page_indicator_on">#4080FF</color>
+    <color name="page_indicator_off">#DEDFE3</color>
+
+
+    <color name="color_000000">#000000</color>
+    <color name="color_505050">#505050</color>
+    <color name="color_D8D8D8">#D8D8D8</color>
+    <color name="color_FFFFFF">#FFFFFF</color>
+    <color name="color_F04142">#F04142</color>
+    <color name="color_EB28BD">#EB28BD</color>
+    <color name="color_8F2BFF">#8F2BFF</color>
+    <color name="color_1A74FF">#1A74FF</color>
+    <color name="color_00ABAB">#00ABAB</color>
+    <color name="color_70B500">#70B500</color>
+    <color name="color_FFBA12">#FFBA12</color>
+    <color name="color_FF7528">#FF7528</color>
+
+    <color name="color_wb_edit_type">#4E5969</color>
+</resources>

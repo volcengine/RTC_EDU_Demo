@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/main_background"
+    tools:parentTag="android.widget.LinearLayout">
+
+    <ImageView
+        android:id="@+id/whiteboard_page_pre"
+        style="@style/WBPagePre"
+        android:layout_gravity="center_vertical" />
+
+    <TextView
+        android:id="@+id/whiteboard_page_text"
+        style="@style/WBPageInfo"
+        android:layout_width="40dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:gravity="center"
+        tools:text="1/1" />
+
+    <ImageView
+        android:id="@+id/whiteboard_page_next"
+        style="@style/WBPageNext"
+        android:layout_gravity="center_vertical" />
+
+    <ImageView
+        android:id="@+id/whiteboard_page_add"
+        style="@style/WBPageAdd"
+        android:layout_gravity="center_vertical" />
+
+    <TextView
+        android:id="@+id/whiteboard_page_add_tips"
+        style="@style/WBPageInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:gravity="center"
+        android:text="@string/wb_add_page"
+        android:textSize="12sp" />
+</merge>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <CheckBox
+        android:id="@+id/item_setting_list_content"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:button="@null"
+        android:clickable="false"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:textColor="@color/setting_item_txt"
+        android:textSize="16sp"
+        tools:text="设置项" />
+
+</FrameLayout>

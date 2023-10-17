@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/main_background"
+    android:fitsSystemWindows="true"
+    tools:ignore="ContentDescription,RtlHardcoded">
+
+    <RelativeLayout
+        android:id="@+id/layout_room_title_bar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        android:gravity="center_vertical"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/full_screen_guideline"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/title_bar_left_iv"
+            style="@style/BackButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="20dp" />
+
+        <TextView
+            android:id="@+id/whiteboard_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/title_bar_left_iv"
+            android:drawableRight="@drawable/wb_ic_dropdown"
+            android:drawablePadding="5dp"
+            android:padding="5dp"
+            android:text="@string/black_whiteboard"
+            android:textColor="@color/title_bar_title"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+        <LinearLayout
+            android:id="@+id/room_id_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/info_room_id"
+                android:textColor="@color/title_bar_title"
+                android:textSize="@dimen/txt_H2_16sp" />
+
+            <TextView
+                android:id="@+id/room_id"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="middle"
+                android:gravity="center"
+                android:singleLine="true"
+                android:textColor="@color/title_bar_title"
+                android:textSize="@dimen/txt_H2_16sp"
+                tools:text="123...321" />
+
+            <TextView
+                android:id="@+id/room_record_status_divider"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:text="|"
+                android:textColor="@color/title_bar_sub_title"
+                android:textSize="@dimen/txt_H5_12sp" />
+
+            <TextView
+                android:id="@+id/room_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:lines="1"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textColor="@color/title_bar_sub_title"
+                android:textSize="@dimen/txt_H5_12sp"
+                tools:text="@string/info_remind_time" />
+
+        </LinearLayout>
+
+        <com.volcengine.vertcdemo.ui.widget.WBPagePanel
+            android:id="@+id/whiteboard_page_panel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:gravity="center_vertical"
+            android:visibility="gone"
+            tools:visibility="visible" />
+    </RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/video_renderer_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#ffffff"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/full_screen_guideline"
+        app:layout_constraintTop_toBottomOf="@+id/layout_room_title_bar" />
+
+    <FrameLayout
+        android:id="@+id/content_container"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/main_background"
+        android:paddingTop="5dp"
+        android:scrollbars="none"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/full_screen_guideline"
+        app:layout_constraintTop_toBottomOf="@+id/layout_room_title_bar"
+        tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/link_mic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_link_mic"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/full_screen_guideline" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/full_screen_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.8" />
+
+    <fragment
+        class="com.volcengine.vertcdemo.feature.roommain.fragment.ClassUserFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@android:color/transparent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@+id/full_screen_guideline"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

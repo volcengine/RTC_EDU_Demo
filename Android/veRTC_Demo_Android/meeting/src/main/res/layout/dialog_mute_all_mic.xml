@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/common_dialog_bg"
+    android:orientation="vertical"
+    android:paddingTop="24dp">
+
+    <TextView
+        android:id="@+id/mute_all_mic_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="@dimen/common_dialog_margin"
+        android:layout_marginRight="@dimen/common_dialog_margin"
+        android:layout_marginBottom="12dp"
+        android:text="@string/mute_all_audio_tips"
+        android:textColor="#1D2129"
+        android:textSize="@dimen/txt_H2_16sp" />
+
+    <CheckBox
+        android:id="@+id/mic_permission_granted"
+        style="@style/CheckBoxStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="12dp"
+        android:checked="true"
+        android:gravity="center"
+        android:paddingLeft="10dp"
+        android:text="@string/mic_permission_granted"
+        android:textColor="@color/title_bar_title"
+        android:textSize="14sp" />
+
+    <View
+        android:id="@+id/dialog_divider"
+        style="@style/DividerLine"
+        android:background="@color/color_E5E6EB" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:background="@color/transparent"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/dialog_negative_btn"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:background="@color/transparent"
+            android:gravity="center"
+            android:text="@string/common_cancel"
+            android:textColor="#1D2129"
+            android:textSize="@dimen/txt_H2_16sp" />
+
+        <View
+            android:id="@+id/dialog_btn_divider"
+            android:layout_width="1dp"
+            android:layout_height="44dp"
+            android:background="@color/color_E5E6EB" />
+
+        <Button
+            android:id="@+id/dialog_positive_btn"
+            android:layout_width="0dp"
+            android:layout_height="44dp"
+            android:layout_weight="1"
+            android:background="@color/transparent"
+            android:gravity="center"
+            android:text="@string/mute_all_audio"
+            android:textColor="@color/active_normal"
+            android:textSize="@dimen/txt_H2_16sp" />
+    </LinearLayout>
+</LinearLayout>

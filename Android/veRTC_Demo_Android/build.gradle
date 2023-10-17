@@ -1,24 +1,27 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 ext {
+    RtcAppVersion = "1.0"
+
     compileSdkVersion = 29
-    minSdkVersion = 21
+    minSdkVersion = 19
     targetSdkVersion = 29
 
-    RTC_SDK = 'com.volcengine:VolcEngineRTC:3.52.106'
+    VOLCENGINE = '3.54.0.556400'
+    VOLCWhiteBoard = '1.6.2'
 
+    // region Third part libraries
     GlideVersion = '4.12.0'
     GsonVersion = '2.8.5'
     EventBusVersion = '3.2.0'
-    OkHttpVersion = '4.9.0'
+    OkHttpVersion = '3.14.9'
+    RetrofitVersion = '2.9.0'
+    RxJava2Version = '2.1.1'
 
     AppCompatVersion = '1.2.0'
     ConstraintLayoutVersion = '2.0.4'
     RecyclerViewVersion = '1.2.1'
     MaterialVersion = '1.4.0'
 
-    LOGIN_MODULE = 'LoginKit'
-
-    JOIN_RTS_MODULE = 'JoinRTSParamsKit'
 }
 
 buildscript {
@@ -27,7 +30,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:4.2.2"
+        classpath "com.android.tools.build:gradle:4.1.3"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -35,11 +38,9 @@ buildscript {
 
 allprojects {
     repositories {
-        maven { url 'https://artifact.bytedance.com/repository/Volcengine/' }
-
-        google()
         mavenCentral()
-        jcenter()
+        maven { url 'https://artifact.bytedance.com/repository/Volcengine/' }
+        google()
     }
 }
 

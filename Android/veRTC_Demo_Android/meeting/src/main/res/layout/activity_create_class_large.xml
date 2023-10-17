@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/create_room_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#13171E"
+    tools:context="com.volcengine.vertcdemo.feature.createroom.CreateMeetingActivity"
+    tools:ignore="ContentDescription">
+
+    <FrameLayout
+        android:id="@+id/create_room_camera_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <include
+        android:id="@+id/title_bar_layout"
+        layout="@layout/layout_title_bar" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="86dp"
+        android:background="#33000000"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <ImageView
+            android:layout_width="13dp"
+            android:layout_height="13dp"
+            android:gravity="center"
+            android:src="@drawable/ic_limit_notice" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:gravity="center"
+            android:text="@string/class_limited_service"
+            android:textColor="@color/gray_11"
+            android:textSize="13sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="42dp"
+        android:layout_marginRight="42dp"
+        android:orientation="vertical">
+
+        <RadioGroup
+            android:id="@+id/create_room_role"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/create_room_role_attendee"
+                style="@style/RadioButtonLg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="@string/create_choose_role_student" />
+
+        </RadioGroup>
+
+        <EditText
+            android:id="@+id/create_room_id"
+            style="@style/EditTextLg"
+            android:layout_width="match_parent"
+            android:layout_marginTop="20dp"
+            android:hint="@string/create_input_room_id_hint" />
+
+        <View
+            style="@style/DividerLine"
+            android:layout_marginTop="10dp"
+            android:background="@color/room_input_divider_bg" />
+
+        <TextView
+            android:id="@+id/create_room_id_waring"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/create_input_room_id_length_warn"
+            android:textColor="@color/waring_normal"
+            android:textSize="@dimen/txt_H3_14sp"
+            android:visibility="invisible"
+            tools:visibility="visible" />
+
+        <EditText
+            android:id="@+id/create_room_user_name"
+            style="@style/EditTextLg"
+            android:layout_width="match_parent"
+            android:layout_marginTop="20dp"
+            android:hint="@string/create_input_user_name_hint" />
+
+        <View
+            style="@style/DividerLine"
+            android:layout_marginTop="10dp"
+            android:background="@color/room_input_divider_bg" />
+
+        <TextView
+            android:id="@+id/create_room_user_name_waring"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/create_input_user_name_content_warn"
+            android:textColor="@color/waring_normal"
+            android:textSize="@dimen/txt_H3_14sp"
+            android:visibility="invisible"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/create_room_join"
+            style="@style/ButtonLg"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="30dp"
+            android:text="@string/create_join_meeting" />
+
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="60dp">
+
+        <ImageView
+            android:id="@+id/create_room_mic"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:background="@drawable/bg_create_room_btn"
+            android:padding="12dp"
+            android:src="@drawable/ic_mic_night"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/create_room_camera"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/create_room_camera"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:background="@drawable/bg_create_room_btn"
+            android:padding="12dp"
+            android:src="@drawable/ic_camera_night"
+            app:layout_constraintLeft_toRightOf="@id/create_room_mic"
+            app:layout_constraintRight_toLeftOf="@id/create_room_speaker"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/create_room_speaker"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:background="@drawable/bg_create_room_btn"
+            android:padding="12dp"
+            android:src="@drawable/ic_audio_route_night"
+            app:layout_constraintLeft_toRightOf="@id/create_room_camera"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/create_room_version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="20dp"
+        android:text="@string/version_desc"
+        android:textColor="#86909C"
+        android:textSize="12sp" />
+</FrameLayout>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/title_bar_height"
+    android:background="@color/top_bar_background"
+    tools:ignore="ContentDescription">
+
+    <LinearLayout
+        android:id="@+id/room_meeting_id_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="60dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/info_room_id"
+            android:textColor="@color/title_bar_title"
+            android:textSize="@dimen/txt_H2_16sp" />
+
+        <TextView
+            android:id="@+id/room_meeting_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="middle"
+            android:gravity="center"
+            android:singleLine="true"
+            android:textColor="@color/title_bar_title"
+            android:textSize="@dimen/txt_H2_16sp"
+            tools:text="123...321" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/room_speaker"
+        style="@style/ControlButtonAudioRoute"
+        android:layout_width="@dimen/title_bar_icon_width"
+        android:layout_height="@dimen/title_bar_icon_height"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="@dimen/title_bar_icon_margin"
+        android:padding="@dimen/title_bar_icon_padding" />
+
+    <ImageView
+        android:id="@+id/room_switch_camera"
+        style="@style/ControlButtonSwitchCamera"
+        android:layout_width="@dimen/title_bar_icon_width"
+        android:layout_height="@dimen/title_bar_icon_height"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/room_speaker"
+        android:padding="@dimen/title_bar_icon_padding" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/room_meeting_id_group"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="2dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/room_record_status_icon"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_marginRight="5dp"
+            android:src="@drawable/ic_record_on" />
+
+        <TextView
+            android:id="@+id/room_record_status_desc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:text="@string/recording"
+            android:textColor="@color/title_bar_title"
+            android:textSize="@dimen/txt_H4_13sp" />
+
+        <TextView
+            android:id="@+id/room_record_status_divider"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:text="|"
+            android:textColor="@color/title_bar_sub_title"
+            android:textSize="@dimen/txt_H5_12sp" />
+
+        <TextView
+            android:id="@+id/room_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:lines="1"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textColor="@color/title_bar_sub_title"
+            android:textSize="@dimen/txt_H5_12sp"
+            tools:text="@string/info_remind_time" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/room_exit"
+        android:layout_width="@dimen/title_bar_icon_width"
+        android:layout_height="@dimen/title_bar_icon_height"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="@dimen/title_bar_icon_margin"
+        android:padding="@dimen/title_bar_icon_padding"
+        android:src="@drawable/ic_leave_meeting" />
+</RelativeLayout>

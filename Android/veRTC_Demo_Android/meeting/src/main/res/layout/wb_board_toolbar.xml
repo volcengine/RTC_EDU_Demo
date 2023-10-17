@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    tools:parentTag="android.widget.LinearLayout">
+
+
+    <ImageView
+        android:id="@+id/wb_ic_edit_type_select"
+        style="@style/WBEditTypesSelect" />
+
+    <ImageView
+        android:id="@+id/wb_ic_edit_type_pen"
+        style="@style/WBEditTypesPen" />
+
+    <ImageView
+        android:id="@+id/wb_ic_edit_type_text"
+        style="@style/WBEditTypesText" />
+
+    <ImageView
+        android:id="@+id/wb_ic_edit_type_shape"
+        style="@style/WBEditTypesShapeRect" />
+
+    <ImageView
+        android:id="@+id/wb_ic_edit_type_erase"
+        style="@style/WBEditTypesErase" />
+
+    <ImageView
+        android:id="@+id/wb_ic_edit_type_undo"
+        style="@style/WBEditTypesUndo" />
+
+    <ImageView
+        android:id="@+id/wb_ic_edit_type_redo"
+        style="@style/WBEditTypesRedo" />
+
+    <ImageView
+        android:id="@+id/wb_ic_edit_clear"
+        style="@style/WBEditTypesClear" />
+
+    <ImageView
+        android:id="@+id/wb_ic_edit_divider"
+        style="@style/WBEditTypesDivider" />
+
+    <ImageView
+        android:id="@+id/wb_ic_edit_collapse"
+        style="@style/WBEditTypesCollapse" />
+
+</merge>

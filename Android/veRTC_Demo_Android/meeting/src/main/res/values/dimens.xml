@@ -1,0 +1,4 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <dimen name="radio_button_role_checked">14sp</dimen>
+    <dimen name="radio_button_role_unchecked">13sp</dimen>
+</resources>

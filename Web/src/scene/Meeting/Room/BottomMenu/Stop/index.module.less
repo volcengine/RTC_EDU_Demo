@@ -1,0 +1,52 @@
+@import '../index.module.less';
+@import '~@/theme/button.less';
+@import '~@/theme/color.less';
+
+.menuRight {
+  .menuRight();
+}
+
+.menuCloseIcon {
+  margin-bottom: 0;
+  background-color: transparent;
+
+  &:hover {
+    background-color: transparent;
+  }
+
+  :global {
+    img {
+      transform: scale(0.5);
+    }
+  }
+}
+
+.menuButton {
+  .menuButton();
+}
+
+.leaveBtns {
+  display: flex;
+  flex-direction: column;
+}
+
+.leaveConfim {
+  .basicBtn();
+
+  width: 96px;
+  color: #fff;
+  background: @closeIcon-color;
+
+  &:first-child {
+    margin-bottom: 12px;
+  }
+}
+
+.leaveTemporary {
+  .basicBtn();
+
+  width: 96px;
+  color: #4e5969;
+  background-color: #fff;
+  border: 1px solid var(--background-stop-popover-cancel-btn);
+}

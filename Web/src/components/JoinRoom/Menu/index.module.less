@@ -1,0 +1,213 @@
+@import '~@/theme/color.less';
+
+.menuContainer {
+  position: absolute;
+  bottom: 120px;
+  left: 50%;
+  width: 696px;
+  height: 128px;
+  padding: 24px 32px;
+  background: var(--background-join-menu);
+  border: none;
+  border-radius: 8px;
+  transform: translateX(-50%);
+  backdrop-filter: blur(25px);
+}
+
+.radioWrapper {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  :global {
+    .ant-radio-wrapper {
+      font-size: 16px;
+      font-family: 'PingFang SC';
+    }
+
+    .ant-radio {
+      .ant-radio-inner {
+        top: -1px;
+        width: 14px;
+        height: 14px;
+        border: 2px solid var(--border-join-menu-radio-inner);
+      }
+
+      .ant-radio-input:focus + .ant-radio-inner {
+        box-shadow: none;
+      }
+    }
+
+    .ant-radio.ant-radio-checked {
+      .ant-radio-inner {
+        border: 5px solid #1664ff;
+
+        &::after {
+          background-color: transparent;
+        }
+      }
+    }
+  }
+
+  .edubTag,
+  .edusTag {
+    width: 65px;
+    height: 28px;
+    font-family: 'PingFang SC';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 28px;
+    text-align: center;
+    border-radius: 4px;
+  }
+  .edubTag {
+    background: #e8f4ff;
+    color: #165dff;
+    border: 1px solid #a2c1ff;
+  }
+  .edusTag {
+    background: #e8ffea;
+    color: #009a29;
+    border: 1px solid #8dd8b3;
+  }
+}
+
+.formInLine {
+  display: flex;
+
+  :global {
+    .ant-form-item {
+      .ant-form-item-control-input {
+        .ant-form-item-control-input-content {
+          .ant-input-affix-wrapper-focused {
+            box-shadow: none;
+          }
+
+          .ant-input-affix-wrapper {
+            width: 160px;
+            margin-right: 16px;
+
+            .ant-input {
+              border: 1px solid transparent;
+
+              &:focus {
+                box-shadow: none;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .ant-form-item.ant-form-item-has-error {
+      .ant-input-affix-wrapper-status-error:not(
+          .ant-input-affix-wrapper-disabled,
+          .ant-input-affix-wrapper-borderless
+        ).ant-input-affix-wrapper {
+        background: #fff;
+        border: 1px solid #db373f;
+        // 1px solid #DB373F
+
+        input {
+          background: #fff;
+        }
+      }
+    }
+  }
+}
+
+.login-check {
+  width: 120px;
+  margin-left: 16px;
+  background-color: #1664ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grayIcon {
+  :global {
+    svg {
+      transform: scale(0.75);
+      fill: #4e5969;
+    }
+  }
+}
+
+.closeIcon {
+  :global {
+    svg {
+      transform: scale(0.75);
+      fill: @closeIcon-color;
+    }
+  }
+}
+
+.validatorTip {
+  :global {
+    .ant-tooltip-content {
+      .ant-tooltip-arrow {
+        .ant-tooltip-arrow-content {
+          --antd-arrow-background-color: var(--background-join-menu-input-tip);
+        }
+      }
+
+      .ant-tooltip-inner {
+        color: var(--join-menu-input-tip-color);
+        font-size: 12px;
+        font-family: 'PingFang SC';
+        background-color: var(--background-join-menu-input-tip);
+      }
+    }
+  }
+}
+
+.errTip {
+  padding: 10px 8px 4px;
+
+  div {
+    margin-bottom: 4px;
+  }
+}
+
+.errTipHeader {
+  margin-bottom: 4px;
+  color: #f53f3f;
+}
+
+.iconButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-right: 16px;
+  padding-top: 6px;
+  padding-left: 2px;
+  background-color: var(--background-join-menu-icon);
+  border-radius: 16px;
+}
+
+.loading {
+  background: #a0c0ff;
+
+  box-shadow: 0px 0px 0px 1px #6e9fff, 0px 2px 1px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+}
+
+.loadingIcon {
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+  animation: circle infinite 0.75s linear;
+}
+
+@keyframes circle {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

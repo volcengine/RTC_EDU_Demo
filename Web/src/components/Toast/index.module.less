@@ -1,0 +1,36 @@
+// .body {
+//   display: flex;
+//   justify-content: center;
+
+// }
+
+.toast {
+  color: #1d2129;
+  font-weight: 500;
+  font-size: 14px;
+  font-family: 'PingFang SC';
+
+  :global {
+    .ant-modal-content {
+      //   width: fit-content;
+      padding: 32px 40px;
+      border-radius: 12px;
+    }
+
+    .ant-modal-header {
+      margin-bottom: 16px;
+      padding: 0 !important;
+      border: none !important;
+    }
+
+    .ant-modal-body {
+      padding: 0 !important;
+
+      .ant-btn {
+        width: 240px;
+        height: 36px;
+        margin-bottom: 15px;
+      }
+    }
+  }
+}

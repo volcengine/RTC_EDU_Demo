@@ -1,0 +1,40 @@
+.whiteboard-colorpicker {
+  display: flex;
+  align-items: center;
+}
+
+.colorItem {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-right: 6px;
+  border: 1px solid #fff;
+  border-radius: 2px;
+}
+
+.selectedColor {
+  border: 1px solid #e3e3e3;
+
+  &::after {
+    position: absolute;
+    top: 4px;
+    display: block;
+    width: 10px;
+    height: 6px;
+    border-bottom: 1px solid #fff;
+    border-left: 1px solid #fff;
+    border-radius: 1px;
+    transform: rotateZ(-45deg);
+    content: '';
+  }
+}
+
+.colorBlock {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+}

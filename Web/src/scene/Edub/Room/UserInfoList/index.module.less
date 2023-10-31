@@ -1,0 +1,47 @@
+@import '~@/theme/color.less';
+
+.userListWrapper {
+  width: 248px;
+  height: 100%;
+  padding: 18px 0;
+  background: #f1f3f5;
+  border-top: 1px solid #dce0e2;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.userListTile {
+  height: 22px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+  padding: 0 16px;
+
+  color: #1d2129;
+  font-family: 'PingFang SC';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.userListContent {
+  height: calc(100% - 22px - 8px);
+}
+
+.iconClose {
+  cursor: pointer;
+
+  :global {
+    svg {
+      fill: #d8d8d8;
+    }
+  }
+}
+
+.loadMore {
+  display: flex;
+  justify-content: center;
+  color: #4e5969;
+  font-size: 12px;
+}

@@ -1,0 +1,146 @@
+@import '@/theme/color.less';
+
+.userInfoWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 36px;
+  padding: 0 15px;
+}
+
+.userStatus {
+  display: flex;
+  align-items: center;
+}
+
+.hostLabel {
+  display: inline-block;
+  height: 16px;
+  margin-right: 4px;
+  color: #fff;
+  opacity: 0.8;
+  font-size: 10px;
+  line-height: 16px;
+  text-align: center;
+  background: #1d2129;
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
+.userName {
+  display: flex;
+  color: var(--color-userlist-drawer-title);
+  font-weight: 400;
+  font-size: 13px;
+  font-family: 'PingFang SC';
+  font-style: normal;
+}
+
+.userNameText {
+  max-width: 63px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.sharingIcon {
+  height: 24px;
+
+  :global {
+    svg {
+      transform: scale(0.66);
+      fill: @allowIcon-color;
+    }
+  }
+}
+
+.mediaIconShare {
+  :global {
+    svg {
+      fill: var(--background-userlist-drawer-mediaicon);
+    }
+  }
+}
+
+.speakingIcon {
+  svg {
+    transform: scale(0.6);
+    fill: #3370ff !important;
+  }
+}
+
+.mediaIcon {
+  height: 24px;
+
+  :global {
+    svg {
+      transform: scale(0.66);
+      transform-origin: 50% 50%;
+      fill: var(--background-userlist-drawer-mediaicon);
+    }
+  }
+
+  margin-right: 4px;
+}
+
+.newIcon {
+  display: flex;
+  align-items: center;
+  width: 16px !important;
+  :global {
+    svg {
+      transform: none !important;
+      transform-origin: 0% 0% !important;
+      fill: var(--background-userlist-drawer-mediaicon);
+    }
+  }
+}
+
+.handsup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  margin-right: 4px;
+
+  :global {
+    svg {
+      transform: scale(1.2);
+      transform-origin: 50% 50%;
+    }
+  }
+}
+
+.mediaClosed {
+  :global {
+    svg {
+      transform: scale(0.66);
+      transform-origin: 50% 50%;
+      fill: @closeIcon-color;
+    }
+  }
+}
+
+.userOperation {
+  display: flex;
+  align-items: center;
+}
+
+.opIcon {
+  display: inline-block;
+  height: 24px;
+
+  &:last-child {
+    margin-top: 8px;
+  }
+}
+
+.tooltip {
+  padding-bottom: 0;
+
+  :global {
+    .ant-tooltip-arrow {
+      display: none;
+    }
+  }
+}

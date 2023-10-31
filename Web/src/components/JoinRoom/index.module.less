@@ -1,0 +1,41 @@
+.container {
+  position: relative;
+  padding-top: 50px;
+  width: 100%;
+  height: 100%;
+}
+
+.preview-player {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+}
+
+.player {
+  width: 100%;
+  height: 100%;
+}
+
+.cameraImg {
+  position: absolute;
+  top: 25%;
+  transform: scale(0.4);
+}
+
+.backToScene {
+  position: absolute;
+  top: 70px;
+  left: 32px;
+  width: 48px;
+  height: 48px;
+  :global {
+    img {
+      width: 48px;
+      height: 48px;
+    }
+  }
+}

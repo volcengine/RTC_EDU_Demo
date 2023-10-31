@@ -1,0 +1,147 @@
+.videoViewWrapper {
+  position: relative;
+  height: 100%;
+  padding: 8px;
+}
+
+.videoViewLayout {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.userCount-1,
+.userCount-2 {
+  // 总高度 - header - menu - padding
+  height: calc(100vh - 50px - 64px - 16px);
+
+  &:last-child {
+    margin-left: 4px;
+  }
+
+  // &:not(:last-child) {
+  //   margin-left: 4px;
+  // }
+}
+
+.userCount-3,
+.userCount-4,
+.userCount-5,
+.userCount-6 {
+  // (总高度 - header - menu - padding - gap) / 2
+  height: calc(50vh - 25px - 32px - 8px - 2px);
+}
+
+.userCount-3,
+.userCount-4 {
+  &:nth-child(1),
+  &:nth-child(2) {
+    margin-bottom: 4px;
+  }
+
+  &:nth-child(2),
+  &:nth-child(4) {
+    margin-left: 4px;
+  }
+}
+
+.userCount-5,
+.userCount-6 {
+  &:nth-child(1),
+  &:nth-child(2),
+  &:nth-child(3) {
+    margin-bottom: 4px;
+  }
+
+  &:nth-child(2),
+  &:nth-child(3),
+  &:nth-child(5),
+  &:nth-child(6) {
+    margin-left: 4px;
+  }
+}
+
+.userCount-7,
+.userCount-8,
+.userCount-9 {
+  // (总高度 - header - menu - padding - gap) / 3
+
+  height: calc(33.33vh - 46px);
+
+  &:nth-child(1),
+  &:nth-child(2),
+  &:nth-child(3),
+  &:nth-child(4),
+  &:nth-child(5),
+  &:nth-child(6) {
+    margin-bottom: 4px;
+  }
+
+  &:nth-child(2),
+  &:nth-child(3),
+  &:nth-child(5),
+  &:nth-child(6),
+  &:nth-child(8),
+  &:nth-child(9) {
+    margin-left: 4px;
+  }
+}
+
+.userCount-2,
+.userCount-3,
+.userCount-4 {
+  min-width: 40%;
+  max-width: calc(50% - 0px);
+}
+
+.userCount-5,
+.userCount-6,
+.userCount-7,
+.userCount-8,
+.userCount-9 {
+  min-width: 30%;
+  max-width: calc(33.33% - 0px);
+}
+
+.videoViewWrapper {
+  &:hover {
+    .pageBtn {
+      display: flex;
+    }
+  }
+}
+
+.pageBtn {
+  position: absolute;
+  top: 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-top: 18px;
+  background: var(--background-footer);
+  border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 8%);
+  transform: translateY(-50%);
+}
+
+.prePage {
+  left: 20px;
+
+  :global {
+    svg {
+      transform: translateY(2px);
+    }
+  }
+}
+
+.nextPage {
+  right: 20px;
+
+  :global {
+    svg {
+      transform: rotateZ(180deg) translateY(-2px);
+    }
+  }
+}

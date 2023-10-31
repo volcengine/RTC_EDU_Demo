@@ -1,0 +1,36 @@
+@import '~@/theme/button.less';
+@import '~@/theme/color.less';
+
+.btns {
+  display: flex;
+  flex-direction: column;
+}
+
+.muteButton {
+  .basicBtn();
+
+  margin-bottom: 15px;
+  color: #fff;
+  background-color: @primary-color;
+}
+
+.cancelButton {
+  .basicBtn();
+
+  background-color: #fff;
+  border: 1px solid #c9cdd4;
+}
+
+.openMicCheckbox {
+  margin-bottom: 32px;
+
+  :global {
+    .ant-checkbox + span {
+      color: #1d2129;
+      font-weight: 400;
+      font-size: 12px;
+      font-family: 'PingFang SC';
+      font-style: normal;
+    }
+  }
+}

@@ -1,0 +1,82 @@
+@import '~@/theme/color.less';
+
+.userListWrapper {
+  width: 268px;
+  height: calc(100vh - 50px);
+  padding: 8px 0;
+  background: var(--background-userlist-drawer);
+}
+
+.userListContent {
+  height: calc(100vh - 50px - 45px - 48px);
+  overflow-y: auto;
+}
+
+.userListTitle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 44px;
+  padding: 0 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 10%);
+
+  :global {
+    span {
+      color: var(--color-userlist-drawer-title);
+      font-weight: 500;
+      font-size: 14px;
+      font-family: 'PingFang SC';
+      font-style: normal;
+    }
+  }
+}
+
+.iconClose {
+  cursor: pointer;
+
+  :global {
+    svg {
+      fill: #d8d8d8;
+    }
+  }
+}
+
+.muteAllButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 236px;
+  height: 32px;
+  margin: auto;
+  color: var(--color-userlist-drawer-mutebtn);
+  font-weight: 400;
+  font-size: 12px;
+  font-family: 'PingFang SC';
+  font-style: normal;
+  background: var(--background-userlist-drawer-mutebtn);
+  border-radius: 2px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.muteAllButton.muted {
+  color: @closeIcon-color;
+  background: rgba(245, 63, 63, 10%);
+
+  :global {
+    svg {
+      fill: @closeIcon-color;
+    }
+  }
+}
+
+.muteAllIcon {
+  height: 24px;
+
+  :global {
+    svg {
+      transform: scale(0.66);
+      fill: var(--background-bottom-menu-icon);
+    }
+  }
+}

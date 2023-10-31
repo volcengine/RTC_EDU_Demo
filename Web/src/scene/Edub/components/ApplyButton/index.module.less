@@ -1,0 +1,110 @@
+@import '~@/theme/color.less';
+
+.menuButton {
+  position: relative;
+  width: 88px;
+  height: 54px;
+  margin-right: 8px;
+  text-align: center;
+  border-radius: 8px;
+  user-select: none;
+
+  &:hover {
+    background: rgba(255, 255, 255, 5%);
+  }
+}
+
+.userCount {
+  position: absolute;
+  top: 3px;
+  left: 64%;
+  font-size: 12px;
+  color: var(--background-bottom-menu-icon);
+  font-family: Inter;
+}
+
+.normalIcon {
+  :global {
+    svg {
+      width: 21px;
+      fill: var(--background-bottom-menu-icon);
+    }
+  }
+}
+
+.countIcon {
+  :global {
+    svg {
+      width: 21px;
+      fill: #1ac84a;
+    }
+  }
+}
+
+.applyUserList {
+  position: absolute;
+  bottom: 68px;
+  background: #fff;
+  width: 220px;
+  box-shadow: 0px 0px 12.5546px rgb(0 71 136 / 13%);
+  padding: 18px 16px;
+}
+
+.applyLinkTitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  color: #1d2129;
+  font-family: 'PingFang SC';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.iconClose {
+  cursor: pointer;
+
+  :global {
+    svg {
+      fill: #d8d8d8;
+    }
+  }
+}
+
+.users {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+}
+
+.applyUser {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  &:not(:last-child) {
+    margin-bottom: 20px;
+  }
+}
+
+.user_name {
+  font-family: 'PingFang SC';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 18px;
+
+  color: #4e5969;
+  width: 104px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  text-align: left;
+}
+
+.iconAllow {
+  margin-right: 18px;
+}

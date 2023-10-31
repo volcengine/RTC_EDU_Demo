@@ -1,0 +1,86 @@
+.playersArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 1px;
+  margin-right: 1px;
+  padding: 3px 0;
+  background: var(--background-share-player-wrapper);
+}
+
+.playerWrapper {
+  display: flex;
+  justify-content: center;
+  min-height: 88px;
+  max-height: 88px;
+
+  :global(.videoPlayerWrapper) {
+    border: 2px solid transparent;
+    &:not(:last-child) {
+      margin-right: 2px;
+    }
+  }
+
+  :global(.speaking) {
+    border-color: #a0c0ff;
+  }
+}
+
+.hideButton {
+  display: flex;
+  justify-content: center;
+}
+
+.hidePlayer {
+  :global {
+    svg {
+      transform: rotateZ(180deg) translateY(-8px);
+    }
+  }
+}
+
+.inlinePlayer {
+  min-width: 156px;
+  max-width: 156px;
+
+  :global(.userInfo) {
+    bottom: 2px;
+    left: 2px;
+    height: 16px;
+    padding: 0 2px;
+    font-size: 12px;
+    line-height: 16px;
+  }
+}
+
+.pageBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-top: 18px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 8%);
+}
+
+.prePage {
+  margin-right: 4px;
+
+  :global {
+    svg {
+      transform: translateY(2px);
+    }
+  }
+}
+
+.nextPage {
+  margin-left: 4px;
+
+  :global {
+    svg {
+      transform: rotateZ(180deg) translateY(-2px);
+    }
+  }
+}

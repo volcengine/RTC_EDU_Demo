@@ -1,0 +1,142 @@
+@import '~@/theme/button.less';
+
+.header {
+  position: absolute;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 50px;
+  padding: 0 24px;
+  background: var(--background-header);
+}
+
+.header-logo {
+  height: 32px;
+
+  img {
+    height: 32px;
+  }
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--header-color);
+
+  :global {
+    span {
+      height: 24px;
+      line-height: 24px;
+    }
+  }
+}
+
+.avatar {
+  .avatarIcon {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    margin-right: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    font-family: 'Nunito Sans';
+    font-style: normal;
+    line-height: 28px;
+    text-align: center;
+    background: var(--background-header-avatar);
+    border-radius: 50%;
+  }
+
+  .userName {
+    font-weight: 400;
+    font-family: Inter;
+    font-style: normal;
+  }
+
+  margin-right: 16px;
+}
+
+.header-setting-btn {
+  background-color: transparent;
+  border: none;
+
+  &:hover {
+    background-color: transparent;
+  }
+}
+
+.header-pop {
+  :global {
+    .ant-popover-arrow {
+      //   display: none;
+      right: 20px;
+      left: auto;
+
+      .ant-popover-arrow-content {
+        &::before {
+          background-color: var(--background-header);
+        }
+      }
+    }
+
+    .ant-popover-inner {
+      margin-right: 12px;
+    }
+
+    .ant-popover-inner-content {
+      padding: 0;
+      background-color: var(--background-header);
+
+      ul {
+        margin: 0;
+        padding: 0;
+      }
+
+      ul > li {
+        width: 90px;
+        padding: 8px 16px;
+        color: var(--header-pop-color);
+        list-style: none;
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+.header-setting-btn {
+  display: flex;
+  align-items: center;
+  color: var(--header-color);
+
+  :global {
+    span {
+      margin-left: 8px;
+    }
+
+    svg {
+      fill: var(--header-color);
+    }
+  }
+}
+
+.version {
+  margin-right: 12px;
+}
+
+.confirmBtn {
+  .basicBtn();
+
+  color: #fff;
+  background: #1664ff;
+}
+
+.canceLBtn {
+  .basicBtn();
+
+  margin-top: 22px;
+  color: #1d2129;
+  border: 1px solid #c9cdd4;
+}

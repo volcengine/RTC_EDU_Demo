@@ -1,0 +1,51 @@
+.contentWrapper {
+  color: #1d2129;
+  font-family: 'PingFang SC';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  width: 236px;
+}
+
+.infoTitle {
+  margin-bottom: 16px;
+  :global {
+    img {
+      width: 14px;
+      height: 14px;
+      margin-right: 8px;
+    }
+  }
+}
+
+.btn {
+  height: 24px;
+  border-radius: 2px;
+  text-align: center;
+  line-height: 24px;
+  font-family: 'PingFang SC';
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  outline: none;
+  border: none;
+}
+
+.btns {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+.cancel {
+  .btn();
+  background: #f2f3f8;
+  color: #1d2129;
+  margin-right: 8px;
+}
+
+.confirm {
+  .btn();
+
+  background: #1664ff;
+  color: #ffffff;
+}

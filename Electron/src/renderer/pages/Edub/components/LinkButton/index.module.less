@@ -1,0 +1,69 @@
+.linkButton {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  background: #ffffff;
+
+  border: 1px solid #dde2e9;
+
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+
+  user-select: none;
+}
+
+.notlink,
+.applying,
+.linking {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding-top: 8px;
+
+  :global {
+    span {
+      font-family: 'PingFang SC';
+      font-style: normal;
+      font-weight: 400;
+      font-size: 12px;
+    }
+  }
+}
+
+.notlink {
+  :global {
+    span {
+      color: #4e5969;
+    }
+
+    svg {
+      fill: #41464f;
+    }
+  }
+}
+
+.applying {
+  :global {
+    span {
+      color: #4086ff;
+    }
+
+    svg {
+      fill: #4281ff;
+    }
+  }
+}
+
+.linking {
+  :global {
+    span {
+      color: #1ac84b;
+    }
+
+    svg {
+      fill: #22bb43;
+    }
+  }
+}

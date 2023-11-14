@@ -1,0 +1,88 @@
+.setting {
+  padding: 10px 20px;
+  height: 480px;
+  display: flex;
+  flex-direction: column;
+  color: var(--text-cololor-nomal);
+  background-color: var(--background-setting);
+
+
+  .header {
+    height: 40px;
+    font-size: 16px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    -webkit-app-region: drag;
+  }
+
+  .body {
+    width: 100%;
+    margin-bottom: 20px;
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .meetSetting {
+      .selectItem {
+        // color: rgb(129, 129, 129);
+        font-size: 14px;
+
+        span {
+          margin-right: 10px;
+          display: inline-block;
+          width: 100px;
+        }
+
+        margin-bottom: 20px;
+      }
+    }
+
+    :global {
+      .ant-select {
+        border: none;
+        color: var(--color-device-detect-modal-input);
+      }
+  
+      .ant-select:not(.ant-select-customize-input) {
+        .ant-select-selector {
+          border: 1px solid var(--background-device-setting-modal-border);
+          background-color: var(--background-setting-input);
+        }
+      }
+  
+  
+      .ant-select-arrow {
+        color: var(--color-device-detect-modal-input);
+        font-size: 10px;
+        margin-top: -4px;
+        text-align: right !important;
+      }
+    }
+
+  }
+
+.divider {
+  margin: 10px 0; 
+  height: 1px;
+  background-color: var(--color-setting-divider);
+}
+
+  .footer {
+    height: 30px;
+    display: flex;
+    justify-content: flex-end;
+
+    :global {
+      .ant-btn {
+        margin-bottom: 15px;
+
+        &:first-child {
+          margin-right: 12px;
+        }
+      }
+    }
+  }
+}

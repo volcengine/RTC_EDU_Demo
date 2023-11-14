@@ -1,0 +1,55 @@
+.pagination {
+  background: transparent;
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  color: #fff;
+  height: 18px;
+}
+
+.pageBtn {
+  width: 24px;
+  background: transparent;
+  box-shadow: none;
+  border: none;
+  cursor: pointer;
+  outline: none;
+}
+
+.pageBtnDisable {
+  opacity: 0.4;
+}
+
+.pageBtnNext {
+  :global {
+    svg {
+      transform: rotateZ(180deg);
+    }
+  }
+}
+
+.pageInfo {
+  height: 18px;
+  line-height: 18px;
+  display: flex;
+  align-items: center;
+}
+
+.pageInfoActive {
+  height: 18px;
+  line-height: 18px;
+  width: 36px;
+  text-align: right;
+}
+
+.pageInfoSplit {
+  height: 18px;
+  line-height: 18px;
+}
+
+.pageInfoNext {
+  height: 18px;
+  line-height: 18px;
+  width: 36px;
+  text-align: left;
+}

@@ -1,0 +1,184 @@
+/* stylelint-disable custom-property-pattern */
+
+.memberList {
+  height: 600px;
+  width: 300px;
+  background-color: var(--background-member);
+  color: var(--color-member);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid transparent;
+  border-radius: 5px;
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 50px;
+    font-size: 14px;
+    font-weight: 500;
+    -webkit-app-region: drag;
+
+
+    .closeIcon {
+    -webkit-app-region: no-drag !important;
+      cursor: pointer;
+    }
+  }
+
+  .body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+
+    .member {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 5px;
+      min-height: 35px;
+
+      .userInfo {
+        font-family: 'PingFang SC';
+        font-style: normal;
+        font-weight: 400;
+        display: flex;
+        align-items: center;
+
+        .user {
+          display: inline-block;
+
+          .nameInfo {
+            display: flex;
+            align-items: center;
+            font-size: 13px;
+            font-weight: 400;
+
+            .name {
+              display: inline-block;
+              max-width: 130px;
+              height: 18px;
+              line-height: 13px;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            }
+
+            .role {
+              height: 18px;
+              line-height: 13px;
+            }
+          }
+
+          .reqInfo {
+            margin-top: -3px;
+            font-size: 11px;
+            padding-left: 5px;
+            font-weight: 300;
+          }
+        }
+
+        .host {
+          // display: inline-block;
+          margin-right: 2px;
+          font-size: 10px;
+          padding: 3px 2px;
+          background: var(--background-hostLabel);
+          border-radius: 2px;
+          color: var(--color-hostLabel);
+        }
+
+        .icon {
+          line-height: 13px;
+        }
+      }
+
+      .iconList {
+        display: flex;
+        font-size: 12px;
+
+        .iconButton {
+          cursor: pointer;
+        }
+      }
+    }
+  }
+
+  .footer {
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .allMicBtn {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      height: 32px;
+      background: var(--background-member-mute);
+      border-radius: 2px;
+      color: var(--color-member-mute);
+
+      .icon {
+        display: inline-block;
+        height: 16px;
+        width: 16px;
+        text-align: center;
+        line-height: 16px;
+        margin-right: 2px;
+      }
+    }
+  }
+  
+}
+
+:global {
+  .ant-modal-content {
+    width: fit-content;
+    padding: 30px 15px !important;
+    border-radius: 12px;
+  }
+
+  .ant-modal-header {
+    border: none !important;
+
+    .ant-modal-title {
+      text-align: center !important;
+    }
+  }
+
+  .ant-modal-body {
+    text-align: center;
+
+    .ant-btn {
+      margin-bottom: 15px;
+      width: 140px !important;
+      height: 36px;
+    }
+  }
+}
+
+.windows {
+  &::-webkit-scrollbar {
+    width:8px;
+    height:10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius:2px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #bfbfbf;
+    border-radius:10px;
+  }
+
+  &::-webkit-scrollbar-corner {
+    background: #179a16;
+  }
+}

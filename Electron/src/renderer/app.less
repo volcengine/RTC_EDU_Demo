@@ -1,0 +1,41 @@
+.app {
+  height: 100vh;
+  width: 100%;
+  background-color: var(--background-body) ;
+  position: relative;
+  overflow: hidden;
+  
+  .operate {
+    position: absolute;
+    top: 15px;
+    left: 10px;
+    z-index: 999;
+    display: flex;
+    width: 60px;
+    justify-content: space-around;
+    -webkit-app-region: no-drag;
+    cursor: pointer !important;
+  
+    div {
+      height: 12px;
+      width: 12px;
+      border-radius: 50%;
+    }
+  
+    .red {
+      background-color: red;
+      cursor: pointer;
+    }
+  
+    .yellow {
+      background-color: yellow;
+      cursor: pointer;
+  
+    }
+  
+    .green {
+      background-color: green;
+      cursor: pointer;
+    }
+  }
+}

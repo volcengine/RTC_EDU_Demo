@@ -1,0 +1,163 @@
+.boardToolBar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 40px;
+  height: 100%;
+  margin-right: 1px;
+  padding: 8px 4px;
+  background-color: #f1f3f5;
+  border-top: 1px solid v#ebebeb;
+  border-bottom: 1px solid v#ebebeb;
+}
+
+.boardToolBarSection {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0;
+  padding-left: 0;
+  // :global {
+  //   li {
+  // 	list-style-type: none;
+  // 	width: 32px;
+  // 	height: 32px;
+  //   }
+  // }
+}
+
+.activeIcon {
+  background: rgba(51, 112, 255, 0.1);
+
+  :global {
+    svg {
+      fill: #3370ff;
+    }
+  }
+}
+
+.disabledIcon {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.toolbarBottom {
+  height: 32px;
+}
+
+.upload-selection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.upload-item {
+  width: 258px;
+  padding: 8px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f8fbff;
+  }
+}
+
+.upload-type {
+  margin-bottom: 4px;
+  color: #1d2129;
+  font-weight: 400;
+  font-size: 12px;
+}
+
+.upload-format {
+  color: #979797;
+  font-weight: 400;
+  font-size: 12px;
+}
+
+.divider {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.toolPopconfirm {
+  :global {
+    .ant-popover-content {
+      .ant-popover-arrow {
+        display: none;
+      }
+
+      .ant-popover-inner {
+        .ant-popover-inner-content {
+          padding: 12px;
+
+          .ant-popover-message {
+            padding: 0;
+
+            .ant-popover-message-title {
+              padding-left: 0;
+            }
+          }
+
+          .ant-popover-buttons {
+            display: none;
+          }
+        }
+      }
+    }
+  }
+}
+
+.shapeToolPopconfirm {
+  :global {
+    .ant-popover-content {
+      .ant-popover-inner {
+        .ant-popover-inner-content {
+          width: 240px;
+          padding: 12px;
+        }
+      }
+    }
+  }
+}
+
+.shapeIcon {
+  :global {
+    svg {
+      fill: transparent;
+
+      circle {
+        stroke: #4e5969;
+      }
+
+      rect {
+        fill: transparent;
+        stroke: #4e5969;
+      }
+
+      path {
+        stroke: #4e5969;
+      }
+    }
+  }
+}
+
+.shapeIcon.activeIcon {
+  :global {
+    svg {
+      fill: transparent;
+
+      circle {
+        stroke: #3370ff;
+      }
+
+      rect {
+        fill: transparent;
+        stroke: #3370ff;
+      }
+
+      path {
+        stroke: #3370ff;
+      }
+    }
+  }
+}

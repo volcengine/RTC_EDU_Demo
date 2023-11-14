@@ -1,0 +1,421 @@
+@import '~@theme/color.less';
+
+.joinContainer {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+  // .joinRoomHeader {
+  //   height: 60px;
+  //   // background-color: #F1F3F5;
+  // }
+
+  .videoPreview {
+    flex: 1;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    justify-content: center;
+
+    canvas {
+      max-width: 100% !important;
+      max-height: 100% !important;
+    }
+
+    .cameraImg {
+      position: absolute;
+      transform: scale(0.4);
+      top: 25%;
+    }
+  }
+
+  .background {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    position: absolute;
+    background-color: antiquewhite;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    :global {
+      span {
+        display: flex;
+        width: 160px;
+        height: 160px;
+        align-items: center;
+        justify-content: center;
+        font-family: Inter;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 64px;
+        border-radius: 50%;
+        color: #4e5969;
+        background: #e5e6eb;
+        position: absolute;
+      }
+    }
+  }
+}
+
+.modalBody {
+  display: flex;
+  height: 246px;
+
+  .label {
+    margin-right: 16px;
+  }
+
+  .camera {
+    flex: 1;
+
+    .preview {
+      width: 274px;
+      height: 191px;
+      margin-top: 23px;
+    }
+  }
+
+  .mic {
+    flex: 1;
+
+    .captureVolume {
+      margin-top: 24px;
+      padding-left: 50px;
+      display: flex;
+
+      :global {
+        .ant-progress {
+          margin-top: 5px;
+          margin-left: -5px;
+        }
+      }
+    }
+
+    .playback {
+      margin-top: 40px;
+
+      .playbackVolume {
+        margin-top: 24px;
+        padding-left: 54px;
+
+        .playBtn {
+          margin-left: 16px;
+          display: inline-block;
+          width: 56px;
+          height: 32px;
+          text-align: center;
+          line-height: 32px;
+          font-size: 12px;
+          color: var(--color-device-detect-modal-color);
+          background-color: var(--background-device-detect-modal-playbtn);
+          cursor: pointer;
+        }
+      }
+    }
+  }
+
+  .volumeProgress {
+    :global {
+      .ant-progress-steps-outer {
+        .ant-progress-steps-item-active {
+          background: #4086ff !important;
+        }
+
+        .ant-progress-steps-item {
+          height: 16px !important;
+          width: 4px !important;
+          margin-right: 4px !important;
+          background: var(--background-device-detect-volume-interval);
+        }
+      }
+    }
+  }
+
+  :global {
+    .ant-select {
+      border: none;
+      color: var(--color-device-detect-modal-input);
+    }
+
+    .ant-select:not(.ant-select-customize-input) {
+      .ant-select-selector {
+        border: 1px solid var(--background-device-detect-modal-input);
+        background-color: var(--background-device-detect-modal-input);
+      }
+    }
+
+    .ant-select:not(.ant-select-disabled):hover {
+      .ant-select-selector {
+        border: 1px solid transparent;
+        border-right-width: 0;
+      }
+    }
+
+    .ant-select-arrow {
+      color: var(--color-device-detect-modal-input);
+      font-size: 10px;
+      margin-top: -4px;
+    }
+  }
+}
+
+.menuContainer {
+  position: absolute;
+  bottom: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 90%);
+  border: 1px solid #fff;
+  backdrop-filter: blur(25px);
+  width: 696px;
+  height: 128px;
+  border-radius: 8px;
+  padding: 24px 32px;
+  user-select: none;
+}
+
+.radioWrapper {
+  :global {
+    .ant-radio-wrapper {
+      font-size: 16px;
+      font-family: 'PingFang SC';
+    }
+
+    .ant-radio {
+      .ant-radio-inner {
+        border: 2px solid #c9cdd4;
+        width: 14px;
+        height: 14px;
+        top: -1px;
+      }
+
+      .ant-radio-input:focus + .ant-radio-inner {
+        box-shadow: none;
+      }
+    }
+
+    .ant-radio.ant-radio-checked {
+      .ant-radio-inner {
+        border: 4px solid #1664ff;
+
+        &::after {
+          background-color: transparent;
+        }
+      }
+    }
+  }
+}
+
+.formInLine {
+  display: flex;
+
+  :global {
+    .ant-form-item {
+      .ant-form-item-control-input {
+        .ant-form-item-control-input-content {
+          input {
+            width: 160px;
+            margin-right: 16px;
+          }
+        }
+      }
+    }
+  }
+
+  .validatorTip {
+    :global {
+      .ant-tooltip-content {
+        .ant-tooltip-arrow {
+          .ant-tooltip-arrow-content {
+            --antd-arrow-background-color: #fff;
+          }
+        }
+
+        .ant-tooltip-inner {
+          background-color: #fff;
+          color: #1d2129;
+          font-size: 12px;
+          font-family: 'PingFang SC';
+        }
+      }
+    }
+  }
+}
+
+.iconButton {
+  width: 32px;
+  height: 32px;
+  border-radius: 16px;
+  margin-right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 6px;
+  padding-left: 2px;
+  cursor: pointer;
+  background-color: white;
+}
+
+.grayIcon {
+  :global {
+    svg {
+      transform: scale(0.75);
+      fill: #4e5969;
+    }
+  }
+}
+
+.closeIcon {
+  :global {
+    svg {
+      transform: scale(0.75);
+      fill: @closeIcon-color;
+    }
+  }
+}
+
+.modal {
+  border-radius: 8px;
+
+  :global {
+    .ant-modal-header {
+      border: none !important;
+      background-color: var(--background-device-detect-modal);
+      border-radius: 8px;
+
+      .ant-modal-title {
+        color: var(--color-device-detect-modal-color);
+        font-family: 'PingFang SC';
+        font-style: normal;
+        font-weight: 500;
+      }
+    }
+
+    .ant-modal-content {
+      background-color: var(--background-device-detect-modal);
+      border-radius: 8px;
+      color: var(--color-device-detect-modal-color);
+
+      .ant-modal-close {
+        color: var(--color-device-detect-modal-close-color);
+      }
+    }
+
+    .ant-modal-body {
+      padding: 16px 24px;
+    }
+
+    .ant-modal-footer {
+      text-align: center !important;
+      border: none !important;
+      padding-bottom: 38px !important;
+      padding-top: 0;
+
+      .ant-btn-primary {
+        width: 240px;
+        height: 36px;
+      }
+    }
+  }
+}
+
+.iconLight {
+  margin-right: 8px;
+
+  :global {
+    svg {
+      fill: var(--color-device-detect-modal-input);
+    }
+  }
+}
+
+.iconScale {
+  :global {
+    svg {
+      transform: scale(0.75);
+    }
+  }
+}
+
+.backToScene {
+  position: absolute;
+  top: 70px;
+  left: 32px;
+  width: 48px;
+  height: 48px;
+  :global {
+    img {
+      width: 48px;
+      height: 48px;
+    }
+  }
+}
+
+.login-check {
+  width: 120px;
+  margin-left: 16px;
+  background-color: #1664ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading {
+  background: #a0c0ff;
+
+  box-shadow: 0px 0px 0px 1px #6e9fff, 0px 2px 1px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+}
+
+.loadingIcon {
+  width: 16px;
+  height: 16px;
+  margin-right: 4px;
+  animation: circle infinite 0.75s linear;
+}
+
+@keyframes circle {
+  0% {
+    transform: rotate(0);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.radioWrapper {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.edubTag,
+.edusTag {
+  width: 65px;
+  height: 28px;
+  font-family: 'PingFang SC';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 28px;
+  text-align: center;
+  border-radius: 4px;
+}
+.edubTag {
+  background: #e8f4ff;
+  color: #165dff;
+  border: 1px solid #a2c1ff;
+}
+.edusTag {
+  background: #e8ffea;
+  color: #009a29;
+  border: 1px solid #8dd8b3;
+}

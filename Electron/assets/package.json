@@ -1,0 +1,10 @@
+{
+  "name": "vertc",
+  "version": "1.0.0",
+  "description": "A minimal Electron application",
+  "main": "electron.js",
+  "repository": "",
+  "keywords": [],
+  "author": "liucheng.bigorange",
+  "license": ""
+}

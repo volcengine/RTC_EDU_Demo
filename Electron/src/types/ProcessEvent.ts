@@ -1,0 +1,16 @@
+export enum ProcessEvent {
+  HTTP = 'http',
+  CloseWindow = 'closeWindow',
+  MinsizeWindow = 'minsizeWindow',
+  FullScreenWindow = 'fullScreenWindow',
+  MiniScreen = 'miniScreen',
+  OperateWindow = 'operateWindow',
+  ChangeMainWindow = 'changeMainWindow',
+  ShowFooter = 'showFooter',
+  RecoverWindow = 'recoverWindow',
+  CloseVideoWindow = 'closeVideoWindow',
+  OpenVideoWindow = 'openVideoWindow',
+  OpenWindow = 'openWindow',
+  IsShareWindow = 'isShareWindow',
+  OpenRecord = 'openRecord',
+}

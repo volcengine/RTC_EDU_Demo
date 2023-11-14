@@ -1,0 +1,41 @@
+.inform {
+  width: 300px;
+  height: 280px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  color: var(--text-cololor-nomal);
+  background-color: var(--background-screen-list);
+
+
+  .title {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 10px;
+    -webkit-app-region: drag;
+  } 
+
+  .text {
+    font-family: "PingFang SC";
+    font-size: 12px;
+    font-weight: 400;
+    max-width: 240px;
+    line-height: 20px;
+    margin-bottom: 30px;
+  
+    .symbol {
+      padding: 0 5px;
+      color: #E63F3F
+    }
+  }
+
+  :global {
+    .ant-btn {
+      width: 160px;
+      margin-bottom: 10px;
+    }
+  }
+}

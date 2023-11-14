@@ -1,0 +1,34 @@
+{
+  "compilerOptions": {
+    "target": "ES2016" /* 编译结果使用的版本标准: 'ES3' (default), 'ES5', 'ES2015', 'ES2016', 'ES2017', 'ES2018', 'ES2019', 'ES2020', or 'ESNEXT'. */,
+    "module": "commonjs" /* 编译结果使用的模块化标准: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', 'es2020', or 'ESNext'. */,
+    "lib": [
+      "ESNext",
+      "DOM"
+    ] /* 在写ts的时候支持的环境，默认是浏览器环境。如需要支持node，安装@type/node */,
+    "jsx": "react" /* Specify JSX code generation: 'preserve', 'react-native', or 'react'. */,
+    "sourceMap": true,
+    "strict": true,
+    "declaration": true,
+    "removeComments": true /* 编译结果把ts的注释移除掉 */,
+    "esModuleInterop": true /* es6的模块化和非es6的模块化标准互通 */,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"], // webpack 配置别名，但在TS中会报红找不到，所以tslint也需要配置
+      "@src/*": ["src/renderer/*"], // webpack 配置别名，但在TS中会报红找不到，所以tslint也需要配置
+      "@assets/*": ["assets/*"],
+      "@common/*": ["src/renderer/common/*"],
+      "@config/*": ["src/config/*"],
+      "@types/*": ["src/types/*"],
+      "@utils/*": ["src/renderer/utils/*"],
+      "@theme/*": ["src/renderer/theme/*"],
+      "@components/*": ["src/renderer/components/*"],
+      "@hooks/*": ["src/renderer/hooks/*"],
+      "@lib/*": ["src/renderer/lib/*"]
+    },
+    "moduleResolution": "node"
+  },
+  "exclude": ["dist", "node_modules"], // 这里需要排除掉 dist 目录和 node_modules 目录，不进行检查
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts", "config.ts"]
+}

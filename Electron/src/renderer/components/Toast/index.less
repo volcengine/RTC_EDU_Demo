@@ -1,0 +1,49 @@
+// .body {
+//   display: flex;
+//   justify-content: center;
+  
+// }
+
+.toast {
+  font-size: 14px;
+  color: var(--text-cololor-nomal);
+  font-family: 'PingFang SC';
+  font-weight: 500;
+  width: fit-content !important;
+
+  :global {
+    .ant-modal-content {
+      width: fit-content;
+      padding: 33px 28px;
+      border-radius: 12px;
+      background-color: var(--background-screen-list);
+
+    }
+
+    .ant-modal-header {
+      border: none !important;
+      background-color: var(--background-screen-list);
+
+
+      .ant-modal-title {
+      color:  var(--color-screen-list);
+        text-align: center !important;
+      }
+    }
+
+    .ant-modal-body {
+      text-align: center;
+
+      .ant-btn {
+        margin-bottom: 15px;
+        width: 240px;
+        height: 36px;
+      }
+
+      .ant-checkbox-wrapper {
+        color:  var(--color-screen-list);
+        margin-bottom: 15px;
+      }
+    }
+  }
+}

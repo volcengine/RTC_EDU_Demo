@@ -1,0 +1,81 @@
+
+.screenList {
+  padding: 10px 20px;
+  height: 480px;
+  display: flex;
+  flex-direction: column;
+  color: var(--color-screen-list);
+  background-color: var(--background-screen-list);
+
+
+  .header {
+    height: 40px;
+    font-size: 16px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    -webkit-app-region: drag;
+  }
+
+  .body {
+    flex: 1;
+    overflow-y: scroll;
+    display: flex;
+    flex-wrap: wrap;
+
+    .screen {
+      height: 115px;
+      flex-basis: 25%;
+
+      .name {
+        max-width: 158px;
+        padding: 0 1px;
+        height: 22px;
+        font-size: 14px;
+        text-align: center;
+        line-height: 22px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+
+  .footer {
+    display: flex;
+    justify-content: flex-end;
+    height: 30px;
+  }
+
+  :global {
+    .ant-divider {
+      border-color: var(--color-screen-list-divider);
+    }
+
+    .ant-checkbox-wrapper {
+      color: var(--text-cololor-nomal);
+    }
+  }
+}
+
+.windows {
+  &::-webkit-scrollbar {
+    width:8px;
+    height:10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius:2px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #bfbfbf;
+    border-radius:10px;
+  }
+
+  &::-webkit-scrollbar-corner {
+    background: #179a16;
+  }
+}

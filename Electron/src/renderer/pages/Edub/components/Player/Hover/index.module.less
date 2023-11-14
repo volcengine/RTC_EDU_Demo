@@ -1,0 +1,67 @@
+.userOp {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+  gap: 45px;
+}
+
+.opItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  color: #ffffff;
+  font-family: 'PingFang SC';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 10px;
+  line-height: 18px;
+
+  .opIcon {
+    border-radius: 50%;
+    border: 0.3px solid #dde2e9;
+    width: 24px;
+    height: 24px;
+    margin-bottom: 2px;
+    background: #ffffff;
+
+    :global {
+      svg {
+        fill: #4e5969;
+        transform: scale(0.37) translate(-35px, -33px);
+      }
+    }
+
+    .UnlinkIcon {
+      svg {
+        transform: scale(0.7) translate(0px, 0px);
+        width: 22px;
+      }
+    }
+  }
+
+  .svgIcon {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .whiteboardSvgIcon {
+    > svg {
+      width: 48px;
+      height: 48px;
+    }
+  }
+}
+
+.userOp.localIsHost {
+  gap: 18px;
+}

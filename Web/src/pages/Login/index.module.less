@@ -1,26 +1,21 @@
-// @import '~@/theme/dark.less';
 @import '~@/theme/theme.less';
 
 .loginWrapper {
   .flex-box();
-
-  justify-content: center;
+  flex-direction: column;
+  justify-content: space-between;
   width: 100%;
   min-width: 800px;
   height: 100%;
   min-height: 600px;
   background-color: #f1f3f5;
 
-  &::before {
-    float: left;
-    padding-top: 100%;
-    content: '';
-  }
-
-  &::after {
-    display: block;
-    clear: both;
-    content: '';
+  .mainWrapper {
+    height: calc(100% - 100px);
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .main {
@@ -112,7 +107,6 @@
       .ant-form-item-has-error
         :not(.ant-input-affix-wrapper-disabled).ant-input-affix-wrapper:hover {
         color: #020814;
-        // background: #fff;
         border-color: #f65159;
         box-shadow: none;
       }
@@ -172,13 +166,13 @@
           font-weight: 400;
           font-size: 14px;
           background-color: rgba(22, 100, 255, 0.1);
-          //   opacity: 0.1;
           border: none;
           border-radius: 4px;
           width: 112px;
           height: 32px;
           line-height: 32px;
           text-align: center;
+          cursor: pointer;
         }
 
         :global {
@@ -241,9 +235,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    bottom: 32px;
-    position: absolute;
-  
+    height: 100px;
+
     .link {
       font-family: 'PingFang SC';
       font-style: normal;

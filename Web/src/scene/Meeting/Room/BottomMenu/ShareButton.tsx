@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { message as Message, Popover, Radio, RadioChangeEvent, message } from 'antd';
-import { ScreenEncoderConfig } from '@volcengine/rtc';
 import { useSelector } from '@/store';
 import { RtcClient } from '@/core/rtc';
 import * as rtsApi from '@/scene/Meeting/apis/rtsApi';
@@ -9,7 +8,14 @@ import ArrowIcon from '@/assets/images/Arrow.svg';
 import ShareIcon from '@/assets/images/Share.svg';
 
 import styles from './index.module.less';
-import { Permission, ShareConfig, ShareType, UserRole } from '@/types/state';
+import {
+  Permission,
+  ShareConfig,
+  ShareType,
+  UserRole,
+  ScreenEncoderConfigForMotionMode,
+  ScreenEncoderConfigForDetailMode,
+} from '@/types/state';
 import { isRtsError } from '@/utils/rtsUtils';
 import { Icon, MenuIconButton, PopoverContent } from '@/components';
 
@@ -18,15 +24,16 @@ export default function () {
 
   const [showOptions, setShowOptions] = useState(false);
 
-  const [shareScreenConfig, setShareScreenConfig] = useState<ShareConfig>(ShareConfig.Text);
+  const [shareScreenMode, setShareScreenMode] = useState<ShareConfig>(ShareConfig.Detail);
   const btnRef = useRef<HTMLDivElement>(null);
 
   const [popOpen, setPopOpen] = useState(false);
 
   const isHost = room.localUser.user_role === UserRole.Host;
 
-  const hasSharePermission =
-    isHost || room.localUser?.share_permission === Permission.HasPermission;
+  const hasSharePermission = useMemo(() => {
+    return isHost || room.localUser?.share_permission === Permission.HasPermission;
+  }, [room, isHost]);
 
   const isSharing = useMemo(() => {
     return room?.share_user_id && room.share_type === ShareType.Screen;
@@ -46,7 +53,6 @@ export default function () {
     const shareRes = await RtcClient.startScreenCapture();
     if (shareRes !== 'success') {
       console.error('startScreenCapture err:', shareRes);
-      //   Message.error('屏幕共享失败');
       if (shareRes === 'Permission denied by system') {
         message.error('请到系统设置中打开屏幕共享权限');
       }
@@ -64,34 +70,13 @@ export default function () {
   };
 
   const handleShareScreenConfigChange = (e: RadioChangeEvent) => {
-    const newConfig = e.target.value;
+    const chosenMode = e.target.value;
+    const encodeConfig =
+      chosenMode === ShareConfig.Motion
+        ? ScreenEncoderConfigForMotionMode
+        : ScreenEncoderConfigForDetailMode;
 
-    const encodeConfig: ScreenEncoderConfig = {
-      width: 1920,
-      height: 1080,
-      frameRate: 15,
-      maxKbps: 3000,
-      contentHint: ShareConfig.Text,
-    };
-
-    // if (newConfig === ShareConfig.Detail) {
-    //   encodeConfig.frameRate = 15;
-    //   encodeConfig.maxKbps = 3000;
-    //   encodeConfig.contentHint = ShareConfig.Detail;
-    // }
-
-    // if (newConfig === ShareConfig.Text) {
-    //   encodeConfig.frameRate = 5;
-    //   encodeConfig.contentHint = ShareConfig.Text;
-    // }
-
-    if (newConfig === ShareConfig.Motion) {
-      encodeConfig.width = 1280;
-      encodeConfig.height = 720;
-      encodeConfig.frameRate = 30;
-      encodeConfig.contentHint = ShareConfig.Motion;
-    }
-    setShareScreenConfig(newConfig);
+    setShareScreenMode(chosenMode);
 
     RtcClient.setScreenConfig(encodeConfig);
 
@@ -123,7 +108,6 @@ export default function () {
       ) : (
         <Popover
           trigger="click"
-          //   overlayClassName={styles.micPopover}
           open={popOpen}
           placement="top"
           content={
@@ -138,10 +122,9 @@ export default function () {
           }
         >
           <MenuIconButton
-            // iconClassName={styles.normalIcon}
-            iconClassName={isSharing ? styles.sharingIcon : styles.normalIcon}
+            iconClassName={styles.noPermIcon}
             onClick={handleClick}
-            text="屏幕共享"
+            text="申请屏幕共享"
             icon={ShareIcon}
           />
         </Popover>
@@ -166,13 +149,9 @@ export default function () {
         }}
       >
         <div className={styles.mediaDevicesContent}>
-          <Radio.Group onChange={handleShareScreenConfigChange} value={shareScreenConfig}>
-            <Radio value={ShareConfig.Text}>清晰度优先</Radio>
+          <Radio.Group onChange={handleShareScreenConfigChange} value={shareScreenMode}>
+            <Radio value={ShareConfig.Detail}>清晰度优先</Radio>
             <Radio value={ShareConfig.Motion}>流畅度优先</Radio>
-            {/* <Radio value={ShareConfig.Detail}>
-              智能模式
-              <span className={styles.shareDesc}>根据共享内容自动切换清晰或流畅模式</span>
-            </Radio> */}
           </Radio.Group>
         </div>
       </div>

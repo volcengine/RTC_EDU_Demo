@@ -1,5 +1,5 @@
 import { MediaType } from '@volcengine/rtc';
-import { message } from 'antd';
+import { message as Message } from 'antd';
 import { DeviceType } from '@/components/DeviceButton/utils';
 import { useSelector, useDispatch } from '@/store';
 import { DeviceState } from '@/types/state';
@@ -26,7 +26,7 @@ const useHandleDevice = () => {
     if (device === DeviceType.Microphone) {
       if (localUser?.mic === DeviceState.Closed) {
         if (!devicePermissions.audio) {
-          message.error('未获得麦克风权限!');
+          Message.error('未获得麦克风权限!');
           return;
         }
       }
@@ -37,23 +37,23 @@ const useHandleDevice = () => {
 
       if (res === null) {
         if (localUser?.mic === DeviceState.Closed) {
-          RtcClient.publishStream(MediaType.AUDIO);
+          RtcClient.unmuteStream(MediaType.AUDIO);
           dispatch(localUserChangeMic(DeviceState.Open));
         }
 
         if (localUser?.mic === DeviceState.Open) {
-          RtcClient.unpublishStream(MediaType.AUDIO);
+          RtcClient.muteStream(MediaType.AUDIO);
           dispatch(localUserChangeMic(DeviceState.Closed));
         }
       } else {
-        message.error(res.message);
+        Message.error(res.message);
       }
     }
 
     if (device === DeviceType.Camera) {
       if (localUser?.camera === DeviceState.Closed) {
         if (!devicePermissions.video) {
-          message.error('未获得摄像头权限!');
+          Message.error('未获得摄像头权限!');
           return;
         }
       }
@@ -73,7 +73,7 @@ const useHandleDevice = () => {
           dispatch(localUserChangeCamera(DeviceState.Closed));
         }
       } else {
-        message.error(res.message);
+        Message.error(res.message);
       }
     }
   };

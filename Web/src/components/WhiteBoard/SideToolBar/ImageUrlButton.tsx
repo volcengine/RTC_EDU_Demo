@@ -22,10 +22,9 @@ function ImgUrlButton({ whiteBoard, fillType }: { whiteBoard: IWhiteBoard; fillT
         onCancel={() => setVisible(false)}
         onOk={() => {
           if (validateUrl(imgUrl)) {
-            whiteBoard.changePageBackground({
-              pageId: whiteBoard.getCurrentPageId(),
-              img: imgUrl,
-              fillType,
+            whiteBoard.setPageBackground({
+              bkImage: imgUrl,
+              bkImageFillType: fillType,
             });
             setVisible(false);
           } else {

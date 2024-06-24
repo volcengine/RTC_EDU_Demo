@@ -1,8 +1,10 @@
+/* eslint-disable prettier/prettier */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface IPreviewBoard {
-    url?: string;
-    pageId: string;
+  url?: string;
+  pageId: string;
+  pageIndex: number;
 }
 
 export interface BoardState {
@@ -10,7 +12,7 @@ export interface BoardState {
 }
 
 export const initialState: BoardState = {
-    previewBoardList: [],
+  previewBoardList: [],
 };
 
 /**

@@ -137,7 +137,7 @@ function Scene() {
   }, [ location ])
 
   const handleLeaveRoom = async () => {
-    await RtcClient.engine?.leaveRoom();
+    await RtcClient.leaveRoom();
     await BoardClient.leaveRoom();
     await rtsApi.leaveRoom();
     dispatch(setJoining(JoinStatus.NotJoined));

@@ -2,8 +2,6 @@ import CameraOn from '@/assets/images/CameraOn.svg';
 import CameraOff from '@/assets/images/CameraOff.svg';
 import MicrophoneOn from '@/assets/images/MicrophoneOn.svg';
 import MicrophoneOff from '@/assets/images/MicrophoneOff.svg';
-// import SoundOn from '@/assets/images/SoundOn.svg';
-// import RealTimeData from '@/assets/images/RealTimeData.svg';
 import Setting from '@/assets/images/Setting.svg';
 import Share from '@/assets/images/Share.svg';
 import ShareOff from '@/assets/images/ShareOff.svg';
@@ -18,8 +16,6 @@ const IconMap = {
   cameraOff: CameraOff,
   microphoneOn: MicrophoneOn,
   microphoneOff: MicrophoneOff,
-  //   soundOn: SoundOn,
-  //   realtime: RealTimeData,
   setting: Setting,
   share: Share,
   shareOff: ShareOff,

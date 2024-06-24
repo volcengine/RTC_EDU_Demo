@@ -92,6 +92,7 @@ function getCurPageUsers<U extends SortedUser>(
   pageSize: number
 ) {
   sortedUsers = [...sortedUsers];
+
   const startIndex = (current - 1) * pageSize;
 
   const endIndex = current * pageSize;

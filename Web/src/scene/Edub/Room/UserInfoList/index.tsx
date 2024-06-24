@@ -51,7 +51,7 @@ function UserList(props: UserListProps) {
       const clientHeight = usersRef.current.clientHeight;
       if (clientHeight + scrollTop >= scrollHeight) {
         setLoading(true);
-        const res = await rtsApi.edubGetUserList({
+        const res = await rtsApi.getUserList({
           index: curUserPage.current,
           size: 20,
         });

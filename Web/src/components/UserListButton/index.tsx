@@ -1,9 +1,6 @@
 import { useSearchParams } from 'react-router-dom';
 import { useDispatch, useSelector } from '@/store';
-
 import User from '@/assets/images/UserList.svg';
-// import UserOpen from '@/assets/images/UserOpen.svg';
-
 import { MenuIconButton } from '@/components';
 import styles from './index.module.less';
 import { setUserListDrawOpen } from '@/store/slices/ui';
@@ -32,7 +29,6 @@ export default function (props: IList) {
         iconClassName={styles.normalIcon}
         onClick={handleClick}
         text="成员"
-        // todo 打开弹窗时的样式
         icon={User}
       />
 

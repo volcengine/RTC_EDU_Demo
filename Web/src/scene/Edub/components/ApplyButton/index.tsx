@@ -2,8 +2,6 @@ import { useState } from 'react';
 import { message } from 'antd';
 import { useSelector } from '@/store';
 import LinkIcon from '@/assets/images/Link.svg';
-
-// import UserOpen from '@/assets/images/UserOpen.svg';
 import CloseIcon from '@/assets/images/Close.svg';
 import AllowIcon from '@/assets/images/Allow.svg';
 import RejectIcon from '@/assets/images/Reject.svg';
@@ -27,7 +25,7 @@ export default function () {
       return;
     }
 
-    await rtsApi.edubLinkmicPermit({
+    await rtsApi.linkmicPermit({
       apply_user_id: user.user_id,
       permit,
     });

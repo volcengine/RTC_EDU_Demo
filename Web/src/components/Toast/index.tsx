@@ -12,8 +12,11 @@ interface ToastProps {
 function Toast(props: ToastProps) {
   const { open, title, children = '', width } = props;
 
+  // 添加 getContainer={false} 和 forceRender 可以解决 Ant Design
+  // "Instance created by `useForm` is not connect to any Form element" 问题
   return (
     <Modal
+      forceRender
       className={styles.toast}
       closable={false}
       title={title}
@@ -21,6 +24,7 @@ function Toast(props: ToastProps) {
       centered
       footer={null}
       width={width}
+      getContainer={false}
     >
       {children}
     </Modal>

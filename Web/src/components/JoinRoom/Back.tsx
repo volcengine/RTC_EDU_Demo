@@ -15,6 +15,8 @@ function Back() {
   const handleClick = () => {
     navigate('/');
 
+    RtcClient.stopVideoCapture();
+    RtcClient.stopAudioCapture();
     RtcClient.destroyEngine();
     dispatch(setJoining(JoinStatus.NotJoined));
     dispatch(edubLeave());

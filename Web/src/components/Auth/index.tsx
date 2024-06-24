@@ -74,7 +74,7 @@ const Auth: React.FC<{ children: React.ReactNode }> = function (props: {
 
     if (!user?.login_token && !user?.user_id) {
       setVerified(VerifiedStatus.Failed);
-      navigate(`/login`);
+      navigate('/login');
     } else {
       // 如果没有联网，则不操作
       if (!navigator.onLine) {
@@ -99,16 +99,14 @@ const Auth: React.FC<{ children: React.ReactNode }> = function (props: {
           scenes_name: scene || 'vc',
         });
 
-        // todo 同一个账号可以同时进多个场景...
         if (rtsRes.code !== 200) {
-          message.error('登录失败，请重新登录！');
+          message.error(`获取 rts 服务参数失败，请重新登录 : ${rtsRes.code}`);
           console.error(rtsRes);
           navigate(`/login${location.search}`);
           setVerified(VerifiedStatus.Failed);
           return;
         }
 
-        console.log('setRTSParams', rtsRes.response);
         dispatch(setRTSParams(rtsRes.response));
 
         setVerified(VerifiedStatus.Pass);

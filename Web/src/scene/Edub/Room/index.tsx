@@ -17,7 +17,6 @@ interface EdubViewProps {
   role: UserRole;
 }
 
-// todo 大班课的信息提示
 function Room(props: EdubViewProps) {
   const { role } = props;
 
@@ -51,7 +50,7 @@ function Room(props: EdubViewProps) {
         );
       },
     },
-    false
+    true
   );
 
   return (

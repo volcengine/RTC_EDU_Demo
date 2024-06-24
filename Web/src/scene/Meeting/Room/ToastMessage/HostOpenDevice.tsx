@@ -44,7 +44,7 @@ function RoomEnd(props: IProps) {
         return;
       }
 
-      RtcClient.publishStream(MediaType.AUDIO);
+      RtcClient.unmuteStream(MediaType.AUDIO);
       dispatch(localUserChangeMic(DeviceState.Open));
       await rtsApi.operateSelfMic({
         operate: DeviceState.Open,

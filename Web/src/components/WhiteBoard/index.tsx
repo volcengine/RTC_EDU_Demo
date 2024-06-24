@@ -1,8 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { EditMode} from '@volcengine/white-board-manage';
+import type { IWhiteBoard } from '@volcengine/white-board-manage';
 import { BoardClient } from '@/core/board';
 import { useBoardRoomEventListener } from '@/core/boardHooks';
-
 import BoardPages from './BoardPages';
 import BottomControl from './BottomControl';
 import SideToolBar from './SideToolBar';
@@ -20,9 +19,11 @@ function WhiteBoard(props: {
 }) {
   const { localEditPermission, room } = props;
 
-  const [curBoard, setCurBoard] = useState<number | string>();
+  const [curBoard, setCurBoard] = useState<IWhiteBoard | undefined>();
+  const [curBoardId, setCurBoardId] = useState<number | string>();
   const [closedId, setClosedId] = useState<number | string>();
   const [curPageId, setCurPageId] = useState<string>();
+  const [curPageIndex, setCurPageIndex] = useState<number>();
 
   const boardWrapper = useRef<HTMLDivElement>(null);
 
@@ -36,7 +37,9 @@ function WhiteBoard(props: {
     disabledRedo,
   } = useBoardRoomEventListener({
     setCurBoard,
+    setCurBoardId,
     setCurPageId,
+    setCurPageIndex,
     setClosedId,
     localEditPermission,
   });
@@ -48,7 +51,7 @@ function WhiteBoard(props: {
         boardWrapper.current.offsetHeight
       );
 
-      BoardClient.createRoom('board', roomHandlers, size);
+      BoardClient.joinRoom('board', roomHandlers, size);
 
       BoardClient.addRoomEventListener(roomHandlers);
     }
@@ -64,23 +67,22 @@ function WhiteBoard(props: {
   const BoardContextValue = useMemo(() => {
     return {
       curBoard,
-      //   setCurBoard,
+      curBoardId,
       curPageId,
-      //   setCurPageId,
+      curPageIndex,
       closedId,
-      //   setClosedId,
     };
-  }, [curBoard, curPageId, closedId]);
+  }, [curBoard, curBoardId, curPageId, curPageIndex, closedId]);
 
   useEffect(() => {
     if (localEditPermission) {
-      BoardClient.setEditMode(EditMode.kEditAll);
+      BoardClient.setWriteable(true);
       BoardClient.enableCursorSync(true);
     } else {
-      BoardClient.setEditMode(EditMode.kRead);
+      BoardClient.setWriteable(false);
       BoardClient.enableCursorSync(false);
     }
-  }, [localEditPermission, curBoard, curPageId, closedId]);
+  }, [localEditPermission, curBoardId, curPageId, curPageIndex, closedId]);
 
   const resizeBoard = () => {
     if (boardWrapper.current) {
@@ -112,6 +114,7 @@ function WhiteBoard(props: {
     boardPagePreviewOpen,
     playersAreaOpen,
     curPageId,
+    curPageIndex,
     boardWrapper.current,
     localEditPermission,
   ]);
@@ -125,15 +128,13 @@ function WhiteBoard(props: {
       )}
 
       <div className={styles.whiteBoard} ref={boardWrapper}>
-        <canvas
+        <div
           id="board"
           style={{
             whiteSpace: 'nowrap',
           }}
         />
-        {localEditPermission === Permission.HasPermission && (
-          <BottomControl />
-        )}
+        {localEditPermission === Permission.HasPermission && <BottomControl />}
       </div>
     </BoardContext.Provider>
   );

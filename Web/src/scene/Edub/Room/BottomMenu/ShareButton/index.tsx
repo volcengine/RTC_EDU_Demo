@@ -1,6 +1,5 @@
 import { Radio, RadioChangeEvent, message } from 'antd';
 import { useEffect, useRef, useState } from 'react';
-import { ScreenEncoderConfig } from '@volcengine/rtc';
 import { useSelector } from '@/store';
 import ShareIcon from '@/assets/images/Share.svg';
 import BoardIcon from '@/assets/images/Board.svg';
@@ -11,48 +10,33 @@ import * as rtsApi from '@/scene/Edub/apis/rtsApi';
 
 import { RtcClient } from '@/core/rtc';
 import styles from './index.module.less';
-import { ShareConfig, ShareType } from '@/types/state';
+import {
+  ShareConfig,
+  ShareType,
+  ScreenEncoderConfigForMotionMode,
+  ScreenEncoderConfigForDetailMode,
+} from '@/types/state';
 
 export default function () {
   const room = useSelector((state) => state.edubRoom);
 
   const [showOptions, setShowOptions] = useState(false);
 
-  const [shareScreenConfig, setShareScreenConfig] = useState<ShareConfig>(ShareConfig.Text);
+  const [shareScreenMode, setShareScreenMode] = useState<ShareConfig>(ShareConfig.Detail);
 
   const shareType = room.share_type;
 
   const btnRef = useRef<HTMLDivElement>(null);
 
   const handleShareScreenConfigChange = (e: RadioChangeEvent) => {
-    const newConfig = e.target.value;
+    const chosenMode = e.target.value;
 
-    const encodeConfig: ScreenEncoderConfig = {
-      width: 1920,
-      height: 1080,
-      frameRate: 15,
-      maxKbps: 3000,
-      contentHint: ShareConfig.Text,
-    };
+    const encodeConfig =
+      chosenMode === ShareConfig.Motion
+        ? ScreenEncoderConfigForMotionMode
+        : ScreenEncoderConfigForDetailMode;
 
-    // if (newConfig === ShareConfig.Detail) {
-    //   encodeConfig.frameRate = 15;
-    //   encodeConfig.maxKbps = 3000;
-    //   encodeConfig.contentHint = ShareConfig.Detail;
-    // }
-
-    // if (newConfig === ShareConfig.Text) {
-    //   encodeConfig.frameRate = 5;
-    //   encodeConfig.contentHint = ShareConfig.Text;
-    // }
-
-    if (newConfig === ShareConfig.Motion) {
-      encodeConfig.width = 1280;
-      encodeConfig.height = 720;
-      encodeConfig.frameRate = 30;
-      encodeConfig.contentHint = ShareConfig.Motion;
-    }
-    setShareScreenConfig(newConfig);
+    setShareScreenMode(chosenMode);
 
     RtcClient.setScreenConfig(encodeConfig);
 
@@ -71,14 +55,9 @@ export default function () {
       return;
     }
 
-    await rtsApi.edubStartShare({
+    await rtsApi.startShare({
       share_type: ShareType.Screen,
     });
-    // if (shareType === ShareType.Board) {
-    // } else {
-    //   await RtcClient.stopScreenCapture();
-    //   await rtsApi.edubStopShare();
-    // }
   };
 
   useEffect(() => {
@@ -99,10 +78,9 @@ export default function () {
       <MenuIconButton
         iconClassName={styles.sharingIcon}
         onClick={handleClick}
-        text="屏幕共享"
+        text={shareType === ShareType.Screen ? '屏幕共享' : '切至屏幕共享'}
         icon={shareType === ShareType.Screen ? ShareIcon : BoardIcon}
       />
-
       <div
         className={`${styles.ArrowIcon} ${showOptions ? styles.ArrowIconRotate : ''}`}
         onClick={() => {
@@ -122,13 +100,9 @@ export default function () {
         }}
       >
         <div className={styles.mediaDevicesContent}>
-          <Radio.Group onChange={handleShareScreenConfigChange} value={shareScreenConfig}>
-            <Radio value={ShareConfig.Text}>清晰度优先</Radio>
+          <Radio.Group onChange={handleShareScreenConfigChange} value={shareScreenMode}>
+            <Radio value={ShareConfig.Detail}>清晰度优先</Radio>
             <Radio value={ShareConfig.Motion}>流畅度优先</Radio>
-            {/* <Radio value={ShareConfig.Detail}>
-                  智能模式
-                  <span className={styles.shareDesc}>根据共享内容自动切换清晰或流畅模式</span>
-                </Radio> */}
           </Radio.Group>
         </div>
       </div>

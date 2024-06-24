@@ -114,6 +114,12 @@ export interface IEdusOnOperateOtherSharePermission {
   operate_user_id: string;
   operate: Permission;
 }
+export interface IEdusStartRecordPermission {
+  room_id: string;
+  user_id: string;
+  permit: Permission;
+}
+
 export enum RtsEvent {
   /**
    * 广播通知
@@ -242,6 +248,11 @@ export enum RtsEvent {
    * 学生申请录制
    */
   edusOnStartRecordApply = 'edusOnStartRecordApply',
+
+  /**
+   * 老师回应申请录制请求
+   */
+  edusOnStartRecordPermit = 'edusOnStartRecordPermit',
 }
 
 export type InformDataType = {
@@ -325,4 +336,8 @@ export type InformDataType = {
         reason: IEdusStopRecordReason;
       };
     }
+  | {
+    event: RtsEvent.edusOnStartRecordPermit;
+    data: IEdusStartRecordPermission;
+  }
 );

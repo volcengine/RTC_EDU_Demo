@@ -50,10 +50,6 @@ export default function (props: HeaderProps) {
   const user = useSelector((state) => state.user);
 
   const [searchParams] = useSearchParams();
-
-  //   const leaveRoom = useLeaveRoom('/login', {
-  //     onLeaveRoom: onLogout,
-  //   });
   const theme = useSelector((state) => state.ui.theme);
   const [form] = Form.useForm();
 
@@ -68,8 +64,7 @@ export default function (props: HeaderProps) {
   const handleLogout = async () => {
     dispatch(logout());
     onLogout && onLogout();
-    // await RtcClient.leaveRTS();
-    // await leaveRoom();
+    window.open('https://bytedance.larkoffice.com/share/base/form/shrcn238aNIfy3vjlN9GQ46eR0f', '_blank', 'noopener, noreferrer');
   };
 
   const handleChangeUserName = async () => {
@@ -95,11 +90,11 @@ export default function (props: HeaderProps) {
     setModalOpen(false);
   };
 
-  const validatorFields = (value: StoreValue, regRes: boolean): Promise<any> => {
+  const validatorFields = (value: StoreValue, isNotMatchRegEx: boolean): Promise<any> => {
     let errorType = ERROR_TYPES.VALID;
     let result: Promise<Error | void> = Promise.resolve();
 
-    if (!value || regRes) {
+    if (!value || isNotMatchRegEx) {
       errorType = !value ? ERROR_TYPES.EMPTY_STRING : ERROR_TYPES.INVALID_CHARACTERS;
       result = Promise.reject(new Error(' '));
     } else if (value?.length > 18) {
@@ -162,8 +157,6 @@ export default function (props: HeaderProps) {
         {children}
 
         <div className={styles['header-right']}>
-          {/* <span onClick={handleChangeTheme}>切换主题</span> */}
-
           {showVersion && (
             <span className={styles.version}>
               Demo版本 v{DemoVersion}/ SDK版本 v{VERTC.getSdkVersion()}
@@ -266,9 +259,8 @@ export default function (props: HeaderProps) {
                   {
                     required: true,
                     validator: (_, value) => {
-                      const regRes = !/^[0-9a-zA-Z_\-@\u4e00-\u9fa5]*$/.test(value);
-                      // const regRes = !/^[0-9a-zA-Z_\-@]*$/.test(value);
-                      return validatorFields(value, regRes);
+                      const isNotMatchRegEx = !/^[0-9a-zA-Z_\-@\u4e00-\u9fa5]*$/.test(value);
+                      return validatorFields(value, isNotMatchRegEx);
                     },
                   },
                 ]}

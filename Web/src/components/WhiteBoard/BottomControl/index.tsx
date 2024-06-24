@@ -1,40 +1,39 @@
-import { useContext, useMemo } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
+import { WhiteBoardEventsTypes } from '@volcengine/white-board-manage';
 import { Pagination } from '@/components';
-import { BoardClient } from '@/core/board';
 import BoardContext from '../BoardContext';
-
 import styles from './index.module.less';
 
 function BottomControl() {
-  const { curBoard, curPageId, closedId } = useContext(BoardContext);
+  const { curBoard } = useContext(BoardContext);
+  const [, _refresh] = useState({});
+  const refreshUI = useCallback(() => _refresh({}), []);
 
   const pageflip = (pageNum: number) => {
     console.log('pageflip', pageNum);
-    const board = BoardClient.room?.getActiveWhiteBoard();
-
-    const page = board?.getAllPageInfo()?.[pageNum - 1];
-    if (page) {
-      BoardClient.flipPage(page.pageId);
-    } else {
-      throw new Error('pageId错误');
-    }
+    curBoard?.flipPage(pageNum - 1);
   };
 
-  const { current, total } = useMemo(() => {
-    const board = BoardClient.room?.getActiveWhiteBoard();
+  const total = curBoard?.getAllPageInfo()?.length || 1;
+  const current = (curBoard?.getCurrentPageIndex() || 0) + 1;
 
-    const current = (board?.getCurrentPageIndex() || 0) + 1;
-    const total = board?.getAllPageInfo()?.length || 1;
-    return {
-      current,
-      total,
+  useEffect(() => {
+    if (!curBoard) {
+      return;
+    }
+
+    curBoard.on(WhiteBoardEventsTypes.onPageCountChanged, refreshUI);
+    curBoard.on(WhiteBoardEventsTypes.onPageIndexChanged, refreshUI);
+    return () => {
+      curBoard.off(WhiteBoardEventsTypes.onPageCountChanged, refreshUI);
+      curBoard.off(WhiteBoardEventsTypes.onPageIndexChanged, refreshUI);
     };
-  }, [curPageId, curBoard, closedId]);
+  }, [curBoard]);
 
   return (
     <div className={styles.control}>
       <Pagination current={current} total={total} onChange={pageflip} />
-{/* 
+      {/* 
       <span className={styles.sperature} />
 
       <button onClick={() => {}} className={styles.previewBtn}>

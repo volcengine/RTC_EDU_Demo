@@ -36,6 +36,7 @@ export enum ShareStatus {
   Sharing = 1,
 }
 
+// 是否静默用户, 云录屏用户是静默用户
 export enum Silence {
   notSilent = 0,
   silence = 1,
@@ -66,12 +67,29 @@ export interface BaseUser {
 }
 
 export enum ShareConfig {
-  Text = 'text',
-  Motion = 'motion',
-  Detail = 'detail',
+  Detail = 'detail', // 清晰度优先
+  Motion = 'motion', // 流畅度优先
 }
 
 export enum PullBoardStreamType {
   Board = 0,
   Stream = 1,
 }
+
+// 屏幕共享-清晰度优先
+export const ScreenEncoderConfigForDetailMode = {
+  width: 1920,
+  height: 1080,
+  frameRate: 15,
+  maxKbps: 3000,
+  contentHint: ShareConfig.Detail,
+};
+
+// 屏幕共享-流畅度优先
+export const ScreenEncoderConfigForMotionMode = {
+  width: 1280,
+  height: 720,
+  frameRate: 30,
+  maxKbps: 2000,
+  contentHint: ShareConfig.Motion,
+};

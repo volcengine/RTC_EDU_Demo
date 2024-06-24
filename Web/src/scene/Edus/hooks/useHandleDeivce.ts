@@ -37,12 +37,12 @@ const useHandleDevice = () => {
 
       if (res === null) {
         if (localUser?.mic === DeviceState.Closed) {
-          RtcClient.publishStream(MediaType.AUDIO);
+          RtcClient.unmuteStream(MediaType.AUDIO);
           dispatch(localUserChangeMic(DeviceState.Open));
         }
 
         if (localUser?.mic === DeviceState.Open) {
-          RtcClient.unpublishStream(MediaType.AUDIO);
+          RtcClient.muteStream(MediaType.AUDIO);
           dispatch(localUserChangeMic(DeviceState.Closed));
         }
       } else {

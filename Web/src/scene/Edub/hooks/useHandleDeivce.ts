@@ -55,7 +55,7 @@ const useHandleDevice = (user?: UserDevice) => {
           dispatch(localUserChangeCamera(DeviceState.Closed));
         }
 
-        rtsApi.edubOperateSelfCamera({
+        rtsApi.operateSelfCamera({
           operate: localUser?.camera === DeviceState.Open ? DeviceState.Closed : DeviceState.Open,
         });
       }
@@ -73,17 +73,16 @@ const useHandleDevice = (user?: UserDevice) => {
             return;
           }
 
-          RtcClient.publishStream(MediaType.AUDIO);
+          RtcClient.unmuteStream(MediaType.AUDIO);
           dispatch(localUserChangeMic(DeviceState.Open));
         }
 
         if (localUser?.mic === DeviceState.Open) {
-          //   RtcClient.stopAudioCapture();
-          RtcClient.unpublishStream(MediaType.AUDIO);
+          RtcClient.muteStream(MediaType.AUDIO);
           dispatch(localUserChangeMic(DeviceState.Closed));
         }
 
-        rtsApi.edubOperateSelfMic({
+        rtsApi.operateSelfMic({
           operate: localUser?.mic === DeviceState.Open ? DeviceState.Closed : DeviceState.Open,
         });
       }
@@ -95,13 +94,13 @@ const useHandleDevice = (user?: UserDevice) => {
       }
 
       if (device === 'camera') {
-        rtsApi.edubOperateOtherCamera({
+        rtsApi.operateOtherCamera({
           operate_user_id: user?.user_id!,
           operate: user?.camera === DeviceState.Open ? DeviceState.Closed : DeviceState.Open,
         });
       }
       if (device === 'microphone') {
-        rtsApi.edubOperateOtherMic({
+        rtsApi.operateOtherMic({
           operate_user_id: user?.user_id!,
           operate: user?.mic === DeviceState.Open ? DeviceState.Closed : DeviceState.Open,
         });

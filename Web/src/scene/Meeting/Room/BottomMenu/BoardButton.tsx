@@ -18,8 +18,9 @@ export default function () {
   const room = useSelector((state) => state.meetingRoom);
   const isHost = room.localUser.user_role === UserRole.Host;
 
-  const hasSharePermission =
-    isHost || room.localUser?.share_permission === Permission.HasPermission;
+  const hasSharePermission = useMemo(() => {
+    return isHost || room.localUser?.share_permission === Permission.HasPermission;
+  }, [room, isHost]);
 
   const isSharing = useMemo(() => {
     return room.share_type === ShareType.Board && room.share_status === ShareStatus.Sharing;
@@ -66,10 +67,10 @@ export default function () {
         await handleStartShareBoard();
         return;
       }
-      BoardClient.leaveRoom();
-      rtsApi.finishShare();
+      await BoardClient.leaveRoom();
+      await rtsApi.finishShare();
     } else {
-      handleStartShareBoard();
+      await handleStartShareBoard();
     }
   };
 
@@ -77,17 +78,19 @@ export default function () {
     if (isSharing && hasSharePermission) {
       return '结束白板共享';
     }
+    if (!hasSharePermission) {
+      return '申请白板共享';
+    }
 
-    return '共享白板';
-  }, [isSharing]);
+    return '白板共享';
+  }, [isSharing, hasSharePermission]);
 
   return (
     <div className={styles.menuButton}>
       {hasSharePermission ? (
         <MenuIconButton
-          // iconClassName={styles.normalIcon}
           iconClassName={classNames({
-            [styles.sharingIcon]: !isSharing && hasSharePermission,
+            [styles.normalIcon]: !isSharing,
             [styles.stopIcon]: isSharing,
           })}
           onClick={handleClick}
@@ -97,7 +100,6 @@ export default function () {
       ) : (
         <Popover
           trigger="click"
-          //   overlayClassName={styles.micPopover}
           open={popOpen}
           placement="top"
           content={
@@ -112,8 +114,10 @@ export default function () {
           }
         >
           <MenuIconButton
-            // iconClassName={styles.normalIcon}
-            iconClassName={isSharing ? styles.sharingIcon : styles.normalIcon}
+            iconClassName={classNames({
+              [styles.normalIcon]: hasSharePermission,
+              [styles.noPermIcon]: !hasSharePermission,
+            })}
             onClick={handleClick}
             text={text}
             icon={BoardIcon}

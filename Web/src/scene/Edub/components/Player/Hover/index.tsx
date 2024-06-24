@@ -31,21 +31,20 @@ export default function (props: HoverProps) {
   const handleUnLink = async () => {
     if (localUser?.user_role !== UserRole.Host) {
       // 学生主动下麦
-      await rtsApi.edubLinkmicLeave();
+      await rtsApi.linkmicLeave();
 
       RtcClient.stopAudioCapture();
       RtcClient.stopVideoCapture();
-      // todo: 待确认: 收回白板权限
     } else {
       // 老师踢人
-      await rtsApi.edubLinkmicKick({
+      await rtsApi.linkmicKick({
         kick_user_id: user?.user_id!,
       });
     }
   };
 
   const handleShare = async () => {
-    await rtsApi.edubSharePermissionPermit({
+    await rtsApi.sharePermissionPermit({
       apply_user_id: user?.user_id!,
       permit:
         user?.share_permission === Permission.NoPermission ? DeviceState.Open : DeviceState.Closed,
@@ -69,9 +68,15 @@ export default function (props: HoverProps) {
       <div className={styles.opItem} onClick={() => handleDevice(DeviceType.Microphone)}>
         <span className={styles.opIcon}>
           <Icon
-            className={`${styles.svgIcon} ${
-              user?.mic === DeviceState.Closed ? styles.closedIcon : ''
-            }`}
+            className={`
+              ${styles.svgIcon}
+              ${user?.mic === DeviceState.Closed ? styles.closedIcon : ''}
+              ${
+                user?.mic === DeviceState.Open &&
+                Boolean(user?.audioPropertiesInfo?.linearVolume) &&
+                styles.speakingIcon
+              }
+            `}
             src={user?.mic === DeviceState.Closed ? MicrophoneOffIcon : MicrophoneOnIcon}
           />
         </span>
@@ -94,7 +99,7 @@ export default function (props: HoverProps) {
         <div className={styles.opItem} onClick={() => handleShare()}>
           <span className={styles.opIcon}>
             <Icon
-              src={user?.share_permission === Permission.NoPermission ? NoShareIcon : ShareIcon}
+              src={user?.share_permission === Permission.NoPermission ? ShareIcon : NoShareIcon}
               className={`${styles.svgIcon}`}
             />
           </span>

@@ -44,8 +44,6 @@ let room: RootState['edusRoom'];
 
 const useRtcListeners = () => {
   const dispatch = useDispatch();
-  //   const navigate = useNavigate();
-
   room = useSelector((state) => state.edusRoom);
   const devicePermissions = useSelector((state) => state.device.devicePermissions);
   const leaveRoom = useLeaveRoom('/', {
@@ -61,22 +59,20 @@ const useRtcListeners = () => {
     }
 
     const msgObj: InformDataType = JSON.parse(message || '{}');
+    // console.log('handleMessageReceived', userId, msgObj);
 
     if (msgObj.message_type !== 'inform') {
       return;
     }
-    console.log('handleMessageReceived', msgObj);
 
-    // !进房
+    // 进房
     if (msgObj.event === RtsEvent.edusOnJoinRoom) {
-      //   const { user, user_count } = msgObj.data;
-      // todo: 是否允许远端用户进房需要服务端确认
-      console.log('进房', msgObj.data);
+      console.log('进房');
 
       if (!room.host_user_id) {
         const roomInfo = await rtsApi.reSync();
         if (!isRtsError(roomInfo)) {
-          console.log('房间内没有老师，同步一下信息', roomInfo);
+          console.log('房间内没有老师，同步一下信息');
           if (roomInfo.response.room.host_user_id) {
             dispatch(localUserJoinRoom(roomInfo.response));
           }
@@ -85,66 +81,57 @@ const useRtcListeners = () => {
 
       dispatch(remoteUserJoinRoom(msgObj.data));
     }
-    // !退房
+    // 退房
     if (msgObj.event === RtsEvent.edusOnLeaveRoom) {
-      console.log('退房', msgObj.data);
-      //  todo ：server fix： 进房时通知user_count=2，离房时user_count=0
-      // todo： 房间里的分享状态是否同步用户状态
+      console.log('退房');
       dispatch(remoteUserLeaveRoom(msgObj.data));
     }
 
-    // !结束小班课
+    // 结束小班课
     if (msgObj.event === RtsEvent.edusOnFinishRoom) {
       console.log('结束小班课');
       const { reason } = msgObj.data;
-      //   let title = '';
-      //   let message = '';
       if (reason === FinishRoomReason.TimeEnded) {
-        // title = '体验时间已结束';
-        // Message.error('体验时间已结束');
         await leaveRoom();
-        // message = '本产品仅用于功能体验，单次房间时长不超过30分钟';
         Message.error('本产品仅用于功能体验，单次房间时长不超过30分钟');
       }
 
       if (reason === FinishRoomReason.HostClose) {
-        // title = '老师关闭房间';
-        // if (!isHost) {
         Message.info('课程已结束');
         await leaveRoom();
-        // }
         return;
       }
 
       if (reason === FinishRoomReason.Illegal) {
-        // title = '审核违规，房间关闭';
         await leaveRoom();
         Message.error('审核违规，房间关闭');
       }
     }
-    // !用户操作自己的摄像头
-    if (msgObj.event === RtsEvent.edusOnOperateSelfCamera) {
-      console.log('用户操作摄像头');
 
+    // 用户操作自己的摄像头
+    if (msgObj.event === RtsEvent.edusOnOperateSelfCamera) {
+      const operateStr = msgObj.data.operate === DeviceState.Open ? '打开' : '关闭';
+      console.log(`远端用户${operateStr}摄像头`);
       dispatch(remoteUserChangeCamera(msgObj.data));
     }
 
-    // !用户操作自己的麦克风
+    // 用户操作自己的麦克风
     if (msgObj.event === RtsEvent.edusOnOperateSelfMic) {
-      console.log('用户操作麦克风');
-
+      const operateStr = msgObj.data.operate === DeviceState.Open ? '打开' : '关闭';
+      console.log(`远端用户${operateStr}麦克风`);
       dispatch(remoteUserChangeMic(msgObj.data));
     }
-    // !全体静音
+
+    // 全体静音
     if (msgObj.event === RtsEvent.edusOnOperateAllMic) {
-      console.log('全体静音', msgObj.data);
+      console.log('全体静音');
 
       if (!isHost) {
         // 老师自己不受影响
         const { operate } = msgObj.data;
         if (operate === RoomMicStatus.AllMuted) {
           if (room.localUser.mic === DeviceState.Open) {
-            await RtcClient.unpublishStream(MediaType.AUDIO);
+            await RtcClient.muteStream(MediaType.AUDIO);
             dispatch(localUserChangeMic(DeviceState.Closed));
             Message.info('老师已将你设置静音');
           }
@@ -155,7 +142,7 @@ const useRtcListeners = () => {
     }
     // 房间内有用户共享
     if (msgObj.event === RtsEvent.edusOnStartShare) {
-      console.log('开始分享', room.localUser);
+      console.log('开始分享');
 
       const { user_name: userName, user_id: userId } = msgObj.data;
       dispatch(startShare(msgObj.data));
@@ -165,7 +152,7 @@ const useRtcListeners = () => {
         room.localUser?.share_status === ShareStatus.Sharing &&
         room.localUser?.user_id !== userId
       ) {
-        Message.error(`${userName}正在共享`);
+        Message.error(`${userName}取代您发起共享`);
         await RtcClient.stopScreenCapture();
       }
     }
@@ -176,15 +163,16 @@ const useRtcListeners = () => {
       dispatch(stopShare(msgObj.data));
     }
 
-    // !用户申请操作自己的麦克风
+    // 用户申请操作自己的麦克风
     if (msgObj.event === RtsEvent.edusOnOperateSelfMicApply) {
-      console.log('用户申请操作自己的麦克风');
 
       if (!isHost) {
         // 如果不是老师，不处理
         return;
       }
-
+      const operateStr = msgObj.data.operate === DeviceState.Open ? '打开' : '关闭';
+      const userIdStr = msgObj.data.user_id;
+      console.log(`用户${userIdStr}申请${operateStr}自己的麦克风`);
       const applyUsers = room.remoteUsers?.filter(
         (user) => user.applying.includes(ApplyType.Mic) && user.user_id !== msgObj.data.user_id
       );
@@ -212,9 +200,8 @@ const useRtcListeners = () => {
         })
       );
     }
-    // !申请操作自己麦克风回复
+    // 申请操作自己麦克风回复
     if (msgObj.event === RtsEvent.edusOnOperateSelfMicPermit) {
-      console.log('申请操作自己麦克风回复', msgObj);
       const { user_id: userId, permit } = msgObj.data;
 
       if (userId === room.localUser?.user_id && permit === Permission.HasPermission) {
@@ -223,18 +210,19 @@ const useRtcListeners = () => {
           return;
         }
         Message.info('老师已同意发言');
-        RtcClient.publishStream(MediaType.AUDIO);
+        console.log('老师授予你使用麦克风的能力');
+        RtcClient.unmuteStream(MediaType.AUDIO);
         dispatch(localUserChangeMic(DeviceState.Open));
       }
     }
-    // !学生申请共享权限
+    // 学生申请共享权限
     if (msgObj.event === RtsEvent.edusOnSharePermissionApply) {
-      console.log('用户申请共享权限');
       if (!isHost) {
         // 如果不是老师，不处理
         return;
       }
       const { user_name: userName } = msgObj.data;
+      console.log(`${userName}申请共享权限`);
 
       const applyUsers = room.remoteUsers?.filter(
         (user) => user.applying.includes(ApplyType.Screen) && user.user_id !== msgObj.data.user_id
@@ -260,14 +248,11 @@ const useRtcListeners = () => {
         })
       );
     }
-    // !申请共享权限回复
+    // 申请共享权限回复
     if (msgObj.event === RtsEvent.edusOnSharePermissionPermit) {
-      console.log('申请共享权限回复', msgObj.data);
-
       const { user_id: userId, permit } = msgObj.data;
 
       if (userId === room.localUser?.user_id) {
-        // RtcClient.publishStream(MediaType.AUDIO);
         dispatch(
           setSharePermit({
             permit,
@@ -276,6 +261,7 @@ const useRtcListeners = () => {
           })
         );
         if (permit === Permission.HasPermission) {
+          console.log('老师授予了你共享权限');  
           Message.info('老师授予了你共享权限');
 
           if (room.share_status === ShareStatus.Sharing && room.share_type === ShareType.Board) {
@@ -283,12 +269,15 @@ const useRtcListeners = () => {
               share_type: ShareType.Board,
             });
           }
+        } else {
+          console.log('老师拒绝授予你共享权限');
+          Message.error('老师拒绝授予你共享权限');
         }
       }
     }
-    // !老师操作学生摄像头
+
+    // 老师操作学生摄像头
     if (msgObj.event === RtsEvent.edusOnOperateOtherCamera) {
-      console.log('老师操作学生摄像头');
       const { operate_user_id: userId, operate } = msgObj.data;
 
       if (userId === room.localUser?.user_id) {
@@ -313,12 +302,9 @@ const useRtcListeners = () => {
         }
       }
     }
-    // !老师操作学生麦克风
+    // 老师操作学生麦克风
     if (msgObj.event === RtsEvent.edusOnOperateOtherMic) {
-      console.log('老师操作学生麦克风');
-
       const { operate_user_id: usesId, operate } = msgObj.data;
-
       if (usesId === room.localUser?.user_id) {
         if (operate === DeviceState.Open) {
           dispatch(
@@ -331,7 +317,7 @@ const useRtcListeners = () => {
         }
 
         if (operate === DeviceState.Closed) {
-          RtcClient.unpublishStream(MediaType.AUDIO);
+          RtcClient.muteStream(MediaType.AUDIO);
           dispatch(localUserChangeMic(DeviceState.Closed));
           Message.info('老师已将你设置静音');
 
@@ -343,36 +329,28 @@ const useRtcListeners = () => {
       }
     }
 
-    // !老师操作学生共享权限
+    // 老师操作学生共享权限
     if (msgObj.event === RtsEvent.edusOnOperateOtherSharePermission) {
       console.log('老师操作学生共享权限');
       const { operate_user_id: usesId, operate } = msgObj.data;
       if (usesId === room.localUser?.user_id) {
-        if (operate === Permission.HasPermission) {
+        if (room.localUser?.share_permission !== operate) {
           dispatch(
             setSharePermit({
-              permit: Permission.HasPermission,
+              permit: operate,
               userId,
               isLocal: true,
             })
           );
-          Message.info('老师授予了你共享权限');
-        }
-
-        if (operate === Permission.NoPermission) {
-          dispatch(
-            setSharePermit({
-              permit: Permission.NoPermission,
-              userId,
-              isLocal: true,
-            })
-          );
-          Message.info('共享权限已被收回');
-
-          if (room.localUser?.share_status === ShareStatus.Sharing) {
-            if (room.share_type === ShareType.Screen) {
-              await RtcClient.stopScreenCapture();
-              rtsApi.finishShare();
+          if (operate === Permission.HasPermission) {
+            Message.info('老师授予了你共享权限');
+          } else if (operate === Permission.NoPermission) {
+            Message.info('共享权限已被收回');
+            if (room.localUser?.share_status === ShareStatus.Sharing) {
+              if (room.share_type === ShareType.Screen) {
+                await RtcClient.stopScreenCapture();
+              }
+              await rtsApi.finishShare();
             }
           }
         }
@@ -387,15 +365,13 @@ const useRtcListeners = () => {
       }
     }
 
+    // 收到开始录制申请
     if (msgObj.event === RtsEvent.edusOnStartRecordApply) {
       if (!isHost) {
         // 如果不是老师，不处理
         return;
       }
-      const {
-        user_name: userName,
-        user_id: userId,
-      } = msgObj.data;
+      const { user_name: userName, user_id: userId } = msgObj.data;
       dispatch(
         setToast({
           title: `${userName}发起录制请求`,
@@ -409,10 +385,14 @@ const useRtcListeners = () => {
         })
       );
     }
+
+    // (老师)开始录制
     if (msgObj.event === RtsEvent.edusOnStartRecord) {
       dispatch(setRecordStatus(RecordStatus.Recording));
       Message.info('开始录制');
     }
+
+    // (老师)结束录制
     if (msgObj.event === RtsEvent.edusOnStopRecord) {
       const { reason } = msgObj.data;
       if (reason === IEdusStopRecordReason.TimeEnded) {
@@ -424,6 +404,16 @@ const useRtcListeners = () => {
       }
 
       dispatch(setRecordStatus(RecordStatus.NotRecoading));
+    }
+
+    // 老师回答是否允许录制
+    if (msgObj.event === RtsEvent.edusOnStartRecordPermit) {
+      const { permit } = msgObj.data;
+      if (permit === Permission.NoPermission) {
+        Message.info('老师拒绝了录制申请');
+      } else {
+        Message.success('老师同意了录制申请');
+      }
     }
   };
 

@@ -10,17 +10,16 @@ import {
   message as Message,
 } from 'antd';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useContext } from 'react';
 import {
   BkFillType,
-  Constant,
-  CONTROL_TYPE,
   InputFormat,
-  IToolMode,
   OutputFormat,
   StorageType,
   TaskStatus,
-  TOOL_TYPE,
+  ToolMode,
+  TranscodeMode,
+  ControlType,
 } from '@volcengine/white-board-manage';
 
 import PointerSvg from '@/assets/images/board/Pointer.svg';
@@ -53,8 +52,9 @@ import styles from './index.module.less';
 import PopModal from './PopModal';
 import { PopType } from './types';
 import { setBoardPagePreviewOpen } from '@/store/slices/ui';
+import BoardContext from '../BoardContext';
 
-type ToolType = CONTROL_TYPE | IToolMode | 'background' | 'upload' | 'album';
+type ToolType = ControlType | ToolMode | 'background' | 'upload' | 'album';
 
 interface ToolBarProps {
   disabledUndo: boolean;
@@ -68,7 +68,7 @@ function ToolBar(props: ToolBarProps) {
   const boardPagePreviewOpen = useSelector((state) => state.ui.boardPagePreviewOpen);
 
   const [curTool, setCurTool] = useState<ToolType>();
-  const [curToolShape, setCurToolShape] = useState<Constant.SHAPE_TYPE>(Constant.SHAPE_TYPE.RECT);
+  const [curToolShape, setCurToolShape] = useState<ToolMode>(ToolMode.RECT);
 
   const [brushColor, setBrushColor] = useState('rgba(235,60,54,255)');
   const [brushThickness, setBrushThickness] = useState(0);
@@ -87,7 +87,8 @@ function ToolBar(props: ToolBarProps) {
   const [uploadPercent, setUploadProgress] = useState(0);
   const [transCodingPercent, setTranscodingPercent] = useState(0);
 
-  const whiteBoard = BoardClient.room?.getActiveWhiteBoard();
+  // const whiteBoard = BoardClient.currentWhiteboard;
+  const { curBoard: whiteBoard } = useContext(BoardContext);
 
   const handleBoardPagePreview = () => {
     dispatch(setBoardPagePreviewOpen(!boardPagePreviewOpen));
@@ -95,18 +96,17 @@ function ToolBar(props: ToolBarProps) {
 
   const handleToolChange = (tool: ToolType) => {
     if (tool !== curTool) {
-      BoardClient.setEditType(tool as IToolMode);
+      BoardClient.setEditType(tool as ToolMode);
       setCurTool(tool);
       if (
-        [
-          Constant.SHAPE_TYPE.CIRCLE,
-          Constant.SHAPE_TYPE.LINE,
-          Constant.SHAPE_TYPE.RECT,
-          Constant.SHAPE_TYPE.ARROW,
-        ].includes(tool as Constant.SHAPE_TYPE)
+        [ToolMode.CIRCLE, ToolMode.LINE, ToolMode.RECT, ToolMode.ARROW].includes(tool as ToolMode)
       ) {
-        setCurToolShape(tool as Constant.SHAPE_TYPE);
+        setCurToolShape(tool as ToolMode);
       }
+    } else {
+      BoardClient.setEditType(ToolMode.POINTER);
+      setCurTool(undefined);
+      setCurToolShape(ToolMode.POINTER);
     }
   };
 
@@ -198,13 +198,14 @@ function ToolBar(props: ToolBarProps) {
       }
       setIsTranscoding(true);
       setTranscodeModalVisible(true);
-      const appid = BoardClient.room?.byteAppId;
+      const appid = BoardClient.config?.appId;
       if (!appid) return;
       const transcodeRes = await BoardClient.room
         ?.createTranscodeTask({
+          transcode_mode: TranscodeMode.static,
           app_id: appid,
           resource: url,
-          operator: BoardClient.room?.userId,
+          operator: BoardClient.config!.user_id!,
           transcode_config: {
             input_format: InputFormat[format as keyof typeof InputFormat],
             output_format: OutputFormat.png,
@@ -220,7 +221,6 @@ function ToolBar(props: ToolBarProps) {
             },
           },
           onProgress: (transcodePercent: number, transcodeStatus: TaskStatus, taskId: string) => {
-            console.log('taskId', taskId);
             setTranscodingPercent(transcodePercent);
           },
         })
@@ -230,10 +230,8 @@ function ToolBar(props: ToolBarProps) {
         });
       setIsTranscoding(false);
       setTranscodingPercent(0);
-      // setTaskId('');
       setTranscodeModalVisible(false);
       if (transcodeRes) {
-        console.log('transcoderes', transcodeRes);
         const { images } = transcodeRes;
         const pics: string[] = images
           .sort((a: any, b: any) => a.page_id - b.page_id)
@@ -250,14 +248,12 @@ function ToolBar(props: ToolBarProps) {
         });
 
         const id = Date.now();
-        console.log('id:', id % 10000000);
 
-        BoardClient.room?.createWhiteBoard(
-          id % 10000000,
-          pageConfig,
-          {},
-          (file.name.split('.')[0] || '').slice(0, 9)
-        );
+        BoardClient.room?.createWhiteBoard({
+          boardId: id % 10000000,
+          pages: pageConfig,
+          boardName: (file.name.split('.')[0] || '').slice(0, 9),
+        });
       }
     } catch (err) {
       console.error(err);
@@ -270,16 +266,16 @@ function ToolBar(props: ToolBarProps) {
     return false;
   };
 
-  const getShapeIcon = (curTool?: Constant.SHAPE_TYPE) => {
-    if (curTool === Constant.SHAPE_TYPE.CIRCLE) {
+  const getShapeIcon = (curTool?: ToolMode) => {
+    if (curTool === ToolMode.CIRCLE) {
       return ShapeCircle;
     }
 
-    if (curTool === Constant.SHAPE_TYPE.LINE) {
+    if (curTool === ToolMode.LINE) {
       return ShapeLine;
     }
 
-    if (curTool === Constant.SHAPE_TYPE.ARROW) {
+    if (curTool === ToolMode.ARROW) {
       return ShapeArrow;
     }
     return ShapeRect;
@@ -317,8 +313,8 @@ function ToolBar(props: ToolBarProps) {
         <Tooltip title="选择/移动" placement="right">
           <IconBtn
             icon={PointerSvg}
-            className={classNames(curTool === TOOL_TYPE.POINTER && styles.activeIcon)}
-            onClick={() => handleToolChange(TOOL_TYPE.POINTER)}
+            className={classNames(curTool === ToolMode.POINTER && styles.activeIcon)}
+            onClick={() => handleToolChange(ToolMode.POINTER)}
           />
         </Tooltip>
 
@@ -333,7 +329,7 @@ function ToolBar(props: ToolBarProps) {
               brushThickness={brushThickness}
               whiteBoard={whiteBoard!}
               kind={PopType.pencilBrush}
-              mode={curTool as Constant.SHAPE_TYPE}
+              mode={curTool as ToolMode}
               onToolChange={handleToolChange}
             />
           }
@@ -342,11 +338,8 @@ function ToolBar(props: ToolBarProps) {
           <Tooltip title="画笔" placement="right">
             <IconBtn
               icon={PenSvg}
-              className={classNames(
-                curTool === Constant.SHAPE_TYPE.PENCIL_BRUSH && styles.activeIcon
-              )}
-              //
-              onClick={() => handleToolChange(Constant.SHAPE_TYPE.PENCIL_BRUSH)}
+              className={classNames(curTool === ToolMode.PENCIL_BRUSH && styles.activeIcon)}
+              onClick={() => handleToolChange(ToolMode.PENCIL_BRUSH)}
             />
           </Tooltip>
         </Popconfirm>
@@ -354,8 +347,8 @@ function ToolBar(props: ToolBarProps) {
         <Tooltip title="激光笔" placement="right">
           <IconBtn
             icon={LaserPenSvg}
-            className={classNames(curTool === TOOL_TYPE.LASER && styles.activeIcon)}
-            onClick={() => handleToolChange(TOOL_TYPE.LASER)}
+            className={classNames(curTool === ToolMode.LASER && styles.activeIcon)}
+            onClick={() => handleToolChange(ToolMode.LASER)}
           />
         </Tooltip>
 
@@ -371,7 +364,7 @@ function ToolBar(props: ToolBarProps) {
                 brushThickness={brushThickness}
                 whiteBoard={whiteBoard!}
                 kind={PopType.textbox}
-                mode={curTool as Constant.SHAPE_TYPE}
+                mode={curTool as ToolMode}
                 onToolChange={handleToolChange}
               />
             }
@@ -380,9 +373,9 @@ function ToolBar(props: ToolBarProps) {
             <IconBtn
               icon={TextSvg}
               onClick={() => {
-                handleToolChange(Constant.SHAPE_TYPE.TEXT);
+                handleToolChange(ToolMode.TEXT);
               }}
-              className={classNames(curTool === Constant.SHAPE_TYPE.TEXT && styles.activeIcon)}
+              className={classNames(curTool === ToolMode.TEXT && styles.activeIcon)}
               key="textbox"
             />
           </Popconfirm>
@@ -400,7 +393,7 @@ function ToolBar(props: ToolBarProps) {
                 brushThickness={brushThickness}
                 whiteBoard={whiteBoard!}
                 kind={PopType.shape}
-                mode={curToolShape as Constant.SHAPE_TYPE}
+                mode={curToolShape as ToolMode}
                 onToolChange={handleToolChange}
               />
             }
@@ -410,24 +403,18 @@ function ToolBar(props: ToolBarProps) {
               icon={getShapeIcon(curToolShape)}
               onClick={() => {
                 if (
-                  [
-                    Constant.SHAPE_TYPE.CIRCLE,
-                    Constant.SHAPE_TYPE.LINE,
-                    Constant.SHAPE_TYPE.RECT,
-                    Constant.SHAPE_TYPE.ARROW,
-                  ].includes(curTool as Constant.SHAPE_TYPE)
+                  [ToolMode.CIRCLE, ToolMode.LINE, ToolMode.RECT, ToolMode.ARROW].includes(
+                    curTool as ToolMode
+                  )
                 ) {
                   return;
                 }
                 handleToolChange(curToolShape);
               }}
               className={classNames(
-                [
-                  Constant.SHAPE_TYPE.CIRCLE,
-                  Constant.SHAPE_TYPE.LINE,
-                  Constant.SHAPE_TYPE.RECT,
-                  Constant.SHAPE_TYPE.ARROW,
-                ].includes(curTool as Constant.SHAPE_TYPE) && styles.activeIcon,
+                [ToolMode.CIRCLE, ToolMode.LINE, ToolMode.RECT, ToolMode.ARROW].includes(
+                  curTool as ToolMode
+                ) && styles.activeIcon,
                 styles.shapeIcon
               )}
             />
@@ -437,8 +424,8 @@ function ToolBar(props: ToolBarProps) {
         <Tooltip title="橡皮擦" placement="right">
           <IconBtn
             icon={EraserSvg}
-            className={classNames(curTool === TOOL_TYPE.ERASER && styles.activeIcon)}
-            onClick={() => handleToolChange(TOOL_TYPE.ERASER)}
+            className={classNames(curTool === ToolMode.ERASER && styles.activeIcon)}
+            onClick={() => handleToolChange(ToolMode.ERASER)}
           />
         </Tooltip>
 
@@ -454,7 +441,7 @@ function ToolBar(props: ToolBarProps) {
                 brushThickness={brushThickness}
                 whiteBoard={whiteBoard!}
                 kind={PopType.background}
-                mode={curTool as Constant.SHAPE_TYPE}
+                mode={curTool as ToolMode}
                 onToolChange={handleToolChange}
               />
             }
@@ -475,7 +462,7 @@ function ToolBar(props: ToolBarProps) {
             icon={UndoSvg}
             className={classNames(disabledUndo && styles.disabledIcon)}
             onClick={() => {
-              setCurTool(CONTROL_TYPE.UNDO);
+              setCurTool(ControlType.UNDO);
               whiteBoard?.undo();
             }}
           />
@@ -486,7 +473,7 @@ function ToolBar(props: ToolBarProps) {
             icon={RedoSvg}
             className={classNames(disabledRedo && styles.disabledIcon)}
             onClick={() => {
-              setCurTool(CONTROL_TYPE.REDO);
+              setCurTool(ControlType.REDO);
               whiteBoard?.redo();
             }}
           />
@@ -530,7 +517,7 @@ function ToolBar(props: ToolBarProps) {
           <IconBtn
             icon={DeleteSvg}
             onClick={() => {
-              setCurTool(CONTROL_TYPE.CLEAR);
+              setCurTool(ControlType.CLEAR);
               whiteBoard?.clearPage();
             }}
           />

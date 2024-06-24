@@ -203,14 +203,6 @@ export const edusRoomSlice = createSlice({
       );
 
       if (findIndex > -1) {
-        // const user = action.payload.user;
-
-        // if (user.share_status === ShareStatus.Sharing) {
-        //   state.share_status = ShareStatus.NotSharing;
-        //   state.share_user_id = '';
-        //   state.share_user_name = '';
-        // }
-
         state.remoteUsers!.splice(findIndex, 1);
       }
 

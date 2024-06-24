@@ -1,166 +1,38 @@
 import { EdubRoomState, IEdubUser } from '@/store/slices/edubRoom';
 import { DeviceState, ShareType, Silence, UserRole } from '@/types/state';
-import { RecordFile, RtsError, SendServerMessageRes } from '@/types/rtsTypes';
-import { getNull, getResponse, handleRes, getRes } from '@/utils/rtsUtils';
-
-// ************************ teacher ******************************
-
-/**
- * 结束房间
- * @returns
- */
-export const edubFinishRoom = async (): Promise<null | RtsError> => {
-  return handleRes('edubFinishRoom', getNull);
-};
-
-/**
- * 操作他人摄像头
- * @param data
- * @returns
- */
-export const edubOperateOtherCamera = async (data: {
-  operate_user_id: string;
-  operate: DeviceState;
-}): Promise<null | RtsError> => {
-  return handleRes<null>('edubOperateOtherCamera', getNull, data);
-};
-
-/**
- * 操作他人麦克风
- * @param data
- * @returns
- */
-export const edubOperateOtherMic = async (data: {
-  operate_user_id: string;
-  operate: DeviceState;
-}): Promise<null | RtsError> => {
-  return handleRes<null>('edubOperateOtherMic', getNull, data);
-};
-
-/**
- * 开启连麦
- * todo  需要吗？PRD里有提到但没明说。
- * @param data
- * @returns
- */
-export const edubStartLinkmic = async (): Promise<null | RtsError> => {
-  return handleRes<null>('edubStartLinkmic', getNull);
-};
-
-/**
- * 结束连麦
- * todo  需要吗？PRD里有提到但没明说。
- * @param data
- * @returns
- */
-export const edubStopLinkmic = async (): Promise<null | RtsError> => {
-  return handleRes<null>('edubStopLinkmic', getNull);
-};
-
-export interface ILinkmicApplyList {
-  linkmic_apply_list: IEdubUser[];
-}
-
-/**
- * 获取连麦申请列表
- * @param data
- * @returns
- */
-export const edubGetLinkmicApplyList = async (): Promise<ILinkmicApplyList | RtsError> => {
-  return handleRes<ILinkmicApplyList>('edubGetLinkmicApplyList', getResponse);
-};
-
-/**
- * 申请连麦回复
- * @param data
- * @returns
- */
-export const edubLinkmicPermit = async (data: {
-  apply_user_id: string;
-  permit: DeviceState;
-}): Promise<null | RtsError> => {
-  return handleRes<null>('edubLinkmicPermit', getNull, data);
-};
-
-/**
- * 老师踢人下麦
- * @param data
- * @returns
- */
-export const edubLinkmicKick = async (data: { kick_user_id: string }): Promise<null | RtsError> => {
-  return handleRes<null>('edubLinkmicKick', getNull, data);
-};
-
-/**
- * - 没有共享权限申请
- * 老师主动授权也使用这个接口
- * @param data
- * @returns
- */
-export const edubSharePermissionPermit = async (data: {
-  apply_user_id: string;
-  permit: DeviceState;
-}): Promise<null | RtsError> => {
-  return handleRes<null>('edubSharePermissionPermit', getNull, data);
-};
-
-/**
- * 开始共享
- *
- * todo 默认为共享屏幕，需要检查一下参数是否要传
- * @param data
- * @returns
- */
-export const edubStartShare = async (data: { share_type: ShareType }): Promise<null | RtsError> => {
-  return handleRes<null>('edubStartShare', getNull, data);
-};
-
-/**
- * 停止共享
- * @returns
- */
-export const edubStopShare = async (): Promise<null | RtsError> => {
-  return handleRes<null>('edubStopShare', getNull);
-};
-
-/**
- * 开始录制
- * @param data
- * @returns
- */
-export const edubStartRecord = async (): Promise<null | RtsError> => {
-  return handleRes<null>('edubStartRecord', getNull);
-};
-
-/**
- * 结束录制
- * @param data
- * @returns
- */
-export const edubStopRecord = async (): Promise<null | RtsError> => {
-  return handleRes<null>('edubStopRecord', getNull);
-};
-
-// ************************* common ************************************
+import { RtsError, SendServerMessageRes } from '@/types/rtsTypes';
+import { getNull, getResponse, sendServerMessage, getRes } from '@/utils/rtsUtils';
 
 export interface JoinEdubRoomRes {
-  // todo 检查学生 or 老师加房时，房间的共享状态
   room: Omit<
     EdubRoomState,
     'localUser' | 'remoteUsers' | 'linkmic_user_list' | 'linkmic_apply_list' | 'teacher'
-  >;
-  user: IEdubUser;
-  teacher?: IEdubUser;
-  linkmic_user_list: IEdubUser[];
-  user_list: IEdubUser[];
-  token: string;
-  // 白板
-  wb_room_id: string;
-  wb_user_id: string;
-  wb_token: string;
-  wb_stream_user_id: string;
+  >; // 房间信息
+  user: IEdubUser; // 本人 user 信息
+  teacher?: IEdubUser; // 老师信息
+  linkmic_user_list: IEdubUser[]; // 申请连麦 user 信息
+  user_list: IEdubUser[]; // user数组，按照进房时间排序
+  token: string; // 加入rtc房间需要的token
+  wb_room_id: string; // 白板 room id
+  wb_user_id: string; // 白板 user id
+  wb_token: string; // 白板 token
+  wb_stream_user_id: string; // 白板 rtc 推流 user_id
 }
 
+export interface ILinkmicApplyList {
+  linkmic_apply_list: IEdubUser[]; // 获取连麦申请列表
+}
+
+export interface GetUserListRes {
+  user_count: number; // 房间内用户数
+  user_list: IEdubUser[]; // user数组，按照进房时间排序
+}
+
+/**
+ * 告知业务服务器用户进房
+ * @param data
+ * @returns
+ */
 export const joinRoom = async (data: {
   user_name: string;
   user_role: UserRole;
@@ -168,95 +40,180 @@ export const joinRoom = async (data: {
   mic: DeviceState;
   is_silence?: Silence;
 }): Promise<SendServerMessageRes<JoinEdubRoomRes> | RtsError> => {
-  return handleRes('edubJoinRoom', getRes, data);
+  return sendServerMessage('edubJoinRoom', getRes, data);
 };
 
-export const edubLeaveRoom = async (): Promise<null | RtsError> => {
-  return handleRes<null>('edubLeaveRoom', getNull);
+/**
+ * 告知业务服务器用户离房
+ * @param data
+ * @returns
+ */
+export const leaveRoom = async (): Promise<null | RtsError> => {
+  return sendServerMessage<null>('edubLeaveRoom', getNull);
 };
 
-export interface GetUserListRes {
-  user_count: number;
-  user_list: IEdubUser[];
-}
-export const edubGetUserList = async (data: {
+/**
+ * 结束房间
+ * @returns
+ */
+export const finishRoom = async (): Promise<null | RtsError> => {
+  return sendServerMessage('edubFinishRoom', getNull);
+};
+
+/**
+ * 断线之后重连，调用此接口获取当前房间信息
+ * @param data
+ * @returns
+ */
+export const reSync = async (): Promise<SendServerMessageRes<JoinEdubRoomRes> | RtsError> => {
+  return sendServerMessage('edubResync', getRes);
+};
+
+/**
+ * 获取房间内用户列表
+ * @param data
+ * @returns
+ */
+export const getUserList = async (data: {
   index: number;
   size: number;
 }): Promise<GetUserListRes | RtsError> => {
-  return handleRes<GetUserListRes>('edubGetUserList', getResponse, data);
+  return sendServerMessage<GetUserListRes>('edubGetUserList', getResponse, data);
 };
 
 /**
- * 操作自己摄像头
- * 只有老师和上麦学生可以调用
+ * 本地用户操作自己的摄像头
  * @param data
  * @returns
  */
-export const edubOperateSelfCamera = async (data: {
+export const operateSelfCamera = async (data: {
   operate: DeviceState;
 }): Promise<null | RtsError> => {
-  return handleRes<null>('edubOperateSelfCamera', getNull, data);
+  return sendServerMessage<null>('edubOperateSelfCamera', getNull, data);
 };
 
 /**
- * 操作自己麦克风
- * 只有老师和上麦学生可以调用
+ * 本地用户操作自己的麦克风
  * @param data
  * @returns
  */
-export const edubOperateSelfMic = async (data: {
+export const operateSelfMic = async (data: {
   operate: DeviceState;
 }): Promise<null | RtsError> => {
-  return handleRes<null>('edubOperateSelfMic', getNull, data);
+  return sendServerMessage<null>('edubOperateSelfMic', getNull, data);
+};
+
+/**
+ * 本地用户开始共享
+ * @param data
+ * @returns
+ */
+export const startShare = async (data: { share_type: ShareType }): Promise<null | RtsError> => {
+  return sendServerMessage<null>('edubStartShare', getNull, data);
+};
+
+/**
+ * 本地用户停止共享
+ * @returns
+ */
+export const stopShare = async (): Promise<null | RtsError> => {
+  return sendServerMessage<null>('edubStopShare', getNull);
+};
+
+/**
+ * 操作他人摄像头
+ * @param data
+ * @returns
+ */
+export const operateOtherCamera = async (data: {
+  operate_user_id: string;
+  operate: DeviceState;
+}): Promise<null | RtsError> => {
+  return sendServerMessage<null>('edubOperateOtherCamera', getNull, data);
+};
+
+/**
+ * 操作他人麦克风
+ * @param data
+ * @returns
+ */
+export const operateOtherMic = async (data: {
+  operate_user_id: string;
+  operate: DeviceState;
+}): Promise<null | RtsError> => {
+  return sendServerMessage<null>('edubOperateOtherMic', getNull, data);
+};
+
+/**
+ * 获取连麦申请列表
+ * @param data
+ * @returns
+ */
+export const getLinkmicApplyList = async (): Promise<ILinkmicApplyList | RtsError> => {
+  return sendServerMessage<ILinkmicApplyList>('edubGetLinkmicApplyList', getResponse);
+};
+
+/**
+ * 申请连麦回复
+ * @param data
+ * @returns
+ */
+export const linkmicPermit = async (data: {
+  apply_user_id: string;
+  permit: DeviceState;
+}): Promise<null | RtsError> => {
+  return sendServerMessage<null>('edubLinkmicPermit', getNull, data);
+};
+
+/**
+ * 踢人下麦
+ * @param data
+ * @returns
+ */
+export const linkmicKick = async (data: { kick_user_id: string }): Promise<null | RtsError> => {
+  return sendServerMessage<null>('edubLinkmicKick', getNull, data);
+};
+
+/**
+ * 授予屏幕共享权限
+ * @param data
+ * @returns
+ */
+export const sharePermissionPermit = async (data: {
+  apply_user_id: string;
+  permit: DeviceState;
+}): Promise<null | RtsError> => {
+  return sendServerMessage<null>('edubSharePermissionPermit', getNull, data);
 };
 
 /**
  * 申请连麦
  * @returns
  */
-export const edubLinkmicApply = async (): Promise<null | RtsError> => {
-  return handleRes<null>('edubLinkmicApply', getNull);
+export const linkmicApply = async (): Promise<null | RtsError> => {
+  return sendServerMessage<null>('edubLinkmicApply', getNull);
 };
 
 /**
  * 取消连麦申请
  * @returns
  */
-export const edubLinkmicApplyCancel = async (): Promise<null | RtsError> => {
-  return handleRes<null>('edubLinkmicApplyCancel', getNull);
+export const linkmicApplyCancel = async (): Promise<null | RtsError> => {
+  return sendServerMessage<null>('edubLinkmicApplyCancel', getNull);
 };
 
 /**
- * 学生主动下麦
+ * 主动下麦
  * @returns
  */
-export const edubLinkmicLeave = async (): Promise<null | RtsError> => {
-  return handleRes<null>('edubLinkmicLeave', getNull);
+export const linkmicLeave = async (): Promise<null | RtsError> => {
+  return sendServerMessage<null>('edubLinkmicLeave', getNull);
 };
 
 /**
  * 申请共享权限
  * @returns
  */
-export const edubSharePermissionApply = async (): Promise<null | RtsError> => {
-  return handleRes<null>('edubSharePermissionApply', getNull);
-};
-
-/**
- * 获取录制结果
- * @returns
- */
-export const edubGetRecordList = async (): Promise<
-  | {
-      video_list: Record<string | number, RecordFile[]>;
-    }
-  | RtsError
-> => {
-  return handleRes<{
-    video_list: Record<string | number, RecordFile[]>;
-  }>('edubGetRecordList', getResponse);
-};
-
-export const reSync = async (): Promise<SendServerMessageRes<JoinEdubRoomRes> | RtsError> => {
-  return handleRes('edubResync', getRes);
+export const sharePermissionApply = async (): Promise<null | RtsError> => {
+  return sendServerMessage<null>('edubSharePermissionApply', getNull);
 };

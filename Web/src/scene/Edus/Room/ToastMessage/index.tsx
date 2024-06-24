@@ -9,8 +9,6 @@ import { ToastType } from './types';
 function ToastMessage() {
   const toast = useSelector((state) => state.ui.toast);
 
-  // todo 授予用户mic /share 权限后，修改apply状态
-
   return (
     <Toast open={toast.open} title={toast.title} width={320}>
       {toast.type === ToastType.RoomEnd && <RoomEnd message={toast.other!} />}

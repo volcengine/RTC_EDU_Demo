@@ -1,4 +1,3 @@
-import { StatusType } from '@volcengine/white-board-manage';
 import { Popover } from 'antd';
 import { useContext, useEffect, useState } from 'react';
 import { BoardClient } from '@/core/board';
@@ -10,7 +9,7 @@ import styles from './index.module.less';
 import BoardContext from '../../BoardContext';
 
 function FileSelect() {
-  const { curBoard, curPageId, closedId } = useContext(BoardContext);
+  const { curBoardId, curPageId, closedId } = useContext(BoardContext);
 
   const [popoverOpen, setPopoverOpen] = useState<boolean>(false);
 
@@ -24,46 +23,42 @@ function FileSelect() {
 
   useEffect(() => {
     const getBoardInfo = async () => {
-      const boardInfo = await BoardClient.room?.getBoardInfo();
-      const activeBoard = BoardClient.room?.getActiveWhiteBoard();
-      console.log('更新白板列表');
+      const room = BoardClient.room;
+      if (!room) {
+        setBoards([]);
+        return;
+      }
 
-      const currentBoardInfo = boardInfo?.boards.find(
-        (board) => board.boardId === activeBoard?.boardId
-      );
-
+      const boardInfo = await room.getAllWhiteBoardInfo();
+      const activeBoard = (await room.getCurrentWhiteBoard())!;
+      const currentBoardInfo = await room.getWhiteBoardInfo(activeBoard.getWhiteBoardId());
       setBoardName(currentBoardInfo?.boardName || '白板');
-
       setBoards(
-        (boardInfo?.boards || [])
-          .filter((board) => board.status !== StatusType.Inactive)
-          .map((board) => {
-            return {
-              name: board.boardName || '白板',
-              id: board.boardId,
-            };
-          })
+        boardInfo.map((board) => {
+          return {
+            name: board.boardName || '白板',
+            id: board.boardId,
+          };
+        })
       );
     };
 
     getBoardInfo();
-  }, [curBoard, curPageId, closedId]);
+  }, [curBoardId, curPageId, closedId]);
 
   // 切换白板文件
   const handleChangeBoard = (id: number) => {
     setPopoverOpen(false);
-    const activeBoard = BoardClient.room?.getActiveWhiteBoard();
-    if (id === activeBoard?.boardId) {
+    const activeBoardId = BoardClient.currentWhiteboard?.getWhiteBoardId();
+    if (id === activeBoardId) {
       return;
     }
-
-    BoardClient.room?.setActiveWhiteBoard(id);
+    BoardClient.room?.switchWhiteBoard(id);
   };
 
   // 删除白板文件
   const handleDeleteBoard = (id: number) => {
-    console.log('handleDeleteBoard', id);
-    BoardClient.room?.closeWhiteBoard(id);
+    BoardClient.room?.removeWhiteBoard(id);
   };
 
   return (
@@ -75,11 +70,7 @@ function FileSelect() {
       onOpenChange={setPopoverOpen}
       placement="bottom"
       content={
-        <ul
-          onMouseLeave={() => {
-            // setPopoverOpen(false);
-          }}
-        >
+        <ul>
           {boards.map((board, index) => {
             return (
               <li key={board.id}>
@@ -89,7 +80,6 @@ function FileSelect() {
                 {index > 0 && (
                   <button
                     onClick={() => {
-                      console.log('delete');
                       handleDeleteBoard(board.id);
                     }}
                   >

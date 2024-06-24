@@ -52,7 +52,7 @@ export interface IEdubLinkmicJoin {
 export interface IEdubLinkmicLeave {
   user: IEdubUser;
 }
-export interface IEdubSharePermissionApply {
+export interface IsharePermissionApply {
   room_id: string;
   user_id: string;
   user_name: string;
@@ -246,7 +246,7 @@ export type InformDataType = {
     }
   | {
       event: RtsEvent.edubOnSharePermissionApply;
-      data: IEdubSharePermissionApply;
+      data: IsharePermissionApply;
     }
   | {
       event: RtsEvent.edubOnSharePermissionPermit;

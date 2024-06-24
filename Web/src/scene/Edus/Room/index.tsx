@@ -55,7 +55,7 @@ function Room() {
       room.room_mic_status === RoomMicStatus.AllMuted &&
       room.localUser.user_role === UserRole.Visitor
     ) {
-      RtcClient.unpublishStream(MediaType.AUDIO);
+      RtcClient.muteStream(MediaType.AUDIO);
     }
   }, [room.room_mic_status]);
 

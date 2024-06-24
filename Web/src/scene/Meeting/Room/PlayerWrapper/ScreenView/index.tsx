@@ -54,7 +54,7 @@ export default function () {
           <>
             <div>你正在共享屏幕</div>
             <div className={styles.stopButton} onClick={handleStopShare}>
-              停止共享
+              停止屏幕共享
             </div>
           </>
         )}

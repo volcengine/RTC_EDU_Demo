@@ -1,13 +1,36 @@
 import Board, {
   WhiteBoardRoomEventsTypes,
-  WhiteBoardRoom,
+  IWhiteBoardRoom,
+  IWhiteBoard,
   IWhiteBoardRoomEvents,
   WebPageInfo,
   Env,
-  IToolMode,
-  EditMode,
+  ToolMode,
+  CreateWhiteBoardInfo,
+  BkFillType,
 } from '@volcengine/white-board-manage';
-// import WhiteBoard from '@volcengine/white-board-manage/type/core/WhiteBoard';
+
+declare module '@volcengine/white-board-manage' {
+  export interface IWhiteBoard {
+    // eslint-disable-next-line @typescript-eslint/method-signature-style
+    setBoardSize(p: { width: number; height: number }): void;
+  }
+}
+
+const defaultBoardConfig: CreateWhiteBoardInfo = {
+  boardId: 1,
+  pages: [
+    {
+      pageId: 'wb_default',
+      extra: '',
+    },
+  ],
+  bkInfo: {
+    bkColor: 'rgba(255,255,255,1)',
+    bkImage: '',
+    bkImageFillType: BkFillType.kCenter,
+  },
+};
 
 interface BoardRoomConfig {
   boardViewId?: string;
@@ -20,26 +43,28 @@ interface BoardRoomConfig {
   };
 }
 
-interface BoardEventHandler {
-  onLoginResult: IWhiteBoardRoomEvents['onLoginResult'];
-  onVRTCError: IWhiteBoardRoomEvents['onVRTCError'];
-  onError: IWhiteBoardRoomEvents['onError'];
-  onJoinRoomResult: IWhiteBoardRoomEvents['onJoinRoomResult'];
-  onCreateWhiteBoard: IWhiteBoardRoomEvents['onCreateWhiteBoard'];
-  onCloseWhiteBoard: IWhiteBoardRoomEvents['onCloseWhiteBoard'];
-  onActiveWhiteBoardChanged: IWhiteBoardRoomEvents['onActiveWhiteBoardChanged'];
+export interface BoardRoomEventHandler {
+  // onLoginResult: IWhiteBoardRoomEvents[''];
+  // onVRTCError: IWhiteBoardRoomEvents['onVRTCError'];
+  onError: IWhiteBoardRoomEvents[WhiteBoardRoomEventsTypes.onError];
+  // onJoinRoomResult: IWhiteBoardRoomEvents['onJoinRoomResult'];
+  onCurrentWhiteBoardChanged: IWhiteBoardRoomEvents[WhiteBoardRoomEventsTypes.onCurrentWhiteBoardChanged];
+  onCreateWhiteBoard: IWhiteBoardRoomEvents[WhiteBoardRoomEventsTypes.onCreateWhiteBoard];
+  onRemoveWhiteBoard: IWhiteBoardRoomEvents[WhiteBoardRoomEventsTypes.onRemoveWhiteBoard];
 }
 
 export class BoardClient {
   config: Partial<BoardRoomConfig>;
 
-  room: WhiteBoardRoom | undefined;
+  room: IWhiteBoardRoom | undefined;
+
+  currentWhiteboard: IWhiteBoard | undefined;
 
   // 工具
-  editType: IToolMode | undefined;
+  editType: ToolMode | undefined;
 
-  // 编辑模式
-  editMode?: EditMode;
+  // 是否可以编辑
+  writeable?: boolean;
 
   // 白板尺寸
   boardSize?: { width: number; height: number };
@@ -49,7 +74,7 @@ export class BoardClient {
 
   private listening: boolean;
 
-  private _roomEventHandlers?: Partial<IWhiteBoardRoomEvents>;
+  private _roomEventHandlers?: BoardRoomEventHandler;
 
   constructor() {
     this.config = {};
@@ -69,52 +94,36 @@ export class BoardClient {
     this.config.appId = appId;
   };
 
-  createRoom = (
+  joinRoom = async (
     boardViewId: string,
-    handlers: BoardEventHandler,
+    handlers: BoardRoomEventHandler,
     size: {
       width: number;
       height: number;
     }
   ) => {
-    if (this.room) {
-      if (!this.listening) {
-        this.addRoomEventListener(handlers);
-      }
-      return;
-    }
-
     this.config.boardViewId = boardViewId;
-
-    this.room = Board.createWhiteBoardRoom(
-      boardViewId,
-      this.config.appId!,
-      this.config.room_id!,
-      this.config.user_id!,
-      this.config.token!,
-      size
-    );
-
+    Board.init({
+      appId: this.config.appId!,
+      domId: boardViewId,
+      boardSize: size,
+    });
+    this.room = await Board.joinRoom({
+      roomId: this.config.room_id!,
+      userId: this.config.user_id!,
+      token: this.config.token!,
+      defaultBoardInfo: defaultBoardConfig,
+    });
     this.addRoomEventListener(handlers);
-
-    this.room.login();
   };
 
   leaveRoom = (): void => {
-    try {
-      if (this.room) {
-        this.room?.leaveRoom();
-        Board.destroyWhiteBoardRoom(this.room);
-      }
-    } catch (error) {}
-
-    // todo 白板内部会调用重复销毁，待sdk更新
-    // this.board.forEach((board) => {
-    //   // todo fix ts types
-    //   this.room?.destroyWhiteBoard(board as unknown as WhiteBoard);
-    // });
+    if (this.room) {
+      this.room.leaveRoom();
+    }
     this.removeEventListener();
     this.room = undefined;
+    this.currentWhiteboard = undefined;
     this.listening = false;
   };
 
@@ -122,63 +131,68 @@ export class BoardClient {
    * 白板房间事件监听
    * @param handlers
    */
-  addRoomEventListener = (handlers: BoardEventHandler): void => {
+  addRoomEventListener = (handlers: BoardRoomEventHandler): void => {
     if (this.listening) {
       return;
     }
-    this.listening = true;
+    if (!this.room) {
+      return;
+    }
 
+    this.listening = true;
     this._roomEventHandlers = {
       ...handlers,
-
-      onActiveWhiteBoardChanged: (e) => {
-        this.setEditMode();
+      onCurrentWhiteBoardChanged: (e) => {
+        this.currentWhiteboard = e.whiteBoard;
+        this.setWriteable();
         this.setEditType();
         this.changeBoardSize();
         this.enableCursorSync();
-        handlers.onActiveWhiteBoardChanged(e);
+        handlers.onCurrentWhiteBoardChanged(e);
       },
     };
 
-    this.room?.on(WhiteBoardRoomEventsTypes.onLoginResult, handlers.onLoginResult);
-    this.room?.on(WhiteBoardRoomEventsTypes.onVRTCError, handlers.onVRTCError);
-    this.room?.on(
-      WhiteBoardRoomEventsTypes.onActiveWhiteBoardChanged,
-      handlers.onActiveWhiteBoardChanged
+    // this.room?.on(WhiteBoardRoomEventsTypes.onLoginResult, handlers.onLoginResult);
+    // this.room?.on(WhiteBoardRoomEventsTypes.onVRTCError, handlers.onVRTCError);
+    this.room.on(
+      WhiteBoardRoomEventsTypes.onError,
+      this._roomEventHandlers[WhiteBoardRoomEventsTypes.onError]!
     );
-
-    this.room?.on(WhiteBoardRoomEventsTypes.onError, handlers.onError);
-    this.room?.on(WhiteBoardRoomEventsTypes.onJoinRoomResult, handlers.onJoinRoomResult);
-    this.room?.on(
-      WhiteBoardRoomEventsTypes.onCloseWhiteBoard,
-      this._roomEventHandlers!.onCloseWhiteBoard!
+    this.room.on(
+      WhiteBoardRoomEventsTypes.onCurrentWhiteBoardChanged,
+      this._roomEventHandlers[WhiteBoardRoomEventsTypes.onCurrentWhiteBoardChanged]!
     );
-    this.room?.on(
+    this.room.on(
+      WhiteBoardRoomEventsTypes.onRemoveWhiteBoard,
+      this._roomEventHandlers[WhiteBoardRoomEventsTypes.onRemoveWhiteBoard]!
+    );
+    this.room.on(
       WhiteBoardRoomEventsTypes.onCreateWhiteBoard,
-      this._roomEventHandlers!.onCreateWhiteBoard!
+      this._roomEventHandlers[WhiteBoardRoomEventsTypes.onCreateWhiteBoard]!
     );
   };
 
   removeEventListener = (): void => {
     this.listening = false;
-    if (!this.room) {
+    if (!this.room || !this._roomEventHandlers) {
       return;
     }
 
-    this.room.off(WhiteBoardRoomEventsTypes.onLoginResult, this._roomEventHandlers?.onLoginResult);
-    this.room.off(WhiteBoardRoomEventsTypes.onVRTCError, this._roomEventHandlers?.onVRTCError);
-    this.room.off(WhiteBoardRoomEventsTypes.onError, this._roomEventHandlers?.onError);
     this.room.off(
-      WhiteBoardRoomEventsTypes.onCloseWhiteBoard,
-      this._roomEventHandlers?.onCloseWhiteBoard
+      WhiteBoardRoomEventsTypes.onError,
+      this._roomEventHandlers[WhiteBoardRoomEventsTypes.onError]!
     );
     this.room.off(
-      WhiteBoardRoomEventsTypes.onJoinRoomResult,
-      this._roomEventHandlers?.onJoinRoomResult
+      WhiteBoardRoomEventsTypes.onCurrentWhiteBoardChanged,
+      this._roomEventHandlers[WhiteBoardRoomEventsTypes.onCurrentWhiteBoardChanged]!
     );
     this.room.off(
+      WhiteBoardRoomEventsTypes.onRemoveWhiteBoard,
+      this._roomEventHandlers[WhiteBoardRoomEventsTypes.onRemoveWhiteBoard]!
+    );
+    this.room?.off(
       WhiteBoardRoomEventsTypes.onCreateWhiteBoard,
-      this._roomEventHandlers?.onCreateWhiteBoard
+      this._roomEventHandlers[WhiteBoardRoomEventsTypes.onCreateWhiteBoard]!
     );
   };
 
@@ -189,14 +203,12 @@ export class BoardClient {
    * @param options
    */
   createPage = (
-    insertPageId: string,
     pageConfig: Partial<WebPageInfo>,
     options?: {
       autoFlip: boolean;
     }
   ): void => {
-    const activeBoard = this.room?.getActiveWhiteBoard();
-    activeBoard?.createPage(insertPageId, pageConfig, {
+    this.currentWhiteboard?.createPages([pageConfig], {
       autoFlip: true,
       ...options,
     });
@@ -209,8 +221,7 @@ export class BoardClient {
    * @param fileId
    */
   addImgToBoard = (url: string): void => {
-    const activeBoard = this.room?.getActiveWhiteBoard();
-    activeBoard?.addImage(url, {});
+    this.currentWhiteboard?.addImage(url, {});
   };
 
   /**
@@ -218,50 +229,51 @@ export class BoardClient {
    * @param pageId
    */
   deletePage = (pageId: string): void => {
-    const activeBoard = this.room?.getActiveWhiteBoard();
-    activeBoard?.removePages([pageId]);
+    this.currentWhiteboard?.removePages([pageId]);
   };
 
   /**
    * 页面跳转
-   * @param pageId
+   * @param pageIndex
    */
-  flipPage = (pageId: string): void => {
-    const activeBoard = this.room?.getActiveWhiteBoard();
-    activeBoard?.flipPage(pageId);
+  flipPage = (pageIndex: number): void => {
+    // const activeBoard = this.room?.getCurrentWhiteBoard();
+    this.currentWhiteboard?.flipPage(pageIndex);
   };
 
-  setEditType = (tool?: IToolMode) => {
+  setEditType = (tool?: ToolMode) => {
     this.editType = tool !== undefined ? tool : this.editType;
-    const activeBoard = this.room?.getActiveWhiteBoard();
+    // const activeBoard = this.room?.getActiveWhiteBoard();
     if (this.editType !== undefined) {
-      activeBoard?.setEditType(this.editType);
+      this.currentWhiteboard?.setEditType(this.editType);
     }
   };
 
-  setEditMode = (mode?: EditMode) => {
-    this.editMode = mode !== undefined ? mode : this.editMode;
-    const activeBoard = this.room?.getActiveWhiteBoard();
-    if (this.editMode !== undefined) {
-      activeBoard?.setEditMode(this.editMode);
+  setWriteable = (writeable?: boolean) => {
+    this.writeable = writeable !== undefined ? writeable : this.writeable;
+    if (this.writeable !== undefined) {
+      this.currentWhiteboard?.setWritable(this.writeable);
     }
   };
 
   changeBoardSize = (size?: { width: number; height: number }) => {
     this.boardSize = size !== undefined ? size : this.boardSize;
-    const activeBoard = this.room?.getActiveWhiteBoard();
     if (this.boardSize !== undefined) {
-      activeBoard?.changeBoardSize(this.boardSize);
+      this.currentWhiteboard?.setBoardSize(this.boardSize);
     }
   };
 
   enableCursorSync = (enable?: boolean) => {
     this.cursorSync = enable !== undefined ? enable : this.cursorSync;
-    const activeBoard = this.room?.getActiveWhiteBoard();
     if (this.cursorSync !== undefined) {
-      activeBoard?.enableCursorSync(this.cursorSync);
+      this.currentWhiteboard?.enableCursorSync(this.cursorSync);
     }
   };
 }
 
-export default new BoardClient();
+const client = new BoardClient();
+export default client;
+
+if (__DEV__) {
+  window.__edu_board_client__ = client;
+}

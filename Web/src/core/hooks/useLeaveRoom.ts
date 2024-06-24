@@ -19,9 +19,13 @@ const useLeaveRoom = (
   const dispatch = useDispatch();
 
   const leaveRoom = useCallback(async () => {
-    await RtcClient.leaveRoom();
-    await BoardClient.leaveRoom();
-
+    try {
+      await RtcClient.leaveRoom();
+      await BoardClient.leaveRoom();
+    } catch (e) {
+      // 网络异常退房的情况下，RtcClient.leaveRoom() 和 BoardClient.leaveRoom() 可能会抛错
+      console.log('error during leave room:', e);
+    }
     const devices = await RtcClient.getDevices();
 
     dispatch(setCamera(devices.videoInputs[0]?.deviceId));

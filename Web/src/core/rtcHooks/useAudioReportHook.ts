@@ -15,12 +15,8 @@ interface IAudioReportHook {
   onRemoteAudio: (audioInfo: Record<string, AudioPropertiesInfo>) => void;
 }
 
-/** {en}
- * @brief
- */
-
-/** {zh}
- * @brief 活跃用户变化，每次只有一个
+/**
+ * 活跃用户变化，每次只有一个
  */
 const useAudioReportHook = (hook: IAudioReportHook, use: boolean = true) => {
   const { onActiveSpeaker, onLocalAudio, onRemoteAudio } = hook;

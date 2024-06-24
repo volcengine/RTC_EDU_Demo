@@ -10,15 +10,10 @@ interface IJoinRoomRTCEventListeners {
   onDuplicateJoin?: IEngineEvents['onError'];
 }
 
-/** {en}
- * @brief
- */
-
-/** {zh}
- * @brief 进房页面的事件监听，只需要处理互踢逻辑
+/**
+ *  进房页面的事件监听，只需要处理互踢逻辑
  */
 const useJoinRoomRtcListener = (props: IJoinRoomRTCEventListeners) => {
-  //   const { onDuplicateJoin } = props;
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
@@ -37,9 +32,7 @@ const useJoinRoomRtcListener = (props: IJoinRoomRTCEventListeners) => {
       await RtcClient.stopScreenCapture();
       await RtcClient.stopVideoCapture();
 
-      navigate(`/login`);
-
-      //   onDuplicateJoin && onDuplicateJoin(e);
+      navigate('/login');
     }
   };
 

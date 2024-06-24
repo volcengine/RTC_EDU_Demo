@@ -8,7 +8,6 @@ import { BoardClient } from '@/core/board';
 import { logout } from '@/store/slices/user';
 import { DeviceState, RoomMicStatus, Silence, UserRole } from '@/types/state';
 import { isRtsError } from '@/utils/rtsUtils';
-// import { BASENAME } from '@/config';
 import { JoinStatus, SceneType, setJoining } from '@/store/slices/scene';
 
 const useJoinRoom = <
@@ -50,18 +49,14 @@ const useJoinRoom = <
     const res = await rtsApi(payload);
 
     if (isRtsError(res)) {
-      // todo rts错误对应的提示
       console.error('join room rts error', res);
       return false;
     }
 
     // rts 服务端错误
     if (res.code !== 200) {
-      //   dispatch(setJoining(JoinStatus.NotJoined));
-
       if (res.code === 403) {
         message.error(`该房间已有${scene === SceneType.Meeting ? '其他主持人' : '老师'}`);
-        // return;
       }
       if (res.code === 401) {
         message.error('房间人数已满');
@@ -90,19 +85,17 @@ const useJoinRoom = <
     }
 
     if (devicePermissions.audio) {
-      await RtcClient.startAudioCapture();
-
       // 当前用户主动关闭麦克风，不推流
-
-      if (localUser.mic === DeviceState.Closed) {
-        RtcClient.unpublishStream(MediaType.AUDIO);
-      }
+      const isLocalUserMuted = localUser.mic === DeviceState.Closed;
 
       // 房间是全体静音状态
-      if (res.response.room.room_mic_status === RoomMicStatus.AllMuted) {
-        if (res.response.user.user_role !== UserRole.Host) {
-          RtcClient.unpublishStream(MediaType.AUDIO);
-        }
+      const isLocalUserInAllMuted = res.response.room.room_mic_status === RoomMicStatus.AllMuted
+        && res.response.user.user_role !== UserRole.Host;
+
+      if (isLocalUserMuted || isLocalUserInAllMuted) {
+        RtcClient.muteStream(MediaType.AUDIO);
+      } else {
+        RtcClient.unmuteStream(MediaType.AUDIO);
       }
     }
 

@@ -1,17 +1,13 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
-
-import { BASENAME } from './config';
 import Login from '@/pages/Login';
-// import View from '@/pages/View';
 import Scene from '@/pages/Scene';
-// import JoinRoom from '@/pages/JoinRoom';
 import Replay from '@/pages/Replay';
+import { BASENAME } from './config';
 import Auth from './components/Auth';
 import Meeting from './scene/Meeting';
 import Edub from './scene/Edub';
 import Small from './scene/Edus';
-
 import { useSelector } from './store';
 import '@/theme/dark.css';
 import '@/theme/light.css';

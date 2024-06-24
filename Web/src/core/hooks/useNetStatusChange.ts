@@ -8,9 +8,8 @@ const useNetStatusChange = (props: { onNetOffline: () => void; onNetOnline: () =
 
   const handleOffline = () => {
     timer.current = setTimeout(() => {
-      Message.error('你已离开房间');
       // 断网1分钟退房
-
+      Message.error('你已离开房间');
       onNetOffline();
     }, 60000);
     Message.error('网络连接已断开，请检查设置');

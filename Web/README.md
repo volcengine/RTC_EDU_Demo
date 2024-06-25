@@ -39,5 +39,3 @@ http://localhost:3000/rtc/solution/vertcroom/login 打开应用
 ## 反馈
 
 ## 相关资源
-
-## 许可证

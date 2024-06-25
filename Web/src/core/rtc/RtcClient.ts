@@ -45,6 +45,8 @@ export class RtcClient {
 
   private _audioPlaybackDevice?: string;
 
+  private _isLeavingRoom: boolean = false;
+
   private _videoCaptureConfig: TrackCaptureConfig = {
     width: 1280,
     height: 720,
@@ -89,12 +91,8 @@ export class RtcClient {
     }
   };
 
-  /** {en}
-   * @brief
-   */
-
-  /** {zh}
-   * @brief 登录即时消息服务器，全局生效一次即可
+  /**
+   * 登录即时消息服务器，全局生效一次即可
    */
   joinWithRTS = async () => {
     await this.engine.login(this.config.rtmToken, this.config.rtsUid);
@@ -143,7 +141,6 @@ export class RtcClient {
           try {
             const res = JSON.parse(message as string);
             if (res.request_id === requestId) {
-              console.log(eventname, res);
               this.engine.removeListener(VERTC.events.onUserMessageReceivedOutsideRoom, callback);
               resolve(res);
             }
@@ -155,12 +152,13 @@ export class RtcClient {
 
       this.engine.on(VERTC.events.onUserMessageReceivedOutsideRoom, callback);
       try {
+        // console.log(`call RtcClient.sendServerMessage for ${eventname}: `, content);
         const sendMessagePromise = this.engine.sendServerMessage(JSON.stringify(content));
         sendMessagePromise.catch((e) => {
-          console.log('sendServerMessage reject with error: ', e, content);
+          console.log(`RtcClient.sendServerMessage for ${eventname} reject with error: `, e);
         });
-      } catch(e) {
-        console.log('sendServerMessage throw unexpected error: ',  e, content);
+      } catch (e) {
+        console.log(`RtcClient.sendServerMessage for ${eventname} throw unexpected error: `, e);
       }
     });
   };
@@ -187,17 +185,18 @@ export class RtcClient {
     );
   };
 
-  /** {en}
-   * @brief
-   */
-
-  /** {zh}
-   * @brief rtc 退出房间,停止音频/视频/屏幕采集
+  /**
+   * rtc 退出房间,停止音频/视频/屏幕采集
    */
   leaveRoom = async () => {
-    this.stopAudioCapture();
-    this.stopVideoCapture();
-    this.stopScreenCapture();
+    if (this._isLeavingRoom) {
+      return;
+    }
+    this._isLeavingRoom = true;
+    await this.stopAudioCapture();
+    await this.stopVideoCapture();
+    await this.stopScreenCapture();
+    await this.engine.unpublishStream(MediaType.AUDIO_AND_VIDEO);
 
     if (this._joined) {
       await this.engine.leaveRoom();
@@ -205,6 +204,7 @@ export class RtcClient {
     }
 
     this.destroyEngine();
+    this._isLeavingRoom = false;
   };
 
   checkPermission(): Promise<{
@@ -302,11 +302,23 @@ export class RtcClient {
     await this.engine.stopVideoCapture();
   };
 
-  publishStream = (mediaType: MediaType) => {
+  unmuteStream = async (mediaType: MediaType) => {
+    if (mediaType === MediaType.VIDEO) {
+      this.startVideoCapture();
+    }
+    if (mediaType === MediaType.AUDIO) {
+      this.startAudioCapture();
+    }
     this.engine.publishStream(mediaType);
   };
 
-  unpublishStream = (mediaType: MediaType) => {
+  muteStream = async (mediaType: MediaType) => {
+    if (mediaType === MediaType.VIDEO) {
+      this.stopVideoCapture();
+    }
+    if (mediaType === MediaType.AUDIO) {
+      this.stopAudioCapture();
+    }
     this.engine.unpublishStream(mediaType);
   };
 
@@ -408,6 +420,24 @@ export class RtcClient {
   };
 
   /**
+   * 订阅
+   */
+  subscribeStream(userId: string, mediaType: MediaType) {
+    if (this._joined) {
+      return this.engine.subscribeStream(userId, mediaType);
+    }
+  }
+
+  /**
+   * 取消订阅
+   */
+  unsubscribeStream(userId: string, mediaType: MediaType) {
+    if (this._joined) {
+      return this.engine.unsubscribeStream(userId, mediaType);
+    }
+  }
+
+  /**
    * 镜像模式
    * @param mirrorType
    */
@@ -436,7 +466,6 @@ export class RtcClient {
   };
 
   setScreenConfig = async (description: ScreenEncoderConfig) => {
-    console.log('setScreenConfig:', description);
     this._screenEncoderConfig = description;
     await this.engine.setScreenEncoderConfig(this._screenEncoderConfig);
   };

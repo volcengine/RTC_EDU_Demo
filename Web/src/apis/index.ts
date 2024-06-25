@@ -1,3 +1,3 @@
-import * as loginAPI from './login';
+import * as Apis from './login';
 
-export { loginAPI };
+export { Apis };

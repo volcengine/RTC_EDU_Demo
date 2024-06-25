@@ -15,39 +15,37 @@ function Scene() {
   const user = useSelector((state) => state.user);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  const handleLogout = () => {
-    navigate(`/login`);
+  const navToLoginPage = () => {
+    navigate('/login');
   };
 
-  
+  const cleanRTCEngine = async () => {
+    dispatch(setJoining(JoinStatus.NotJoined));
+    if (!RtcClient.engine) {
+      return;
+    }
+    await RtcClient.stopScreenCapture();
+    await RtcClient.stopAudioCapture();
+    await RtcClient.stopVideoCapture();
+    RtcClient.setVideoPlayer(user.user_id!, undefined);
+    RtcClient.destroyEngine();
+    BoardClient.leaveRoom();
+  };
 
   useEffect(() => {
-    const mount = async () => {
-      /** Void to auto enter room, but this may not work originally */
-      dispatch(setJoining(JoinStatus.NotJoined));
-  
-      if (!RtcClient.engine) return;
-  
-      await RtcClient.stopScreenCapture();
-      await RtcClient.stopAudioCapture();
-      await RtcClient.stopVideoCapture();
-      RtcClient.setVideoPlayer(user.user_id!, undefined);
-  
-      RtcClient.destroyEngine();
-      BoardClient.leaveRoom();
-    };
-    mount();
+    cleanRTCEngine();
   }, []);
 
   return (
     <div className={style.sceneWrapper}>
-      <Header showVersion={false} onLogout={handleLogout} />
-      <Time />
-      <div className={style.sceneList}>
-        {SceneList.map((scene) => {
-          return <SceneItem {...scene} key={scene.scene} />;
-        })}
+      <Header showVersion={false} onLogout={navToLoginPage} />
+      <div className={style.sceneContentWrapper}>
+        <Time />
+        <div className={style.sceneList}>
+          {SceneList.map((scene) => {
+            return <SceneItem {...scene} key={scene.scene} />;
+          })}
+        </div>
       </div>
       <Footer />
     </div>

@@ -1,6 +1,4 @@
 import { useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
-
 import VERTC, { DeviceInfo } from '@volcengine/rtc';
 
 import {
@@ -15,12 +13,8 @@ import {
 import { useDispatch } from '@/store';
 import { RtcClient } from '@/core/rtc';
 
-/** {en}
- * @brief
- */
-
-/** {zh}
- * @brief 1. 获取设备信息，在初始化时调用，和场景无关 2. 处理设备状态变化
+/**
+ *  1. 获取设备信息，在初始化时调用，和场景无关 2. 处理设备状态变化
  *
  */
 const useDevice = (props: {
@@ -29,22 +23,9 @@ const useDevice = (props: {
 }) => {
   const dispatch = useDispatch();
   const { onMicNoPermission, onCameraNoPermission } = props;
-  const [searchParams] = useSearchParams();
-  const visibility = searchParams.get('visibility');
 
   useEffect(() => {
     const mount = async () => {
-      /** Magic for rtc sdk  */
-      if (!navigator.mediaDevices) {
-        /** If the device not support the media services */
-        /** pass */
-      } else if (visibility !== 'false') {
-        /** Ask for permission */
-        await navigator.mediaDevices.getUserMedia({
-          audio: true,
-          video: true,
-        });
-      }
       RtcClient.checkPermission().then(async (permission) => {
         dispatch(setDevicePermissions(permission));
 
@@ -64,24 +45,20 @@ const useDevice = (props: {
         dispatch(setCameraList(devices.videoInputs));
         dispatch(setMicrophoneList(devices.audioInputs));
         dispatch(setAudioPlayBackList(devices.audioOutputs));
+      }).catch((err) => {
+        console.log('check permission err: ', err);
       });
     };
 
     mount();
   }, []);
 
-  /** {en}
-   * @brief
-   */
-
-  /** {zh}
-   * @brief 监听摄像头设备，支持自动切换设备
+  /**
+   *  监听摄像头设备，支持自动切换设备
    *
    */
   const handleVideoDeviceStateChanged = async (device: DeviceInfo) => {
-    console.log('device hook VideoDeviceStateChanged', device);
     const devices = await RtcClient.getDevices();
-    console.log('new devices', devices);
 
     let deviceId = device.mediaDeviceInfo?.deviceId;
     if (device.deviceState === 'inactive') {
@@ -93,18 +70,12 @@ const useDevice = (props: {
     dispatch(setCamera(deviceId));
   };
 
-  /** {en}
-   * @brief
-   */
-
-  /** {zh}
-   * @brief 监听麦克风设备
+  /**
+   *  监听麦克风设备
    *
    */
   const handleAudioDeviceStateChanged = async (device: DeviceInfo) => {
-    console.log('device hook AudioDeviceStateChanged', device);
     const devices = await RtcClient.getDevices();
-    console.log('new devices', devices);
 
     if (device.mediaDeviceInfo.kind === 'audioinput') {
       let deviceId = device.mediaDeviceInfo.deviceId;

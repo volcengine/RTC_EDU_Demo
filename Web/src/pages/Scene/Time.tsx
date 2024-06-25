@@ -11,12 +11,10 @@ const WeekMap: Record<number, string> = {
   0: '日',
 };
 
-function getTime() {
+function getTimeInfo() {
   const curDate = new Date();
   const day = curDate.toLocaleDateString().replace(/\//g, '.');
-
   const week = WeekMap[curDate.getDay()];
-
   const time = curDate.toLocaleTimeString().split(':');
   time.length = 2;
 
@@ -27,22 +25,22 @@ function getTime() {
 }
 
 function Time() {
-  const [date, setDate] = useState(getTime());
+  const [timeInfo, setTimeInfo] = useState(getTimeInfo());
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setDate(getTime());
+      setTimeInfo(getTimeInfo());
     }, 60 * 1000);
 
     return () => {
       clearInterval(timer);
     };
-  }, [date]);
+  }, [timeInfo]);
 
   return (
     <div className={styles.timeWrapper}>
-      <span className={styles.time}>{date.time}</span>
-      <span className={styles.date}>{date.date}</span>
+      <span className={styles.time}>{timeInfo.time}</span>
+      <span className={styles.date}>{timeInfo.date}</span>
     </div>
   );
 }

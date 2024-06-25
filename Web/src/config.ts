@@ -1,4 +1,4 @@
-export const DemoVersion = '1.0.0';
+export const DemoVersion = '2.0.0';
 
 export const RESOLUTIOIN_LIST = [
   {
@@ -120,7 +120,6 @@ export const isDev = window.location.hostname.includes('localhost');
 export const Disclaimer = 'https://www.volcengine.com/docs/6348/68916';
 export const ReversoContex = 'https://www.volcengine.com/docs/6348/68918';
 export const UserAgreement = 'https://www.volcengine.com/docs/6348/128955';
-
 export const BASENAME = '/rtc/solution/vertcroom';
 export const HOST = 'https://rtc-test.bytedance.com';
 
@@ -140,3 +139,4 @@ export const tosConfig = {
   endpoint: 'your_bucket_endpoint',
   bucket: 'your_bucket_name',
 };
+ 

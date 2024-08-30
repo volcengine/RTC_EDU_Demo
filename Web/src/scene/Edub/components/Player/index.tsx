@@ -21,7 +21,6 @@ interface PlayerProps {
   };
 }
 
-// todo 支持hover时操作学生的设备 & 下麦，支持学生操作自己
 export default function (props: PlayerProps) {
   const { user, height, localUser } = props;
 

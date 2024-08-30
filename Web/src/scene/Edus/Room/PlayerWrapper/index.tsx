@@ -1,7 +1,5 @@
 import { useMemo } from 'react';
 import { useSelector } from '@/store';
-
-// import Header from '@/components/Header';
 import styles from './index.module.less';
 import VideoView from './VideoView';
 import ScreenView from './ScreenView';

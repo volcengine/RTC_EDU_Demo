@@ -71,10 +71,10 @@ export default function (props: IDetectModalProps) {
 
   // 切换音频采集设备
   const hanleAudioCaptureDeviceChange = (value: string) => {
-    console.log('hanleAudioCaptureDeviceChange', value);
     setCurAudioCaptureDevice(value);
     RtcClient.switchDevice('microphone', value);
   };
+
   // 切换音频播放设备
   const handleAudioPlaybackDeviceChange = (value: string) => {
     setCurAudioPlaybackDevice(value);
@@ -89,6 +89,13 @@ export default function (props: IDetectModalProps) {
 
   // 处理本地音频信息回调
   const handleLocalVolumeCallback = (info: LocalAudioPropertiesInfo[]) => {
+    // mute 音频时, info 将为空数组
+    if (info.length === 0) {
+      if (audioCaptureVolumePercent !== 0) {
+        setAudioCaptureVolumePercent(0);
+      }
+      return;
+    }
     const { audioPropertiesInfo } = info[0];
     const { linearVolume } = audioPropertiesInfo;
     const temp = (linearVolume / 255) * 100;
@@ -99,7 +106,6 @@ export default function (props: IDetectModalProps) {
     if (open) {
       // 打开弹窗
       RtcClient.setVideoPlayer(user?.user_id!, PlayerDomId);
-      console.log('增加音频监听');
       RtcClient.engine.on(
         VERTC.events.onAudioPlaybackDeviceTestVolume,
         handlePlaybackVolueCallback

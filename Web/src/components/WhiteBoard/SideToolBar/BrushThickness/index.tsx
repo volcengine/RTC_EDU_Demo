@@ -1,6 +1,4 @@
 import classNames from 'classnames';
-// import { CompactPicker } from 'react-color';
-
 import styles from './index.module.less';
 
 interface IBrushthickness {

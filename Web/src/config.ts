@@ -139,4 +139,3 @@ export const tosConfig = {
   endpoint: 'your_bucket_endpoint',
   bucket: 'your_bucket_name',
 };
- 

@@ -1,7 +1,5 @@
 import { useDispatch } from '@/store';
 import { initialState, setToast } from '@/store/slices/ui';
-import * as rtsApi from '@/scene/Edus/apis/rtsApi';
-
 import styles from './index.module.less';
 
 interface IProps {
@@ -22,32 +20,12 @@ function Record(props: IProps) {
   };
 
   const handleRecord = async () => {
-    // 调用rts 进行共享
-    // 修改房间共享状态
-
-    if (type === 'start') {
-      await rtsApi.startRecordPermit({
-        permit: 1,
-        apply_user_id: other.userId,
-      });
-      await rtsApi.startRecord();
-    }
-
-    if (type === 'stop') {
-      await rtsApi.stopRecord();
-    }
-
+    // 不支持录制功能
     handleClose();
   };
 
   const handleCancel = async () => {
-    // 调用rts 进行共享
-    // 修改房间共享状态
-    await rtsApi.startRecordPermit({
-      permit: 0,
-      apply_user_id: other.userId,
-    });
-
+    // 不支持录制功能
     handleClose();
   };
 

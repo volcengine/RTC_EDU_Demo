@@ -12,17 +12,8 @@ interface ISceneItem {
 
 function SceneItem(props: ISceneItem) {
   const { sceneName, scene, scenePic } = props;
-
   const dispatch = useDispatch();
-
   const handleScene = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>, scene: SceneType) => {
-    // if (scene === SceneType.Edus) {
-    //   alert('待完成');
-    //   e.stopPropagation();
-    //   e.preventDefault();
-    //   return;
-    // }
-
     dispatch(setScene(scene));
   };
 

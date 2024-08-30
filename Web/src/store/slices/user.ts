@@ -16,7 +16,6 @@ export const userSlice = createSlice({
   reducers: {
     login: (state, action: PayloadAction<StoreUtils.UserInfo>) => {
       Utils.setUserInfo(action.payload);
-
       state.created_at = action.payload.created_at;
       state.user_id = action.payload.user_id;
       state.user_name = action.payload.user_name;
@@ -25,7 +24,6 @@ export const userSlice = createSlice({
     },
     logout: (state) => {
       Utils.removeUserInfo();
-
       state.created_at = undefined;
       state.user_id = undefined;
       state.user_name = undefined;

@@ -9,7 +9,6 @@ export const getMaxWidth = (
     host_user_id: string;
   }
 ): number => {
-  // todo  这里需要优化
   const isHost = user?.user_id && user?.user_id === room.host_user_id;
 
   const isApplying = !!user?.applying?.length;

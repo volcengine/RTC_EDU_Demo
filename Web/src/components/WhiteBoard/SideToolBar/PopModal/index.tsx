@@ -1,4 +1,4 @@
-import { BkFillType, Constant, TOOL_TYPE, IWhiteBoard } from '@volcengine/white-board-manage';
+import { BkFillType, ToolMode, IWhiteBoard } from '@volcengine/white-board-manage';
 import { useState } from 'react';
 import { Radio, Divider, Button, Space, Upload, message } from 'antd';
 import styles from './index.module.less';
@@ -13,10 +13,10 @@ const range = [40, 70, 100];
 const textRange = [300, 500, 700];
 
 const ShapeDesc = {
-  [Constant.SHAPE_TYPE.CIRCLE]: '(按住shift可绘制正圆)',
-  [Constant.SHAPE_TYPE.RECT]: '(按住shift可绘制正方形)',
-  [Constant.SHAPE_TYPE.LINE]: '(按住shift可绘制水平/垂直线)',
-  [Constant.SHAPE_TYPE.ARROW]: '(按住shift可绘制水平/垂直线)',
+  [ToolMode.CIRCLE]: '(按住shift可绘制正圆)',
+  [ToolMode.RECT]: '(按住shift可绘制正方形)',
+  [ToolMode.LINE]: '(按住shift可绘制水平/垂直线)',
+  [ToolMode.ARROW]: '(按住shift可绘制水平/垂直线)',
 };
 
 interface PopModalProps {
@@ -26,8 +26,8 @@ interface PopModalProps {
   brushThickness?: number;
   whiteBoard: IWhiteBoard;
   kind: PopType;
-  mode: TOOL_TYPE | Constant.SHAPE_TYPE | 'background' | undefined;
-  onToolChange: (key: Constant.SHAPE_TYPE) => void;
+  mode: ToolMode | 'background' | undefined;
+  onToolChange: (key: ToolMode) => void;
 }
 
 const kindMap = {
@@ -82,15 +82,13 @@ function PopModal(props: PopModalProps) {
         key: encodeURIComponent(file.name),
         file,
       });
-
       if (backgroundType === 0) {
-        whiteBoard.changePageBackground({
-          pageId: whiteBoard.getCurrentPageId(),
-          img: url,
-          fillType,
+        whiteBoard.setPageBackground({
+          bkImage: url,
+          bkImageFillType: fillType,
         });
       } else {
-        whiteBoard.changeBoardBackground({
+        whiteBoard.setBoardBackground({
           bkImage: url,
           bkImageFillType: fillType,
         });
@@ -111,10 +109,10 @@ function PopModal(props: PopModalProps) {
           <span className={styles.title}>
             形状类型
             <span className={styles.shapeDesc}>
-              {ShapeDesc[mode as Constant.SHAPE_TYPE as keyof typeof ShapeDesc]}
+              {ShapeDesc[mode as ToolMode as keyof typeof ShapeDesc]}
             </span>
           </span>
-          <ChartChoose onToolChange={onToolChange} mode={mode as Constant.SHAPE_TYPE} />
+          <ChartChoose onToolChange={onToolChange} mode={mode as ToolMode} />
         </>
       )}
       {kind !== PopType.background && (
@@ -153,13 +151,11 @@ function PopModal(props: PopModalProps) {
           <Button
             onClick={() => {
               if (backgroundType === 0) {
-                whiteBoard.changePageBackground({
-                  pageId: whiteBoard.getCurrentPageId(),
-                  color: brushColor,
+                whiteBoard.setPageBackground({
+                  bkColor: brushColor,
                 });
               } else {
-                console.log('brushColor', brushColor);
-                whiteBoard.changeBoardBackground({
+                whiteBoard.setBoardBackground({
                   bkColor: brushColor,
                 });
               }
@@ -186,16 +182,22 @@ function PopModal(props: PopModalProps) {
           <Divider className={styles.divider} />
           <Button
             onClick={() =>
-              whiteBoard.changePageBackground({ pageId: whiteBoard.getCurrentPageId() })
+              whiteBoard.setPageBackground({
+                bkColor: undefined,
+                bkImage: undefined,
+              })
             }
-            // disabled={file?.type !== FileType.whiteBoard}
           >
             清空当前页背景
           </Button>
           <Button
             style={{ marginLeft: 10 }}
-            onClick={() => whiteBoard.changeBoardBackground({})}
-            // disabled={file?.type !== FileType.whiteBoard}
+            onClick={() =>
+              whiteBoard.setBoardBackground({
+                bkColor: undefined,
+                bkImage: undefined,
+              })
+            }
           >
             清空全局页背景
           </Button>

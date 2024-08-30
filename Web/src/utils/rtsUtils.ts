@@ -5,7 +5,7 @@ export function isRtsError(res: any): res is RtsError {
   return res?.type === SendServerMessageErr;
 }
 
-export async function handleRes<T = any>(
+export async function sendServerMessage<T = any>(
   event: string,
   formatRes: (res: SendServerMessageRes<T>) => T | SendServerMessageRes<T>,
   data?: Record<string, any>

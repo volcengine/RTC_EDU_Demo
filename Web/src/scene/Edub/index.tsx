@@ -106,7 +106,7 @@ function Edub() {
     const { user } = res.response;
 
     if (user.share_status === ShareStatus.Sharing && user.share_type === ShareType.Screen) {
-      rtsApi.edubStopShare();
+      rtsApi.stopShare();
     }
 
     dispatch(localUserJoinRoom(res.response));
@@ -140,7 +140,7 @@ function Edub() {
         if (res) {
           dispatch(setJoining(JoinStatus.Joined));
           if (+role! === UserRole.Visitor) {
-            RtcClient.unpublishStream(MediaType.AUDIO);
+            RtcClient.muteStream(MediaType.AUDIO);
             RtcClient.stopVideoCapture();
           }
         } else {
@@ -165,9 +165,9 @@ function Edub() {
   }, [ location ])
 
   const handleLeaveRoom = async () => {
-    await RtcClient.engine?.leaveRoom();
+    await RtcClient.leaveRoom();
     await BoardClient.leaveRoom();
-    await rtsApi.edubLeaveRoom();
+    await rtsApi.leaveRoom();
     dispatch(setJoining(JoinStatus.NotJoined));
   };
 
@@ -186,8 +186,6 @@ function Edub() {
   }, [hasEngine, joinStatus]);
 
   if (!hasEngine) {
-    // todo 引擎未创建完成的时候，需要个样式？
-
     return null;
   }
 

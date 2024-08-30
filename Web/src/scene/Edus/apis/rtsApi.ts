@@ -1,39 +1,23 @@
 import { EdusRoomState, IEdusUser } from '@/store/slices/edusRoom';
-import { RecordFile, RtsError, SendServerMessageRes } from '@/types/rtsTypes';
+import { RtsError, SendServerMessageRes } from '@/types/rtsTypes';
 import { DeviceState, Permission, ShareType, Silence, UserRole } from '@/types/state';
-import { getNull, getRes, getResponse, handleRes } from '@/utils/rtsUtils';
+import { getNull, getRes, getResponse, sendServerMessage } from '@/utils/rtsUtils';
 
 export interface JoinEdusRoomRes {
-  // todo 检查学生 or 老师加房时，房间的共享状态
   room: Omit<
     EdusRoomState,
     'localUser' | 'remoteUsers' | 'linkmic_user_list' | 'linkmic_apply_list' | 'teacher'
-  >;
-  user: IEdusUser;
-  teacher?: IEdusUser;
-  linkmic_user_list: IEdusUser[];
-  user_list: IEdusUser[];
-  token: string;
-  // 白板
-  wb_room_id: string;
-  wb_user_id: string;
-  wb_token: string;
-  wb_stream_user_id: string;
+  >; // 房间信息
+  user: IEdusUser; // 本人 user 信息
+  teacher?: IEdusUser; // 老师信息
+  linkmic_user_list: IEdusUser[]; // user数组，按照进房时间排序
+  user_list: IEdusUser[]; // user数组，按照进房时间排序
+  token: string; // 加入rtc房间需要的token
+  wb_room_id: string; // 白板 room id
+  wb_user_id: string; // 白板 user id
+  wb_token: string; // 白板 token
+  wb_stream_user_id: string; // 互动白板 rtc 推流 user_id
 }
-
-export const joinRoom = async (data: {
-  user_name: string;
-  camera: DeviceState;
-  mic: DeviceState;
-  user_role: UserRole;
-  is_silence?: Silence;
-}): Promise<SendServerMessageRes<JoinEdusRoomRes> | RtsError> => {
-  return handleRes('edusJoinRoom', getRes, data);
-};
-
-export const leaveRoom = async (): Promise<null | RtsError> => {
-  return handleRes('edusLeaveRoom', getNull);
-};
 
 export interface ReconnectRes {
   room: Omit<EdusRoomState, 'localUser' | 'remoteUsers'>;
@@ -41,115 +25,163 @@ export interface ReconnectRes {
   user_list: IEdusUser[];
 }
 
-export const reSync = async (): Promise<SendServerMessageRes<ReconnectRes> | RtsError> => {
-  return handleRes('edusResync', getRes);
-};
-
 export interface GetUserListRes {
   user_count: number;
   user_list: IEdusUser[];
 }
 
-export const getUserList = async (): Promise<GetUserListRes | RtsError> => {
-  return handleRes('edusGetUserList', getResponse);
-};
-
-export const operateSelfCamera = async (data: {
-  operate: DeviceState;
-}): Promise<null | RtsError> => {
-  return handleRes('edusOperateSelfCamera', getNull, data);
-};
-
-export const operateSelfMic = async (data: { operate: DeviceState }): Promise<null | RtsError> => {
-  return handleRes('edusOperateSelfMic', getNull, data);
-};
-
-export const operateSelfMicApply = async (data: {
-  operate: DeviceState;
-}): Promise<null | RtsError> => {
-  return handleRes('edusOperateSelfMicApply', getNull, data);
-};
-
 /**
- * 申请操作自己摄像头 - 未实现
+ * 告知业务服务器用户进房
  * @param data
  * @returns
  */
-export const operateSelfCameraApply = async (data: {
+export const joinRoom = async (data: {
+  user_name: string;
+  camera: DeviceState;
+  mic: DeviceState;
+  user_role: UserRole;
+  is_silence?: Silence;
+}): Promise<SendServerMessageRes<JoinEdusRoomRes> | RtsError> => {
+  return sendServerMessage('edusJoinRoom', getRes, data);
+};
+
+/**
+ * 告知业务服务器用户离房
+ * @param data
+ * @returns
+ */
+export const leaveRoom = async (): Promise<null | RtsError> => {
+  return sendServerMessage('edusLeaveRoom', getNull);
+};
+
+/**
+ * 结束房间
+ * @returns
+ */
+export const finishRoom = async (): Promise<null | RtsError> => {
+  return sendServerMessage('edusFinishRoom', getNull);
+};
+
+/**
+ * 断线之后重连，调用此接口获取当前房间信息
+ * @param data
+ * @returns
+ */
+export const reSync = async (): Promise<SendServerMessageRes<ReconnectRes> | RtsError> => {
+  return sendServerMessage('edusResync', getRes);
+};
+
+/**
+ * 获取房间内用户列表
+ * @param data
+ * @returns
+ */
+export const getUserList = async (): Promise<GetUserListRes | RtsError> => {
+  return sendServerMessage('edusGetUserList', getResponse);
+};
+
+/**
+ * 本地用户操作自己的摄像头
+ * @param data
+ * @returns
+ */
+export const operateSelfCamera = async (data: {
   operate: DeviceState;
 }): Promise<null | RtsError> => {
-  return handleRes('edusOperateSelfCameraApply', getNull, data);
+  return sendServerMessage('edusOperateSelfCamera', getNull, data);
 };
 
+/**
+ * 本地用户操作自己的麦克风
+ * @param data
+ * @returns
+ */
+export const operateSelfMic = async (data: { operate: DeviceState }): Promise<null | RtsError> => {
+  return sendServerMessage('edusOperateSelfMic', getNull, data);
+};
+
+/**
+ * 申请麦克风权限
+ * @param data
+ * @returns
+ */
+export const operateSelfMicApply = async (data: {
+  operate: DeviceState;
+}): Promise<null | RtsError> => {
+  return sendServerMessage('edusOperateSelfMicApply', getNull, data);
+};
+
+/**
+ * 本地用户开始共享
+ * @param data
+ * @returns
+ */
 export const startShare = async (data: { share_type: ShareType }): Promise<null | RtsError> => {
-  return handleRes('edusStartShare', getNull, data);
+  return sendServerMessage('edusStartShare', getNull, data);
 };
 
+/**
+ * 本地用户停止共享
+ * @returns
+ */
 export const finishShare = async (): Promise<null | RtsError> => {
-  return handleRes('edusFinishShare', getNull);
+  return sendServerMessage('edusFinishShare', getNull);
 };
 
+/**
+ * 申请共享权限
+ * @returns
+ */
 export const sharePermissionApply = async (): Promise<null | RtsError> => {
-  return handleRes('edusSharePermissionApply', getNull);
+  return sendServerMessage('edusSharePermissionApply', getNull);
 };
 
 /**
- * 学生申请录制
+ * 操纵参会人摄像头
  * @returns
  */
-export const startRecordApply = async (): Promise<null | RtsError> => {
-  return handleRes('edusStartRecordApply', getNull);
-};
-
-/**
- * 获取录制结果
- * @returns
- */
-export const getRecordList = async (): Promise<
-  | {
-      video_list: Record<string | number, RecordFile[]>;
-    }
-  | RtsError
-> => {
-  return handleRes('edusGetRecordList', getResponse);
-};
-
-// 老师调用
-export const finishRoom = async (): Promise<null | RtsError> => {
-  return handleRes('edusFinishRoom', getNull);
-};
-
 export const operateOtherCamera = async (data: {
   operate_user_id: string;
   operate: DeviceState;
 }): Promise<null | RtsError> => {
-  return handleRes('edusOperateOtherCamera', getNull, data);
+  return sendServerMessage('edusOperateOtherCamera', getNull, data);
 };
 
+/**
+ * 操纵参会人麦克风
+ * @returns
+ */
 export const operateOtherMic = async (data: {
   operate_user_id: string;
   operate: DeviceState;
 }): Promise<null | RtsError> => {
-  return handleRes('edusOperateOtherMic', getNull, data);
+  return sendServerMessage('edusOperateOtherMic', getNull, data);
 };
 
-// 全体静音
-export const vcOperateAllMic = async (data: {
-  operate_self_mic_permission: Permission;
-  operate: DeviceState.Closed;
-}): Promise<null | RtsError> => {
-  return handleRes('edusOperateAllMic', getNull, data);
-};
-
+/**
+ * 操纵参会人屏幕共享权限
+ * @returns
+ */
 export const operateOtherSharePermission = async (data: {
   operate_user_id: string;
   operate: Permission;
 }): Promise<null | RtsError> => {
-  return handleRes('edusOperateOtherSharePermission', getNull, data);
+  return sendServerMessage('edusOperateOtherSharePermission', getNull, data);
 };
 
 /**
- * 老师回复麦克风权限申请
+ * 发送全员禁言消息
+ * @returns
+ */
+export const vcOperateAllMic = async (data: {
+  operate_self_mic_permission: Permission;
+  operate: DeviceState.Closed;
+}): Promise<null | RtsError> => {
+  return sendServerMessage('edusOperateAllMic', getNull, data);
+};
+
+/**
+ * 学生请求麦克风使用权限后, 老师答复
  * @param data
  * @returns
  */
@@ -157,41 +189,17 @@ export const operateSelfMicPermit = async (data: {
   apply_user_id: string;
   permit: DeviceState;
 }): Promise<null | RtsError> => {
-  return handleRes('edusOperateSelfMicPermit', getNull, data);
+  return sendServerMessage('edusOperateSelfMicPermit', getNull, data);
 };
 
-// todo  edusOperateSelfCameraPermit 摄像头权限申请回复 未被使用
+/**
+ * 学生请求屏幕共享权限后, 老师答复
+ * @param data
+ * @returns
+ */
 export const sharePermissionPermit = async (data: {
   apply_user_id: string;
   permit: Permission;
 }): Promise<null | RtsError> => {
-  return handleRes('edusSharePermissionPermit', getNull, data);
+  return sendServerMessage('edusSharePermissionPermit', getNull, data);
 };
-
-/**
- * (老师)开始录制
- * @returns
- */
-export const startRecord = async (): Promise<null | RtsError> => {
-  return handleRes('edusStartRecord', getNull);
-};
-
-/**
- * (老师)结束录制
- * @returns
- */
-export const stopRecord = async (): Promise<null | RtsError> => {
-  return handleRes('edusStopRecord', getNull);
-};
-
-/**
- * (老师)申请开始录制回复
- * @returns
- */
-export const startRecordPermit = async (data: {
-  permit: number;
-  apply_user_id: string;
-}): Promise<null | RtsError> => {
-  return handleRes('edusStartRecordPermit', getNull, data);
-};
-

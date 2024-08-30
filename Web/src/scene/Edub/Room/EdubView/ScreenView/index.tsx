@@ -25,7 +25,7 @@ export default function (props: ScreenViewProps) {
 
   const handleStopShare = async () => {
     await RtcClient.stopScreenCapture();
-    await rtsApi.edubStopShare();
+    await rtsApi.stopShare();
   };
 
   useEffect(() => {
@@ -45,7 +45,7 @@ export default function (props: ScreenViewProps) {
       <div className={styles.shareWrapper}>
         {isLocalShare && (
           <div className={styles.stopButton} onClick={handleStopShare}>
-            停止共享
+            停止屏幕共享
           </div>
         )}
         {!isLocalShare && <div id={domId} className={styles.shareDom} />}

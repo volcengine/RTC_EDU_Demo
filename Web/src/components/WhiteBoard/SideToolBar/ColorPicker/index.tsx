@@ -33,7 +33,6 @@ function ColorTool(props: IColorPicker) {
       {colors.map((c) => {
         return (
           <div
-            // title={c}
             key={c}
             onClick={() => {
               handleColorClick(c);

@@ -29,25 +29,13 @@ function Stop() {
   const handleLeave = async () => {
     setPopOpen(false);
 
-    // 学生没有结束共享的权限
-    // 老师暂时离房不会结束共享
-
-    // if (
-    //   room.share_user_id === room.localUser.user_id &&
-    //   room.share_status === ShareStatus.Sharing &&
-    //   room.share_type === ShareType.Board
-    // ) {
-    //   await edubAPI.edubStopShare();
-    // }
-
-    await rtsApi.edubLeaveRoom();
-
+    await rtsApi.leaveRoom();
     await leaveRoom();
   };
 
   const handleEdubRoom = async () => {
     setPopOpen(false);
-    await rtsApi.edubFinishRoom();
+    await rtsApi.finishRoom();
     await leaveRoom();
   };
 

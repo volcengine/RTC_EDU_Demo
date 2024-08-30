@@ -1,20 +1,22 @@
 import { Popover } from 'antd';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import * as rtsApi from '@/scene/Edub/apis/rtsApi';
-
 import { MenuIconButton, PopoverContent, SettingButton } from '@/components';
 import { LinkStatus, localUserLeaveRoom, setLinkStatus } from '@/store/slices/edubRoom';
 import useLeaveRoom from '@/core/hooks/useLeaveRoom';
-
 import StopIcon from '@/assets/images/Stop.svg';
-
 import styles from './index.module.less';
-import { useDispatch } from '@/store';
+import { useDispatch, useSelector } from '@/store';
 import { JoinStatus, setJoining } from '@/store/slices/scene';
 
 export default function () {
+  const room = useSelector((state) => state.edubRoom);
   const dispatch = useDispatch();
   const [popOpen, setPopOpen] = useState(false);
+  const remoteUserNumber = useMemo(
+    () => room.remoteUsers.length,
+    [room.remoteUsers]
+  );
 
   const leaveRoom = useLeaveRoom('/', {
     onLeaveRoom: () => {
@@ -24,7 +26,7 @@ export default function () {
   });
 
   const handleStop = async () => {
-    await rtsApi.edubLeaveRoom();
+    await rtsApi.leaveRoom();
     await leaveRoom();
     dispatch(setJoining(JoinStatus.NotJoined));
   };
@@ -32,7 +34,6 @@ export default function () {
   return (
     <div className={styles.headerRight}>
       <SettingButton />
-
       <Popover
         open={popOpen}
         placement="bottomLeft"
@@ -54,7 +55,11 @@ export default function () {
           iconClassName={styles.menuCloseIcon}
           className={styles.menuButton}
           onClick={() => {
-            setPopOpen(true);
+            if (remoteUserNumber > 1) {
+              setPopOpen(true);
+            } else {
+              handleStop();
+            }
           }}
           icon={StopIcon}
         />

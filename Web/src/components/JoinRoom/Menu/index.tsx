@@ -89,12 +89,12 @@ export default function (props: IMenuProps) {
   const validatorFields = (
     value: StoreValue,
     name: 'name' | 'roomId',
-    regRes: boolean
+    isNotMatchRegEx: boolean
   ): Promise<any> => {
     let errorType = ERROR_TYPES.VALID;
     let result: Promise<Error | void> = Promise.resolve();
 
-    if (!value || regRes) {
+    if (!value || isNotMatchRegEx) {
       errorType = !value ? ERROR_TYPES.EMPTY_STRING : ERROR_TYPES.INVALID_CHARACTERS;
       result = Promise.reject(new Error(' '));
     } else if (value?.length > 18) {
@@ -249,7 +249,6 @@ export default function (props: IMenuProps) {
         <div className={styles.formInLine}>
           <Tooltip
             open={roomIdErr !== ERROR_TYPES.VALID}
-            // title={roomIdErr === ERROR_TYPES.INVALID_CHARACTERS ? renderToolTip() : '请填写房间ID'}
             title={renderToolTip(roomIdErr, '房间ID')}
             placement="topLeft"
             overlayClassName={styles.validatorTip}
@@ -261,9 +260,8 @@ export default function (props: IMenuProps) {
                 {
                   required: true,
                   validator: (_, value) => {
-                    // const regRes = !/^[0-9a-zA-Z_\-@.\u4e00-\u9fa5]*$/.test(value);
-                    const regRes = !/^[0-9a-zA-Z_\-@]*$/.test(value);
-                    return validatorFields(value, 'roomId', regRes);
+                    const isNotMatchRegEx = !/^[0-9a-zA-Z_\-@]*$/.test(value);
+                    return validatorFields(value, 'roomId', isNotMatchRegEx);
                   },
                 },
               ]}
@@ -285,9 +283,8 @@ export default function (props: IMenuProps) {
                 {
                   required: true,
                   validator: (_, value) => {
-                    const regRes = !/^[0-9a-zA-Z_\-@\u4e00-\u9fa5]*$/.test(value);
-                    // const regRes = !/^[0-9a-zA-Z_\-@]*$/.test(value);
-                    return validatorFields(value, 'name', regRes);
+                    const isNotMatchRegEx = !/^[0-9a-zA-Z_\-@\u4e00-\u9fa5]*$/.test(value);
+                    return validatorFields(value, 'name', isNotMatchRegEx);
                   },
                 },
               ]}

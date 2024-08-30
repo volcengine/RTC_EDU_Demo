@@ -23,12 +23,12 @@ export default function () {
     if (link) {
       /** Apply for mic link */
       dispatch(setLinkStatus(LinkStatus.Applying));
-      await rtsApi.edubLinkmicApply();
+      await rtsApi.linkmicApply();
 
     } else {
       /** Cancel mic link */
       dispatch(setLinkStatus(LinkStatus.NotLink));
-      await rtsApi.edubLinkmicApplyCancel();
+      await rtsApi.linkmicApplyCancel();
     }
   };
 

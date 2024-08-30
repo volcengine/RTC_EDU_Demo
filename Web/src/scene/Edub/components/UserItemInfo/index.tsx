@@ -1,10 +1,5 @@
 import BoardIcon from '@/assets/images/Board.svg';
 import ShareIcon from '@/assets/images/Share.svg';
-// import MicrophoneOffIcon from '@/assets/images/MicrophoneOff.svg';
-// import CameraOffIcon from '@/assets/images/CameraOff.svg';
-// import MicrophoneOnIcon from '@/assets/images/MicrophoneOn.svg';
-// import CameraOnIcon from '@/assets/images/CameraOn.svg';
-
 import { Icon } from '@/components';
 import { ApplyType, ShareStatus, ShareType, BaseUser } from '@/types/state';
 

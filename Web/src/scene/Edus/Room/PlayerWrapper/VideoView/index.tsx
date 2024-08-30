@@ -50,14 +50,12 @@ export default function () {
       <div
         className={`${styles.videoViewLayout}`}
         style={{
-          //   height: pageCount > 1 ? 'calc(100% - 8px)' : '100%',
           height: '100%',
           display: 'flex',
         }}
       >
         {curPageUsers.map((user, index) => {
           return (
-            // todo: 这里接管外面的UI
             <Player
               user={user}
               key={user?.user_id || index}

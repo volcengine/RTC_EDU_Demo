@@ -4,7 +4,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
 }
 
 .timeWrapper {
@@ -12,7 +12,6 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin-bottom: 64px;
 
   .time {
     font-family: 'Montserrat Alternates';
@@ -22,7 +21,6 @@
     line-height: 56px;
     text-align: right;
     color: #020814;
-
     margin-bottom: 4px;
   }
 
@@ -37,21 +35,27 @@
   }
 }
 
+.sceneContentWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 400px;
+}
+
 .sceneList {
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: 60px;
 }
 
 .sceneItem {
   display: flex;
   flex-direction: column;
   align-items: center;
-  //   justify-content: center;
-
-  //   background: #272e3b;
-  //   border-radius: 13.7143px;
 
   &:not(:first-child) {
     margin-left: 40px;
@@ -91,11 +95,11 @@
 }
 
 .sceneFooter {
+  position: relative;
+  margin-bottom: 0px;
   display: flex;
   align-items: center;
   justify-content: center;
-  bottom: 32px;
-  position: absolute;
 
   .version {
     font-family: 'PingFang SC';
@@ -106,4 +110,12 @@
     text-align: right;
     color: #86909c;
   }
+}
+
+.sceneFooterWrapper {
+  height: 100px;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  display: flex;
 }

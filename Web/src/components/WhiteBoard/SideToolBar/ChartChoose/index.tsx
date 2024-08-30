@@ -1,12 +1,12 @@
 import Icon from '@ant-design/icons';
 import classNames from 'classnames';
-import { Constant } from '@volcengine/white-board-manage';
+import { ToolMode } from '@volcengine/white-board-manage';
 import { RectIcon, CircleIcon, LineIcon, ArrowIcon } from './ToolIcon';
 import styles from './index.module.less';
 
 interface IChartChoose {
-  onToolChange: (key: Constant.SHAPE_TYPE) => void;
-  mode: Constant.SHAPE_TYPE;
+  onToolChange: (key: ToolMode) => void;
+  mode: ToolMode;
 }
 
 function ChartChoose(props: IChartChoose) {
@@ -16,29 +16,29 @@ function ChartChoose(props: IChartChoose) {
       <div className={styles.item}>
         <Icon
           component={RectIcon}
-          onClick={() => onToolChange(Constant.SHAPE_TYPE.RECT)}
-          className={classNames({ [styles.active]: mode === Constant.SHAPE_TYPE.RECT })}
+          onClick={() => onToolChange(ToolMode.RECT)}
+          className={classNames({ [styles.active]: mode === ToolMode.RECT })}
         />
       </div>
       <div className={styles.item}>
         <Icon
           component={CircleIcon}
-          onClick={() => onToolChange(Constant.SHAPE_TYPE.CIRCLE)}
-          className={classNames({ [styles.active]: mode === Constant.SHAPE_TYPE.CIRCLE })}
+          onClick={() => onToolChange(ToolMode.CIRCLE)}
+          className={classNames({ [styles.active]: mode === ToolMode.CIRCLE })}
         />
       </div>
       <div className={styles.item}>
         <Icon
           component={LineIcon}
-          onClick={() => onToolChange(Constant.SHAPE_TYPE.LINE)}
-          className={classNames({ [styles.active]: mode === Constant.SHAPE_TYPE.LINE })}
+          onClick={() => onToolChange(ToolMode.LINE)}
+          className={classNames({ [styles.active]: mode === ToolMode.LINE })}
         />
       </div>
       <div className={styles.item}>
         <Icon
           component={ArrowIcon}
-          onClick={() => onToolChange(Constant.SHAPE_TYPE.ARROW)}
-          className={classNames({ [styles.active]: mode === Constant.SHAPE_TYPE.ARROW })}
+          onClick={() => onToolChange(ToolMode.ARROW)}
+          className={classNames({ [styles.active]: mode === ToolMode.ARROW })}
         />
       </div>
     </div>

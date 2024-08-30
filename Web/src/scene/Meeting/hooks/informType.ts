@@ -113,135 +113,122 @@ export enum IStopRecordReason {
   TimeEnded = 1,
 }
 
+export interface IOnStartRecordPermission {
+  room_id: string;
+  user_id: string;
+  permit: Permission;
+}
+
 export enum RtsEvent {
   /**
-   * 广播通知
-   *
-   * 有人进房
+   * 有用户进房
    */
   vcOnJoinRoom = 'vcOnJoinRoom',
+
   /**
-   * 广播通知
-   *
-   * 有人退房
+   * 有用户退房
    */
   vcOnLeaveRoom = 'vcOnLeaveRoom',
+
   /**
-   * 广播通知
-   *
    * 会议结束
    */
   vcOnFinishRoom = 'vcOnFinishRoom',
+
   /**
-   * 广播通知
-   *
    * 用户操作了自己的摄像头
    */
   vcOnOperateSelfCamera = 'vcOnOperateSelfCamera',
+
   /**
-   * 广播通知
-   *
    * 用户操作了自己的麦克风
    */
   vcOnOperateSelfMic = 'vcOnOperateSelfMic',
+
   /**
-   * 广播通知
-   *
-   * 全体静音
+   * 主持人发起了全员静音
    */
   vcOnOperateAllMic = 'vcOnOperateAllMic',
+
   /**
-   * 广播通知
-   *
    * 用户开始共享
    */
   vcOnStartShare = 'vcOnStartShare',
+
   /**
-   * 广播通知
-   *
    * 用户结束共享
    */
   vcOnFinishShare = 'vcOnFinishShare',
+
   /**
-   * 广播通知
-   *
-   * 开始录制
-   * todo ：是否还有
+   * 用户开始录制
    */
   vcOnStartRecord = 'vcOnStartRecord',
+
   /**
-   * 广播通知
-   *
-   * 结束录制
-   *  todo ：是否还有
+   * 用户结束录制
    */
   vcOnStopRecord = 'vcOnStopRecord',
+
   /**
-   * 广播通知
-   *
-   * 主持人移交
+   * 主持人变化
    */
   vcOnHostChange = 'vcOnHostChange',
+
   /**
-   * 单点通知(主持人收到)
-   *
    * 申请操作自己的麦克风
    */
   vcOnOperateSelfCameraApply = 'vcOnOperateSelfCameraApply',
+
   /**
-   * 单点通知(参会人收到)
-   *
    * 申请操作自己摄像头回复
    */
   vcOnOperateSelfCameraPermit = 'vcOnOperateSelfCameraPermit',
+
   /**
-   * 单点通知(主持人收到)
-   *
    * 申请操作自己的麦克风
    */
   vcOnOperateSelfMicApply = 'vcOnOperateSelfMicApply',
+
   /**
-   * 单点通知(参会人收到)
-   *
    * 申请操作自己麦克风回复
    */
   vcOnOperateSelfMicPermit = 'vcOnOperateSelfMicPermit',
+
   /**
-   * 单点通知(主持人收到)
-   *
    * 申请共享
    */
   vcOnSharePermissionApply = 'vcOnSharePermissionApply',
+
   /**
-   * 单点通知(参会人收到)
-   *
    * 申请共享回复
    */
   vcOnSharePermissionPermit = 'vcOnSharePermissionPermit',
+
   /**
-   * 单点通知(参会人收到)
-   *
    * 主持人操作参会人摄像头
    */
   vcOnOperateOtherCamera = 'vcOnOperateOtherCamera',
+
   /**
-   * 单点通知(参会人收到)
-   *
    * 主持人操作参会人麦克风
    */
   vcOnOperateOtherMic = 'vcOnOperateOtherMic',
+
   /**
-   * 单点通知(参会人收到)
-   *
    * 主持人操作参会人共享权限
    */
   vcOnOperateOtherSharePermission = 'vcOnOperateOtherSharePermission',
+
   /**
-   * 单点通知(主持人收到)
-   *
    * 参会人申请录制
    */
   vcOnStartRecordApply = 'vcOnStartRecordApply',
+
+  /**
+   * 主持人回应申请录制请求
+   */
+  vcOnStartRecordPermit = 'vcOnStartRecordPermit',
 }
 
 export type InformDataType = {
@@ -329,4 +316,8 @@ export type InformDataType = {
         reason: IStopRecordReason;
       };
     }
+  | {
+    event: RtsEvent.vcOnStartRecordPermit;
+    data: IOnStartRecordPermission;
+  }
 );

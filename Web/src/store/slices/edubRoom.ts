@@ -73,7 +73,6 @@ export interface EdubRoomState {
   localUser: Partial<
     IEdubUser & {
       // 需要在端侧维护连麦申请状态
-      // todo 此时学生如果掉线了呢？
       applyLinking?: boolean;
       // 学生维护自己的连麦状态
       linked?: boolean;
@@ -216,12 +215,10 @@ export const edubRoomSlice = createSlice({
       };
     },
 
-    // done
     localUserChangeMic: (state, action: PayloadAction<DeviceState>) => {
       state!.localUser!.mic = action.payload;
     },
 
-    // done
     localUserChangeCamera: (state, action: PayloadAction<DeviceState>) => {
       state!.localUser!.camera = action.payload;
     },
@@ -436,7 +433,6 @@ export const edubRoomSlice = createSlice({
       >
     ) => {
       const { isLocal, audioInfo } = action.payload;
-
       if (isLocal) {
         // 本端的音频信息
         state.localUser!.audioPropertiesInfo = audioInfo;
@@ -449,7 +445,6 @@ export const edubRoomSlice = createSlice({
           if (user.user_id === state.localUser.user_id) {
             user.audioPropertiesInfo = audioInfo;
           }
-
           return user;
         });
       } else {
@@ -465,6 +460,10 @@ export const edubRoomSlice = createSlice({
         if (Object.keys(audioInfo).includes(state.teacher?.user_id!)) {
           state.teacher!.audioPropertiesInfo = audioInfo[state.teacher?.user_id!];
         }
+        state.remoteUsers = state.remoteUsers?.map((user) => {
+          user.audioPropertiesInfo = audioInfo[user.user_id];
+          return user;
+        });
       }
     },
 

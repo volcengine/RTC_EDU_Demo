@@ -84,12 +84,10 @@ export default function (props: IProps) {
     dispatch(setMicrophone(devices.audioInputs[0]?.deviceId));
     dispatch(setAudioPlayBack(devices.audioOutputs[0]?.deviceId));
     dispatch(setJoining(JoinStatus.NotJoined));
-    navigate(`/login`);
+    navigate('/login');
   };
 
   useEffect(() => {
-    console.log('join room mount');
-
     const mount = async () => {
       if (devicePermissions.video === undefined) {
         return;

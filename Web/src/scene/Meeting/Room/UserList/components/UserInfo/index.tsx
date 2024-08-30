@@ -1,7 +1,7 @@
 import { message, Tooltip } from 'antd';
 import BoardIcon from '@/assets/images/Board.svg';
 import ShareIcon from '@/assets/images/Share.svg';
-import MicrophoneOffIcon from '@/assets/newImg/MicrophoneOff.svg';
+import MicrophoneOffIcon from '@/assets/images/MicrophoneOff.svg';
 import MicrophoneOn from '@/assets/images/MicrophoneOn.svg';
 import CameraOffIcon from '@/assets/images/CameraOff.svg';
 import CameraOnIcon from '@/assets/images/CameraOn.svg';
@@ -52,7 +52,8 @@ export default function (props: IProps) {
   const isHost = room.localUser.user_role === UserRole.Host;
 
   const handleMic = async () => {
-    if (!isHost) {
+    if (!isHost && !user?.isLocal) {
+      message.info('非主持人, 不支持此操作');
       return;
     }
 
@@ -88,18 +89,23 @@ export default function (props: IProps) {
   };
 
   const handleCamera = async () => {
-    if (!isHost) {
+    if (!isHost && !user?.isLocal) {
+      message.info('非主持人, 不支持此操作');
       return;
     }
+    const operate = user?.camera === DeviceState.Open ? DeviceState.Closed : DeviceState.Open;
+    const operateStr = operate === DeviceState.Open ? '打开' : '关闭';
     if (!user?.isLocal) {
       rtsApi.operateOtherCamera({
         operate_user_id: user?.user_id!,
-        operate: user?.camera === DeviceState.Open ? DeviceState.Closed : DeviceState.Open,
+        operate,
       });
+      console.log(`主持人尝试${operateStr}观众 ${user?.user_id} 的摄像头`);
     } else {
       const res = await rtsApi.operateSelfCamera({
-        operate: user?.camera === DeviceState.Open ? DeviceState.Closed : DeviceState.Open,
+        operate,
       });
+      console.log(`主持人尝试${operateStr}自己的摄像头`);
 
       if (res === null) {
         if (user?.camera === DeviceState.Closed) {
@@ -123,7 +129,8 @@ export default function (props: IProps) {
   };
 
   const handleUserSharePerm = async () => {
-    if (!isHost) {
+    if (!isHost && !user?.isLocal) {
+      message.info('非主持人, 不支持此操作');
       return;
     }
 

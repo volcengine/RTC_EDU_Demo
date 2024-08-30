@@ -51,7 +51,7 @@ export default function () {
       linkStatus !== LinkStatus.Linking &&
       localUser.pull_wb_stream_type === PullBoardStreamType.Stream
     ) {
-      RtcClient.engine.subscribeStream(room.wb_stream_user_id!, MediaType.VIDEO);
+      RtcClient.subscribeStream(room.wb_stream_user_id!, MediaType.VIDEO);
       RtcClient.setVideoPlayer(room.wb_stream_user_id!, 'board-stream');
     }
 
@@ -59,8 +59,13 @@ export default function () {
       if (view !== View.BoardView) {
         return;
       }
-      RtcClient.engine.unsubscribeStream(room.wb_stream_user_id!, MediaType.VIDEO);
-      RtcClient.setVideoPlayer(room.wb_stream_user_id!, undefined);
+      if (
+        linkStatus !== LinkStatus.Linking &&
+        localUser.pull_wb_stream_type === PullBoardStreamType.Stream
+      ) {
+        RtcClient.unsubscribeStream(room.wb_stream_user_id!, MediaType.VIDEO);
+        RtcClient.setVideoPlayer(room.wb_stream_user_id!, undefined);
+      }
     };
   }, [linkStatus, localUser.pull_wb_stream_type, view]);
 

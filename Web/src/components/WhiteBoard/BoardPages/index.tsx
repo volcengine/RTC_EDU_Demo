@@ -1,56 +1,60 @@
 import { v4 as uuidv4 } from 'uuid';
-import { useContext, useEffect } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import classNames from 'classnames';
+import { WhiteBoardEventsTypes } from '@volcengine/white-board-manage';
 import { useSelector } from '@/store';
 import BoardAddSvg from '@/assets/images/board/BoardAdd.svg';
 import { BoardClient } from '@/core/board';
 import { Icon } from '@/components';
-
 import DeleteSvg from './Delete.svg';
-
 import styles from './index.module.less';
 import FileSelect from './FileSelect';
 import BoardContext from '../BoardContext';
 import useUpdatePreviewBoard from './hooks/useUpdatePreviewBoard';
+import type { IPreviewBoard } from '@/store/slices/board';
 
 function BoardPages() {
   const boardPagePreviewOpen = useSelector((state) => state.ui.boardPagePreviewOpen);
+  const { curBoard, curBoardId, curPageId, closedId } = useContext(BoardContext);
+  const [previewBoard, updatePreviewBoard] = useUpdatePreviewBoard();
+  const [, _refresh] = useState({});
+  const refreshUI = useCallback(() => _refresh({}), []);
 
-  const {
-    curBoard,
-    curPageId,
-    closedId,
-    // setCurPageId, setCurFile, fileList, setFileList
-  } = useContext(BoardContext);
-
-  const [ previewBoard, updatePreviewBoard ] = useUpdatePreviewBoard();
-
-  const previewflipPage = (pageId: string) => {
-    if (curPageId === pageId) {
+  const previewflipPage = (item: IPreviewBoard) => {
+    if (curPageId === item.pageId) {
       return;
     }
-
-    BoardClient.flipPage(pageId);
+    BoardClient.flipPage(item.pageIndex);
   };
 
   const handleAddPage = () => {
     const pageId = `board_${uuidv4()}`;
-
-    BoardClient.createPage(curPageId!, {
+    BoardClient.createPage({
       pageId,
     });
   };
 
   // 删除白板页面
   const handleDeleteBoardPage = (pageId: string) => {
-    console.log('whiteboard handleDeleteBoard', pageId);
-
     BoardClient.deletePage(pageId);
   };
 
   useEffect(() => {
-    curBoard && curPageId && updatePreviewBoard();
-  }, [curPageId, curBoard, closedId]);
+    if (!curBoard) {
+      return;
+    }
+    curBoard.on(WhiteBoardEventsTypes.onPageIndexChanged, refreshUI);
+    return () => {
+      curBoard.off(WhiteBoardEventsTypes.onPageIndexChanged, refreshUI);
+    };
+  }, [curBoard]);
+
+  useEffect(() => {
+    curBoardId && curPageId && updatePreviewBoard();
+    return () => {
+      curBoardId && curPageId && updatePreviewBoard();
+    }
+  }, [curPageId, curBoardId, closedId]);
 
   return (
     <div
@@ -66,7 +70,7 @@ function BoardPages() {
           <div
             className={classNames(styles.page, curPageId === item.pageId ? styles.activePage : '')}
             key={`${item}-${index}`}
-            onClick={() => previewflipPage(item.pageId)}
+            onClick={() => previewflipPage(item)}
           >
             <span className={styles.previewIndex}>{index + 1}</span>
             <div className={styles.pageImg}>
@@ -75,7 +79,6 @@ function BoardPages() {
             {previewBoard.length > 1 && (
               <button
                 onClick={(e) => {
-                  console.log('delete');
                   e.stopPropagation();
                   handleDeleteBoardPage(item.pageId);
                 }}

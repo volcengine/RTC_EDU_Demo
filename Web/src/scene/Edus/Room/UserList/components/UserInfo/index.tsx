@@ -1,7 +1,7 @@
 import { message, Tooltip } from 'antd';
 import BoardIcon from '@/assets/images/Board.svg';
 import ShareIcon from '@/assets/images/Share.svg';
-import MicrophoneOffIcon from '@/assets/newImg/MicrophoneOff.svg';
+import MicrophoneOffIcon from '@/assets/images/MicrophoneOff.svg';
 import MicrophoneOn from '@/assets/images/MicrophoneOn.svg';
 import CameraOffIcon from '@/assets/images/CameraOff.svg';
 import CameraOnIcon from '@/assets/images/CameraOn.svg';
@@ -215,19 +215,27 @@ export default function (props: IProps) {
         <span className={styles.opIcon} onClick={handleMic}>
           <Icon
             src={user?.mic === DeviceState.Closed ? MicrophoneOffIcon : MicrophoneOn}
-            className={`${styles.mediaIcon} ${styles.newIcon} ${user?.mic === DeviceState.Closed && styles.mediaClosed
-              } ${user?.mic === DeviceState.Open &&
-              Boolean(user?.audioPropertiesInfo?.linearVolume) &&
-              styles.speakingIcon
-              }`}
+            className={`
+              ${styles.mediaIcon}
+              ${styles.newIcon}
+              ${user?.mic === DeviceState.Closed ? styles.mediaOffIcon : ''}
+              ${user?.mic === DeviceState.Closed && styles.mediaClosed}
+              ${
+                user?.mic === DeviceState.Open &&
+                Boolean(user?.audioPropertiesInfo?.linearVolume) &&
+                styles.speakingIcon
+              }
+            `}
           />
         </span>
 
         <span className={styles.opIcon} onClick={handleCamera}>
           <Icon
             src={user?.camera === DeviceState.Closed ? CameraOffIcon : CameraOnIcon}
-            className={`${styles.mediaIcon} ${user?.camera === DeviceState.Closed && styles.mediaClosed
-              }`}
+            className={`
+              ${styles.mediaIcon}
+              ${user?.camera === DeviceState.Closed && styles.mediaClosed}
+            `}
           />
         </span>
 

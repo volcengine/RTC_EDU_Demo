@@ -16,25 +16,25 @@ target 'veRTC Room' do
   
   # 基础组件
   # Basic components
-  pod 'Core', :path => '../Meeting_Demo_iOS/Core'
+  pod 'Core', :path => '../RTCSolution/Core'
 
   # 场景化源码
   # Scene source code
   # 登录
-  pod 'LoginKit', :path => '../Meeting_Demo_iOS/APP/LoginKit'
+  pod 'LoginKit', :path => '../RTCSolution/APP/LoginKit'
 
 
   # 获取 RTS 登录信息
-  pod 'veJoinRTSParams', :path => '../Meeting_Demo_iOS/APP/veJoinRTSParams'
+  pod 'veJoinRTSParams', :path => '../RTCSolution/APP/veJoinRTSParams'
   
   # 视频会议
-  pod 'MeetingDemo', :path => '../Meeting_Demo_iOS/APP/MeetingDemo'
+  pod 'MeetingDemo', :path => '../RTCSolution/APP/MeetingDemo'
   
   # 教育小班课
-  pod 'EduSmallClassDemo', :path => '../Meeting_Demo_iOS/APP/EduSmallClassDemo'
+  pod 'EduSmallClassDemo', :path => '../RTCSolution/APP/EduSmallClassDemo'
   
   # 教育大班课
-  pod 'EduBigClassDemo', :path => '../Meeting_Demo_iOS/APP/EduBigClassDemo'
+  pod 'EduBigClassDemo', :path => '../RTCSolution/APP/EduBigClassDemo'
   
   # 白板
   pod 'VolcEngineWhiteboard', '1.6.2'

@@ -20,9 +20,6 @@ module.exports = {
       '@': path.resolve(__dirname, 'src'),
     },
   },
-  devServer: {
-    open: ['http://localhost:3000/rtc/solution/vertcroom'],
-  },
   plugins: [
     {
       plugin: CracoLessPlugin,
@@ -36,6 +33,7 @@ module.exports = {
     },
   ],
   devServer: {
+    open: 'http://localhost:3000/rtc/solution/vertcroom',
     client: {
       overlay: {
         errors: false,

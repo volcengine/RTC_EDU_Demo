@@ -33,9 +33,3 @@ yarn
 yarn start
 
 http://localhost:3000/rtc/solution/vertcroom/login 打开应用
-
-## 参考
-
-## 反馈
-
-## 相关资源

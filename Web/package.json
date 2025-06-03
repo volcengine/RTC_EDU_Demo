@@ -5,7 +5,7 @@
   "dependencies": {
     "@ant-design/icons": "^4.3.0",
     "@reduxjs/toolkit": "^1.8.5",
-    "@volcengine/rtc": "~4.66.14",
+    "@volcengine/rtc": "~4.66.15",
     "@volcengine/tos-sdk": "^2.1.17",
     "@volcengine/white-board-manage": "1.8.6-rc.0",
     "antd": "^4.23.2",

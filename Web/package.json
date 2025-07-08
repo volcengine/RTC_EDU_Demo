@@ -5,7 +5,7 @@
   "dependencies": {
     "@ant-design/icons": "^4.3.0",
     "@reduxjs/toolkit": "^1.8.5",
-    "@volcengine/rtc": "~4.66.16",
+    "@volcengine/rtc": "~4.66.20",
     "@volcengine/tos-sdk": "^2.1.17",
     "@volcengine/white-board-manage": "1.8.6-rc.0",
     "antd": "^4.23.2",
@@ -21,8 +21,8 @@
     "uuid": "9.0.0"
   },
   "scripts": {
-    "start": "craco start",
-    "dev": "craco start",
+    "start": "PUBLIC_URL=/rtc/solution/vertcroom craco start",
+    "dev": "PUBLIC_URL=/rtc/solution/vertcroom craco start",
     "build": "craco build",
     "test": "craco test",
     "eject": "react-scripts eject",

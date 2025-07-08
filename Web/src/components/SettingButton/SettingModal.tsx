@@ -1,5 +1,6 @@
 import { Checkbox, Form, Modal, Select } from 'antd';
 import { useMemo } from 'react';
+import RTCAIAnsExtension from '@volcengine/rtc/extension-ainr';
 
 import { BASENAME } from '@/config';
 
@@ -7,7 +8,6 @@ import styles from './index.module.less';
 import { RecordFile } from '@/types/rtsTypes';
 import { useDispatch, useSelector } from '@/store';
 import { setAiAns } from '@/store/slices/setting';
-import { aiAnsExtension } from '@/core/rtc/RtcClient';
 
 interface ISettingModalProps {
   open: boolean;
@@ -36,6 +36,7 @@ function SettingModal(props: ISettingModalProps) {
 
   const handleOk = async () => {
     const { aiAns } = form.getFieldsValue();
+    const aiAnsExtension = new RTCAIAnsExtension();
     if (aiAns) {
       aiAnsExtension.enable();
     } else {

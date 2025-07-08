@@ -12,7 +12,6 @@ import Board, {
 
 declare module '@volcengine/white-board-manage' {
   export interface IWhiteBoard {
-    // eslint-disable-next-line @typescript-eslint/method-signature-style
     setBoardSize(p: { width: number; height: number }): void;
   }
 }

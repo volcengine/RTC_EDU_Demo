@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface IPreviewBoard {

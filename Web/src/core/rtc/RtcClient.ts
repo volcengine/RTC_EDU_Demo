@@ -14,7 +14,6 @@ import VERTC, {
 import RTCAIAnsExtension from '@volcengine/rtc/extension-ainr';
 import { v4 as uuid } from 'uuid';
 
-export const aiAnsExtension = new RTCAIAnsExtension();
 
 interface EngineOptions {
   appId: string;
@@ -82,8 +81,9 @@ export class RtcClient {
     this.engine = VERTC.createEngine(this.config.appId);
     this.hasEngine = true;
     try {
-      await this.engine.registerExtension(aiAnsExtension);
-      aiAnsExtension.enable();
+      const AIAnsExtension = new RTCAIAnsExtension();
+      await this.engine.registerExtension(AIAnsExtension);
+      AIAnsExtension.enable();
       this.aiAnsExtensionEnable = true;
     } catch (error) {
       console.log((error as any).message);

@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { useRef } from 'react';
 import { BoardClient } from '@/core/board';
 import { useSelector, useDispatch } from '@/store';

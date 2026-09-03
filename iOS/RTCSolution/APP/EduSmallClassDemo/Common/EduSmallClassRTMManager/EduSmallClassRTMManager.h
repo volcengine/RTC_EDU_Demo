@@ -117,14 +117,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 /*
  * Request to turn on my camera
- * @param userId ID of the user who requested to turn on the microphone
+ * @param userId ID of the user who requested to turn on the camera
  * @param block Callback
  */
 + (void)applyForCamPermission:(NSString *)userId block:(void (^)(BOOL result))block;
 
 /*
  * send cam permission result
- * @param userId ID of the user who requested to turn on the microphone
+ * @param userId ID of the user who requested to turn on the camera
  * @param block Callback
  */
 + (void)grantCamPermission:(NSString *)userId result:(BOOL)granted;
@@ -137,8 +137,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)applyForSharePermission:(NSString *)userId block:(void (^)(BOOL result))block;
 
 /*
- * send cam permission result
- * @param userId ID of the user who requested to turn on the microphone
+ * send share permission result
+ * @param userId ID of the user who requested to start share
  * @param block Callback
  */
 + (void)grantSharePermission:(NSString *)userId result:(BOOL)granted;
@@ -152,7 +152,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /*
  * send record permission result
- * @param userId ID of the user who requested to turn on the microphone
+ * @param userId ID of the user who requested to start record
  * @param block Callback
  */
 + (void)acceptRecordRequest:(NSString *)userId result:(BOOL)accepted result:(void (^)(BOOL success))block;
@@ -308,13 +308,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /*
- * Notice of the end of the EduSmallClass
+ * Notice of linkmic join
  * @param block Callback
  */
 + (void)eduOnLinkmicJoin:(void (^)(BOOL reslut)) block;
 
 /*
- * Notice of the end of the EduSmallClass
+ * Notice of linkmic leave
  * @param block Callback
  */
 + (void)eduOnLinkmicLeave:(void (^)(BOOL reslut)) block;
